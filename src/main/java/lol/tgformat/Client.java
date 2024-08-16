@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
 public enum Client {
     instance;
     private final String name = "BloodLine_Recode";
-    private final String date = "20240813";
+    private final String date = "20240816";
     private final String version = "1.0";
     private String username;
     private ModuleManager moduleManager;
