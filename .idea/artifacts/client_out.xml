@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="client-out">
+    <output-path>$PROJECT_DIR$/out/artifacts/client_out</output-path>
+    <root id="archive" name="BloodLine.jar">
+      <element id="module-output" name="Roxy" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/client/phantomshield-inline.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/client/phantomshield-annotations.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="libs">
+    <output-path>$PROJECT_DIR$/out/artifacts/libs</output-path>
+    <root id="root">
+      <element id="library" level="project" name="client" />
+      <element id="library" level="project" name="minecraft" />
+      <element id="library" level="project" name="via" />
+    </root>
+  </artifact>
+</component>
