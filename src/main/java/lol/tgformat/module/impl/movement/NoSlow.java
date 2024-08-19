@@ -112,6 +112,7 @@ public class NoSlow extends Module {
                 case "GrimC07":
                     if (isSlow()) {
                         if (!isBow() && !isFood()) {
+                            PacketUtil.send1_12Block();
                             PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                         }
                         if (isBow()) {
@@ -192,9 +193,6 @@ public class NoSlow extends Module {
         if (isGapple()) return false;
         ItemStack heldItem = mc.thePlayer.getHeldItem();
         Item item = heldItem.getItem();
-        if (ModuleManager.getModule(KillAura.class).isGrimBlocking()) {
-            return true;
-        }
         return (mc.thePlayer.isUsingItem()) && ((item instanceof ItemSword && sword.isEnabled()) || (item instanceof ItemFood && food.isEnabled()) || (item instanceof ItemBow && bow.isEnabled()));
     }
 }

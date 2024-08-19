@@ -399,7 +399,7 @@ public class ItemRenderer
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     renderItemMap(abstractclientplayer, f3, f, swingProgress);
 
-                } else if (abstractclientplayer.getItemInUseCount() > 0 || canblock || ModuleManager.getModule(KillAura.class).isGrimBlocking()) {
+                } else if (abstractclientplayer.getItemInUseCount() > 0 || canblock) {
 
                     float sb = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
                     EnumAction enumaction = this.itemToRender.getItemUseAction();

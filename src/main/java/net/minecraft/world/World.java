@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import lol.tgformat.api.event.EventManager;
+import lol.tgformat.events.PreUpdateEvent;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
@@ -56,6 +58,8 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 import net.viamcp.viamcp.fixes.FixedSoundEngine;
+
+import static lol.tgformat.ui.clickgui.Utils.mc;
 
 public abstract class World implements IBlockAccess
 {
@@ -1862,6 +1866,8 @@ public abstract class World implements IBlockAccess
 
                 if (skiptick > 0 && entityIn == Minecraft.getMinecraft().thePlayer) {
                     skiptick--;
+                    EventManager.call(new PreUpdateEvent());
+                    mc.thePlayer.onUpdateWalkingPlayer();
                 } else {
                     if (entityIn.ridingEntity != null) {
                         entityIn.updateRidden();

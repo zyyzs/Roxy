@@ -2,14 +2,24 @@ package lol.tgformat.module.impl.combat;
 
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.AttackEvent;
+import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.WorldEvent;
+import lol.tgformat.events.movement.MoveInputEvent;
+import lol.tgformat.events.movement.StrafeEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.misc.Disabler;
+import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.CurrentRotationUtil;
+import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C0APacketAnimation;
 
 /**
  * @author TG_format
@@ -17,30 +27,37 @@ import net.minecraft.network.play.client.C03PacketPlayer;
  */
 public class Criticals extends Module {
     public Criticals() {
-        super("Critcals", ModuleType.Combat);
+        super("Criticals", ModuleType.Combat);
     }
+    public final BooleanSetting repeatC02 = new BooleanSetting("RepeatC02", true);
+    private final NumberSetting repeatAmount = new NumberSetting("RepeatAmount",1, 10, 1,1);
     @Listener
     public void onWorld(WorldEvent event) {
         mc.theWorld.skiptick = 0;
     }
     @Listener
-    public void onAttack(AttackEvent event) {
-        if (cantCrit((EntityLivingBase) event.getTarget())) {
+    public void onMoveInput(MoveInputEvent event) {
+        if (KillAura.target == null) return;
+        if (cantCrit( KillAura.target)) {
             reset();
         } else {
             KillAura aura = ModuleManager.getModule(KillAura.class);
             if (KillAura.target != null) {
-                if (mc.thePlayer.onGround) {
-                    aura.attackTimer.reset();
-                }
                 if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState()) {
                     mc.theWorld.skiptick++;
-                    PacketUtil.sendPacket(new C03PacketPlayer(false));
                 } else {
                     if (!isNull() && (!aura.isState())) {
                         reset();
                     }
                 }
+            }
+        }
+    }
+    @Listener
+    public void onStrafe(StrafeEvent event) {
+        if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.pressed) {
+            if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.0f) {
+                mc.thePlayer.jump();
             }
         }
     }

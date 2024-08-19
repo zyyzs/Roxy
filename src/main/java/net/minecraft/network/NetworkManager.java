@@ -592,6 +592,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     private void dispatchUnregisteredPacket(final Packet inPacket) {
         PacketSendHigherEvent event = new PacketSendHigherEvent(inPacket, true);
         EventManager.call(event);
+        if (inPacket instanceof C03PacketPlayer c03) {
+            CurrentRotationUtil.getCurrentRotation(c03);
+        }
         final EnumConnectionState enumconnectionstate = EnumConnectionState.getFromPacket(event.getPacket());
         final EnumConnectionState enumconnectionstate2 = this.channel.attr(NetworkManager.attrKeyConnectionState).get();
         if (enumconnectionstate2 != enumconnectionstate) {

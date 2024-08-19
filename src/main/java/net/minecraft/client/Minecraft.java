@@ -2176,11 +2176,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
                     while(true) {
                         if (!this.gameSettings.keyBindAttack.isPressed()) {
-                            while(this.gameSettings.keyBindUseItem.isPressed()) {
-                            }
-
-                            while(this.gameSettings.keyBindPickBlock.isPressed()) {
-                            }
                             break;
                         }
                     }

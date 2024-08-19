@@ -3,6 +3,7 @@ package lol.tgformat.module.impl.combat;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.component.RotationComponent;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
@@ -28,12 +29,13 @@ import lol.tgformat.utils.enums.MovementFix;
 import lol.tgformat.utils.keyboard.KeyBoardUtil;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.CurrentRotationUtil;
 import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
@@ -55,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @StringEncryption
 @NativeObfuscation
 public class KillAura extends Module {
-    private final ModeSetting attackmode = new ModeSetting("AttackMode", "Post", "Post", "Pre");
+    private final ModeSetting attackmode = new ModeSetting("AttackMode", "Post", "Post", "Pre", "Tick");
     private final NumberSetting maxcps = new NumberSetting("MaxCPS", 8,20,0,1);
     private final NumberSetting mincps = new NumberSetting("MinCPS", 6,20,0,1);
     private final NumberSetting startrange = new NumberSetting("StartRange",3.3f,6.0f,1.0f,0.1f);
@@ -74,8 +76,8 @@ public class KillAura extends Module {
     public final TimerUtil attackTimer = new TimerUtil();
     private final Animation Anim = new DecelerateAnimation(600, 1);
     @Getter
-    public static EntityPlayer target;
-    private EntityPlayer ESPTarget;
+    public static EntityLivingBase target;
+    private EntityLivingBase ESPTarget;
 
     @Override
     public void onDisable() {
@@ -88,7 +90,6 @@ public class KillAura extends Module {
     @Listener
     public void onWorld(WorldEvent event) {
         target = null;
-        KeyBoardUtil.resetKeybinding(mc.gameSettings.keyBindUseItem);
     }
     @Listener
     public void onPreUpdate(PreUpdateEvent event){
@@ -98,12 +99,13 @@ public class KillAura extends Module {
         }
         for (Entity entity : mc.theWorld.loadedEntityList) {
             if (notAttack(entity)) continue;
-            target = (EntityPlayer) entity;
+            target = (EntityLivingBase) entity;
         }
         if (target == null) return;
         if (notAttack(target)) {
             target = null;
-            PacketUtil.releaseUseItem(false);
+            PacketUtil.releaseUseItem(true);
+            mc.thePlayer.stopUsingItem();
             return;
         }
         if (mc.thePlayer.getClosestDistanceToEntity(target) <= range.getValue() + 0.02F) {
@@ -123,9 +125,14 @@ public class KillAura extends Module {
             case "Off": {
                 break;
             }
+            case "GrimAC":{
+                if (isSword()) {
+                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+                }
+            }
         }
         if (attackmode.is("Pre")) return;
-        if (isLookingAtEntity(RotationComponent.lastServerRotations.x, RotationComponent.lastServerRotations.y, target) && shouldAttack()){
+        if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()) {
             if(keepsprint.isEnabled()) {
                 mc.playerController.attackEntityNoSlow(target);
                 this.attackTimer.reset();
@@ -144,7 +151,7 @@ public class KillAura extends Module {
         }
         for (Entity entity : mc.theWorld.loadedEntityList) {
             if (notAttack(entity)) continue;
-            target = (EntityPlayer) entity;
+            target = (EntityLivingBase) entity;
         }
         if (target == null) return;
         if (notAttack(target)) {
@@ -166,7 +173,7 @@ public class KillAura extends Module {
             }
         }
         if (attackmode.is("Post")) return;
-        if (isLookingAtEntity(RotationComponent.rotations.x, RotationComponent.rotations.y, target) && shouldAttack()){
+        if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()){
             if(keepsprint.isEnabled()) {
                 mc.playerController.attackEntityNoSlow(target);
                 this.attackTimer.reset();
@@ -196,7 +203,7 @@ public class KillAura extends Module {
         Blink blink = ModuleManager.getModule(Blink.class);
         Timer timer = ModuleManager.getModule(Timer.class);
         AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
-        return !(entity instanceof EntityPlayer)
+        return !(entity instanceof EntityLivingBase)
                 || entity == mc.thePlayer
                 || !entity.isEntityAlive()
                 || !(mc.thePlayer.getClosestDistanceToEntity(entity) < startrange.getValue())
@@ -219,6 +226,20 @@ public class KillAura extends Module {
             case "BackSprint" -> MovementFix.BACKWARDS_SPRINT;
             default -> throw new IllegalStateException("Unexpected value: " + moveFix.getMode());
         };
+    }
+    @Listener
+    public void onTick(TickEvent event) {
+        if (attackmode.is("Tick")) {
+            if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()){
+                if(keepsprint.isEnabled()) {
+                    mc.playerController.attackEntityNoSlow(target);
+                    this.attackTimer.reset();
+                } else {
+                    mc.playerController.attackEntity(mc.thePlayer, target);
+                    this.attackTimer.reset();
+                }
+            }
+        }
     }
     @Listener
     public void onRender3D(Render3DEvent event) {
@@ -256,10 +277,10 @@ public class KillAura extends Module {
     public boolean shouldAttack() {
         return this.attackTimer.hasReached(1000.0D / (cps() * 1.5D));
     }
-    public static boolean isLookingAtEntity(float yaw, float pitch, Entity target) {
+    public static boolean isLookingAtEntity(Vector2f rotations, Entity target) {
         double range = 3.0f;
         Vec3 src = mc.thePlayer.getPositionEyes(1.0f);
-        Vec3 rotationVec = getVectorForRotation(pitch, yaw);
+        Vec3 rotationVec = getVectorForRotation(rotations.y, rotations.x);
         Vec3 dest = src.addVector(rotationVec.xCoord * range, rotationVec.yCoord * range, rotationVec.zCoord * range);
         MovingObjectPosition obj = mc.theWorld.rayTraceBlocks(src, dest, false, false, true);
         if (obj == null) {

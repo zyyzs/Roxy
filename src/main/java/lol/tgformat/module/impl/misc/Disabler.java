@@ -168,7 +168,7 @@ public class Disabler extends Module {
         }
     }
     
-    private float getRandomYaw(float requestedYaw){
+    public static float getRandomYaw(float requestedYaw){
         int rand = MathUtil.getRandomInRange(1,200);
         return requestedYaw + (360 * rand);
     }

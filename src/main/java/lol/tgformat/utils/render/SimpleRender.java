@@ -2,6 +2,7 @@ package lol.tgformat.utils.render;
 
 import lol.tgformat.accessable.IMinecraft;
 import lombok.experimental.UtilityClass;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -25,7 +26,7 @@ public class SimpleRender implements IMinecraft {
 
     public float processFPS(final float defV) {
         final float defF = 1000;
-        int limitFPS = Math.abs(mc.getDebugFPS());
+        int limitFPS = Math.abs(Minecraft.getDebugFPS());
         return defV / (limitFPS <= 0 ? 1 : limitFPS / defF);
     }
 
