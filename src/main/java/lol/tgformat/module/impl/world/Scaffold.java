@@ -170,15 +170,15 @@ public class Scaffold extends Module {
             GL11.glScaled(countscale, countscale, countscale);
             GL11.glTranslated(-(x + (width / 2F)), -(y + (height / 2F)), 0);
             RoundedUtil.drawRound(x, y, width + 5f, height, 3, new Color(0, 0, 0, 50));
-            GlowUtils.drawGlow(x, y, width + 5f, height, 22, new Color(0,0,0,120));
+            GlowUtils.drawGlow(x, y, width + 5f, height, 22, new Color(20,20,20, 128));
 
             if (mc.thePlayer.getHeldItem() == null || mc.thePlayer.getHeldItem().stackSize == 0) {
                 mc.fontRendererObj.drawString("?", x + 4, y, new Color(40, 44, 52).getRGB());
             } else {
-                this.drawItemStack(mc.thePlayer.getHeldItem(), x + 1, y + 1);
+                this.drawItemStack(mc.thePlayer.getHeldItem(), x + 2.5f, y + 1);
             }
 
-            tenacityBoldFont18.drawString("Blocks:  " + mc.thePlayer.getHeldItem().stackSize, x + 18, (y + 5), new Color(255, 255, 255).getRGB());
+            tenacityBoldFont18.drawString("Blocks:  " + mc.thePlayer.getHeldItem().stackSize, x + 21, (y + 6), new Color(255, 255, 255).getRGB());
             GL11.glPopMatrix();
         }
 
@@ -281,7 +281,7 @@ public class Scaffold extends Module {
         }
         Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
         if (scaffold.isState()) {
-            countscale = AnimationUtil.moveUD((float) countscale, (float) 1, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
+            countscale = AnimationUtil.moveUD((float) countscale, (float) 1, (float)( (30 * RenderUtil.deltaTime())+2), (float)((20 * RenderUtil.deltaTime())+2));
         } else {
             countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         }
