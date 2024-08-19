@@ -10,6 +10,7 @@ import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.combat.Criticals;
 import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.module.impl.world.Scaffold;
@@ -153,7 +154,7 @@ public class Speed extends Module {
             while(true) {
                 Entity entity;
                 do {
-                    if (!entitys.hasNext()) {
+                    if (!entitys.hasNext() && !ModuleManager.getModule(Criticals.class).isState()) {
                         if (c > 0 && MoveUtil.isMoving()) {
                             double strafeOffset = (double)Math.min(c, 3) * 0.08D;
                             float yaw = this.getMoveYaw();
@@ -165,7 +166,6 @@ public class Speed extends Module {
                             } else {
                                 mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft);
                             }
-
                             return;
                         } else {
                             mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft);

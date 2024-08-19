@@ -36,7 +36,7 @@ public class Criticals extends Module {
     @Listener
     public void onMoveInput(MoveInputEvent event) {
         if (KillAura.target == null) return;
-        if (cantCrit( KillAura.target)) {
+        if (cantCrit(KillAura.target)) {
             reset();
         } else {
             KillAura aura = ModuleManager.getModule(KillAura.class);

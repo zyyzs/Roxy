@@ -18,12 +18,14 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.block.*;
 import lol.tgformat.utils.enums.MovementFix;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.move.MoveUtil;
 import lol.tgformat.utils.player.InventoryUtil;
+import lol.tgformat.utils.render.GlowUtils;
 import lol.tgformat.utils.render.RenderUtils;
 import lol.tgformat.utils.rotation.RayCastUtil;
 import lol.tgformat.utils.rotation.RotationUtil;
@@ -49,6 +51,10 @@ import net.netease.utils.RenderUtil;
 import org.lwjgl.opengl.GL11;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+
+import static lol.tgformat.ui.clickgui.Utils.tenacityBoldFont18;
+import static net.netease.font.FontManager.arial18;
+import static net.netease.font.FontManager.arial20;
 
 /**
  * @author TG_format
@@ -164,6 +170,7 @@ public class Scaffold extends Module {
             GL11.glScaled(countscale, countscale, countscale);
             GL11.glTranslated(-(x + (width / 2F)), -(y + (height / 2F)), 0);
             RoundedUtil.drawRound(x, y, width + 5f, height, 3, new Color(0, 0, 0, 50));
+            GlowUtils.drawGlow(x, y, width + 5f, height, 22, new Color(0,0,0,120));
 
             if (mc.thePlayer.getHeldItem() == null || mc.thePlayer.getHeldItem().stackSize == 0) {
                 mc.fontRendererObj.drawString("?", x + 4, y, new Color(40, 44, 52).getRGB());
@@ -171,7 +178,7 @@ public class Scaffold extends Module {
                 this.drawItemStack(mc.thePlayer.getHeldItem(), x + 1, y + 1);
             }
 
-            mc.fontRendererObj.drawString("Blocks:" + mc.thePlayer.getHeldItem().stackSize, x + 18, (y + 5), new Color(255, 255, 255).getRGB());
+            tenacityBoldFont18.drawString("Blocks:  " + mc.thePlayer.getHeldItem().stackSize, x + 18, (y + 5), new Color(255, 255, 255).getRGB());
             GL11.glPopMatrix();
         }
 

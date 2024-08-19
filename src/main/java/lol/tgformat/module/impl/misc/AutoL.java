@@ -59,6 +59,7 @@ public class AutoL extends Module {
     }
 
     private static String[] hytText = {
+            "其实jnic是许锦良开发的 他一手创建了中国jnic",
             "你现在有没有入权了?",
             "你告诉我，是不是这个情况?",
             "SilenceFix is God in QuickMacro",

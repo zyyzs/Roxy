@@ -12,6 +12,7 @@ import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.values.impl.*;
 import lol.tgformat.ui.font.AbstractFontRenderer;
 import lol.tgformat.ui.font.CustomFont;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.font.Pair;
 import lol.tgformat.ui.hud.AnimationType;
 import lol.tgformat.ui.utils.RoundedUtil;
@@ -47,12 +48,15 @@ import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 
 import static lol.tgformat.ui.clickgui.Utils.*;
 import static lol.tgformat.utils.math.MathUtil.DF_1;
+import static net.netease.font.FontManager.arial16;
+import static net.netease.font.FontManager.arial18;
 
 /**
  * @Author KuChaZi
@@ -350,7 +354,7 @@ public class HUD extends Module {
                         DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
                         entity.animatedHealthBar = AnimationUtil.animate(entity.animatedHealthBar, entity.getHealth(), 0.15f);
 
-                        RoundedUtils.drawRound(x + 1.0F, y + height - 25.3F, entity.animatedHealthBar / entity.getMaxHealth() * Math.max(getMaxHel * width, (float)FontManager.arial18.getStringWidth(entity.getName())), 3.0F, 0.0F, new Color(126, 0, 252, 203));
+                        RoundedUtils.drawRound(x + 1.0F, y + height - 25.3F, entity.animatedHealthBar / entity.getMaxHealth() * Math.max(getMaxHel * width, (float) arial18.getStringWidth(entity.getName())), 3.0F, 0.0F, new Color(126, 0, 252, 203));
                         //  RoundedUtils.drawRound(x + 1.0F, y + height - 25.3F, entity.animatedHealthBar / entity.getMaxHealth() * Math.max(getMaxHel * width, (float)FontManager.arial18.getStringWidth(entity.getName())), 3.0F, 0.0F, new Color(126, 0, 252, 203));
 
                         // DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
@@ -358,27 +362,38 @@ public class HUD extends Module {
                         break;
                     }
                     case "Naven": {
-                        float getMaxHel = Math.min(entity.getMaxHealth(), 20.0f);
-                        float width = 6.4F;
-                        float height = 56.0F;
-                        GlowUtils.drawGlow(x, y, 140.0F, 58.0F, 6, new Color(0, 0, 0, 60));
-                        DrawUtil.drawRoundedRect(x, y, x + 120 + 20, y + 55, 6.0, Integer.MIN_VALUE);
-                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
+//                        float getMaxHel = Math.min(entity.getMaxHealth(), 20.0f);
+//                        float width = 6.4F;
+//                        float height = 56.0F;
+//                        GlowUtils.drawGlow(x, y, 140.0F, 58.0F, 6, new Color(0, 0, 0, 60));
+//                        DrawUtil.drawRoundedRect(x, y, x + 120 + 20, y + 55, 6.0, Integer.MIN_VALUE);
+//                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
+//
+//                        FontManager.edit20.drawStringWithShadow(entity.getName(), x + 46, y + 12, new Color(255, 255, 255).getRGB());
+//                        FontManager.arial16.drawStringWithShadow("Health: " + DF_1.format(entity.getHealth()), x + 46.0F, y + 24.0F, Color.WHITE.getRGB());
+//                        FontManager.arial16.drawStringWithShadow("Distance: " + MathUtil.round(mc.thePlayer.getDistanceToEntity(entity), 1), x + 46.0F, y + 31.0F, Color.WHITE.getRGB());
+//                        FontManager.arial16.drawStringWithShadow("Block: " + entity.isBlocking(), x + 46.0F, y + 38.0F, Color.WHITE.getRGB());//+ entity.isBlocking()
+//
+//                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
+//
+//                        entity.animatedHealthBar = AnimationUtil.animate(entity.animatedHealthBar, entity.getHealth(), 0.25f);
+//
+//                        RoundedUtils.drawRound(x + 6.0F, y + height - 7.0F, entity.animatedHealthBar / entity.getMaxHealth() * Math.max(getMaxHel * width, (float)FontManager.arial18.getStringWidth(entity.getName())), 3.0F, 2.0F, new Color(160, 42, 42));
+//
+//                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
+//
+//                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 6, y + 8, 36, 36);
+                        float width = 130;
+                        float height = 50;
 
-                        FontManager.edit20.drawStringWithShadow(entity.getName(), x + 46, y + 12, new Color(255, 255, 255).getRGB());
-                        FontManager.arial16.drawStringWithShadow("Health: " + DF_1.format(entity.getHealth()), x + 46.0F, y + 24.0F, Color.WHITE.getRGB());
-                        FontManager.arial16.drawStringWithShadow("Distance: " + MathUtil.round(mc.thePlayer.getDistanceToEntity(entity), 1), x + 46.0F, y + 31.0F, Color.WHITE.getRGB());
-                        FontManager.arial16.drawStringWithShadow("Block: " + entity.isBlocking(), x + 46.0F, y + 38.0F, Color.WHITE.getRGB());//+ entity.isBlocking()
+                        RoundedUtil.drawRound(x, y, width, height, 5, new Color(10, 10, 30, 120));
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 30, 30);
+                        RoundedUtil.drawRound(x + 5, y + height - 7, (entity.getHealth() / entity.getMaxHealth()) * width - 10, 3, 2, new Color(160, 42, 42));
+                        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+                        arial18.drawString(entity.getName(), x + 40, y + 10, -1);
+                        arial16.drawString("Health: " + decimalFormat.format(entity.getHealth()), x + 40, y + 22, -1);
+                        arial16.drawString("Distance: " + decimalFormat.format(entity.getDistanceToEntity(mc.thePlayer)), x + 40, y + 30, -1);
 
-                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
-
-                        entity.animatedHealthBar = AnimationUtil.animate(entity.animatedHealthBar, entity.getHealth(), 0.25f);
-
-                        RoundedUtils.drawRound(x + 6.0F, y + height - 7.0F, entity.animatedHealthBar / entity.getMaxHealth() * Math.max(getMaxHel * width, (float)FontManager.arial18.getStringWidth(entity.getName())), 3.0F, 2.0F, new Color(160, 42, 42));
-
-                        DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
-
-                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 6, y + 8, 36, 36);
                         break;
                     }
                     case "Acrimony": {
@@ -400,6 +415,7 @@ public class HUD extends Module {
                         FontManager.arial26.drawStringWithShadow(entity.getHealth() <= mc.thePlayer.getHealth() ? "Winning" : "Losing", x + 44, y + 44, entity.getHealth() <= mc.thePlayer.getHealth() ? Color.GREEN.getRGB() : Color.RED.getRGB());
                         break;
                     }
+
 
                 }
 

@@ -4,6 +4,7 @@ import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.module.Module;
+import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
@@ -28,7 +29,7 @@ import java.awt.*;
 public class Gapple extends Module {
     public BooleanSetting auto = new BooleanSetting("Auto", true);
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
-    public NumberSetting delay = new NumberSetting("Delay", 1, 10,0,1);
+    public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
     private final boolean stopMove = true;
     public boolean noCancelC02 = false;
     public boolean noC02 = false;
@@ -103,6 +104,7 @@ public class Gapple extends Module {
             PacketStoringComponent.send(new C09PacketHeldItemChange(this.slot), true);
             PacketStoringComponent.send(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()), true);
             PacketStoringComponent.stopStoringPackets();
+            ModuleManager.getModule(Criticals.class).cantCrit(KillAura.target);
             PacketStoringComponent.send(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem), true);
             pulsing = false;
             if (this.auto.isEnabled()) {
