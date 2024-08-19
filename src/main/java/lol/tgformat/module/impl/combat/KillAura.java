@@ -33,7 +33,6 @@ import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -75,8 +74,8 @@ public class KillAura extends Module {
     public final TimerUtil attackTimer = new TimerUtil();
     private final Animation Anim = new DecelerateAnimation(600, 1);
     @Getter
-    public static EntityLivingBase target;
-    private EntityLivingBase ESPTarget;
+    public static EntityPlayer target;
+    private EntityPlayer ESPTarget;
 
     @Override
     public void onDisable() {

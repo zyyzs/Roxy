@@ -14,6 +14,7 @@ import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.move.MoveUtil;
 import lol.tgformat.utils.network.PacketUtil;
@@ -75,7 +76,6 @@ public class Timer extends Module {
     @Override
     public void onDisable() {
         if (mc.thePlayer == null) return;
-
         if (mode.is("Balance")) {
             inBus.forEach(packet -> packet.processPacket(mc.getNetHandler()));
             inBus.clear();
@@ -85,14 +85,12 @@ public class Timer extends Module {
     }
 
     @Listener
-    
     public void onPacket(PacketReceiveEvent event) {
         if (mode.is("Balance")) {
             Packet<?> packet = event.getPacket();
             if (packet instanceof S32PacketConfirmTransaction) {
                 event.setCancelled();
                 mc.getNetHandler().addToSendQueue(new C0FPacketConfirmTransaction(0, (short) 0, true));
-                inBus.add((Packet<INetHandler>) packet);
             }
             if (packet instanceof S12PacketEntityVelocity) {
                 inBus.add((Packet<INetHandler>) packet);
@@ -133,7 +131,6 @@ public class Timer extends Module {
 
     @Listener
     public void onUpdate(PreUpdateEvent event) {
-        PacketUtil.sendC0F();
         if (mode.is("Balance")) {
             if (balance < 200) {
                 mc.timer.timerSpeed = 1F;
@@ -181,12 +178,11 @@ public class Timer extends Module {
             int startX = sr.getScaledWidth() / 2 - 68;
             int startY = sr.getScaledHeight() / 2 + 30;
             int Packet = balance;
-            GlowUtils.drawGlow(startX, startY, 140.0f, 35.0f, 8, new Color(0, 0, 0, 60));
-            RoundedUtils.drawRound(startX, startY, 140.0f, 35.0f, 5.0f, new Color(0, 0, 0, 30));
             GlStateManager.disableAlpha();
-            FontManager.arial20.drawString("BalanceTimer: " + Packet, startX + 30, startY + 20, new Color(225, 225, 225, 255).getRGB());
-            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 5.0f, 2.0f, new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), new Color(0, 0, 0, 50), new Color(0, 0, 0, 50));
-            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(Packet / 50.0f, 120.0f), 5.0f, 2.0f, new Color(255, 255, 255, 255), new Color(126, 0, 252, 255), new Color(135, 222, 66, 255), new Color(241, 59, 232, 255));
+            String text = "Balance:" + Packet;
+            FontUtil.tenacityFont20.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont20.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 255).getRGB());
+            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
+            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(Packet / 50.0f, 120.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
             GlStateManager.disableAlpha();
         }
     }

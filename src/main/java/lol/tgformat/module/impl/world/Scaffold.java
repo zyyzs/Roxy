@@ -73,12 +73,10 @@ public class Scaffold extends Module {
     public boolean tip = false;
     protected Random rand = new Random();
     private List<BlockPos> placedBlocks = new ArrayList<>();
-    private double playerPosY;
     private double countscale = 0;
     private boolean towers = false;
     private int ticks = 0;
     private int holdticks = 0;
-    int idkTick = 0;
     @Getter
     private int slot;
     private int oldSlot;
@@ -93,12 +91,9 @@ public class Scaffold extends Module {
 
     @Override
     public void onEnable() {
-        this.idkTick = 5;
+        countscale = 0;
         if (mc.thePlayer == null) {
             return;
-        }
-        if (samey.isEnabled()) {
-            playerPosY = mc.thePlayer.posY;
         }
         oldSlot = mc.thePlayer.inventory.currentItem;
         this.prevItem = mc.thePlayer.inventory.currentItem;
@@ -185,14 +180,6 @@ public class Scaffold extends Module {
 
     @Listener
     public void onUpdate(PreMotionEvent event) {
-        if (this.idkTick > 0) {
-            --this.idkTick;
-        }
-        if (samey.isEnabled()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                playerPosY = mc.thePlayer.posY;
-            }
-        }
         if (tower.isEnabled()) {
             onTower();
         }
@@ -287,9 +274,9 @@ public class Scaffold extends Module {
         }
         Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
         if (scaffold.isState()) {
-            countscale = AnimationUtil.moveUD((float) countscale, (float) 1, (float) (5 * RenderUtil.deltaTime()), (float) (4 * RenderUtil.deltaTime()));
+            countscale = AnimationUtil.moveUD((float) countscale, (float) 1, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         } else {
-            countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (5 * RenderUtil.deltaTime()), (float) (4 * RenderUtil.deltaTime()));
+            countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         }
     }
 
@@ -322,9 +309,6 @@ public class Scaffold extends Module {
         this.slot = this.getBlockSlot();
         if (this.slot < 0) {
             return;
-        }
-        if (samey.isEnabled()) {
-            playerPosY = mc.thePlayer.posY;
         }
         if (fakeslot.isEnabled()) {
             Client.instance.getSlotSpoofComponent().startSpoofing(oldSlot);

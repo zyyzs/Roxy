@@ -6,6 +6,8 @@ import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.module.values.impl.NumberSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.component.MovementComponent;
 import lol.tgformat.component.PacketStoringComponent;
@@ -25,6 +27,8 @@ import java.awt.*;
  */
 public class Gapple extends Module {
     public BooleanSetting auto = new BooleanSetting("Auto", true);
+    public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
+    public NumberSetting delay = new NumberSetting("Delay", 1, 10,0,1);
     private final boolean stopMove = true;
     public boolean noCancelC02 = false;
     public boolean noC02 = false;
@@ -113,25 +117,22 @@ public class Gapple extends Module {
             LogUtil.addChatMessage("Eat");
             return;
         }
-        int sendDelay = 9;
-        if (mc.thePlayer.ticksExisted % sendDelay == 0) {
-            int sendOnceTicks = 1;
-            for (int i = 0; i < sendOnceTicks; ++i) {
+        if (mc.thePlayer.ticksExisted % delay.getValue() == 0) {
+            for (int i = 0; i < duringSendTicks.getValue(); ++i) {
                 PacketStoringComponent.releasePacket(true);
             }
         }
     }
     @Listener
     public void onRender2D(Render2DEvent event) {
-        float target = (float)(120.0f * (this.c03s / 32.0));
+        float target = (float)(120.0f * (this.c03s / 32.0)) * ((float) 100 / 120);
         int startX = sr.getScaledWidth() / 2 - 68;
         int startY = sr.getScaledHeight() / 2 + 30;
-        GlowUtils.drawGlow(startX, startY, 140.0f, 35.0f, 8, new Color(0, 0, 0, 100));
-        RoundedUtils.drawRound(startX, startY, 140.0f, 35.0f, 5.0f, new Color(0, 0, 0, 30));
         GlStateManager.disableAlpha();
-        FontManager.arial20.drawString("Started eating.. " + target, startX + 30, startY + 20, new Color(225, 225, 225, 255).getRGB());
-        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 5.0f, 2.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
-        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 5.0f, 2.0f, new Color(255, 255, 255, 255), new Color(126, 0, 252, 255), new Color(135, 222, 66, 255), new Color(241, 59, 232, 255));
+        String text = "Eating.. " + target + "%";
+        FontUtil.tenacityFont20.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont20.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 255).getRGB());
+        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
+        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
         GlStateManager.disableAlpha();
     }
 }

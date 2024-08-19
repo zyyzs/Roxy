@@ -11,6 +11,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLiquid;
@@ -19,6 +21,7 @@ import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -119,6 +122,7 @@ public abstract class World implements IBlockAccess
      * chunkprovider's dummy if possible
      */
     protected boolean findingSpawnPoint;
+    @Getter
     protected MapStorage mapStorage;
     protected VillageCollection villageCollectionObj;
     public final Profiler theProfiler;
@@ -150,6 +154,7 @@ public abstract class World implements IBlockAccess
      * the original block, plus 32 (i.e. value of 31 would mean a -1 offset
      */
     int[] lightUpdateBlockList;
+    public int skiptick = 0;
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client)
     {
@@ -1850,17 +1855,19 @@ public abstract class World implements IBlockAccess
             entityIn.prevRotationYaw = entityIn.rotationYaw;
             entityIn.prevRotationPitch = entityIn.rotationPitch;
 
-            if (forceUpdate && entityIn.addedToChunk)
-            {
+            //怎么个改法等等哦ok
+
+            if (forceUpdate && entityIn.addedToChunk) {
                 ++entityIn.ticksExisted;
 
-                if (entityIn.ridingEntity != null)
-                {
-                    entityIn.updateRidden();
-                }
-                else
-                {
-                    entityIn.onUpdate();
+                if (skiptick > 0 && entityIn == Minecraft.getMinecraft().thePlayer) {
+                    skiptick--;
+                } else {
+                    if (entityIn.ridingEntity != null) {
+                        entityIn.updateRidden();
+                    } else {
+                        entityIn.onUpdate();
+                    }
                 }
             }
 
@@ -3575,11 +3582,6 @@ public abstract class World implements IBlockAccess
         return biomegenbase.isHighHumidity();
     }
 
-    public MapStorage getMapStorage()
-    {
-        return this.mapStorage;
-    }
-
     /**
      * Assigns the given String id to the given MapDataBase using the MapStorage, removing any existing ones of the same
      * id.
@@ -3626,7 +3628,7 @@ public abstract class World implements IBlockAccess
         {
             for (int i = 0; i < this.worldAccesses.size(); ++i)
             {
-                ((IWorldAccess)this.worldAccesses.get(i)).playAuxSFX(player, sfxType, pos, p_180498_4_);
+                this.worldAccesses.get(i).playAuxSFX(player, sfxType, pos, p_180498_4_);
             }
         }
         catch (Throwable throwable)

@@ -45,6 +45,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new TrowableAura());
         addModule(new AntiBot());
         addModule(new BackTrack());
+        addModule(new Criticals());
         //Combat
 
 

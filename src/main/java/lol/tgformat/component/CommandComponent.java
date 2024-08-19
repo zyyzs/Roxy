@@ -36,17 +36,28 @@ public class CommandComponent implements IMinecraft {
 
         String[] command = msg.substring(1).split(" ");
         if (command.length == 0) return;
-
-        if (command[0].equals("bind")) {
-            try {
-                Module module = ModuleManager.getModuleByName(command[1]);
-                module.setKey(Keyboard.getKeyIndex(command[2].toUpperCase()));
-                LogUtil.addChatMessage("Bind " + module.getName() + " to " + command[2]);
-                event.setCancelled(true);
-            } catch (Exception e) {
-                event.setCancelled(true);
-                LogUtil.print(e.getMessage());
-            }
+        switch (command[0]) {
+            case "bind":
+                try {
+                    Module module = ModuleManager.getModuleByName(command[1]);
+                    module.setKey(Keyboard.getKeyIndex(command[2].toUpperCase()));
+                    LogUtil.addChatMessage("Bind " + module.getName() + " to " + command[2].toUpperCase());
+                    event.setCancelled(true);
+                } catch (Exception e) {
+                    event.setCancelled(true);
+                    LogUtil.print(e.getMessage());
+                }
+                break;
+            case "binds":
+                for (Module module : ModuleManager.getModules()) {
+                    if (module.getKey() == 0) {
+                        continue;
+                    }
+                    LogUtil.addChatMessage(module.getName() + " " + Keyboard.getKeyName(module.getKey()));
+                }
+                break;
+            case "config":
+                //TODO:懒得写
         }
     }
 
