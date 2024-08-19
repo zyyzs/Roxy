@@ -217,7 +217,7 @@ public class KillAura extends Module {
                 || FriendsCollection.isIRCFriend(entity);
     }
 
-    
+
     private MovementFix getMovementFixType() {
         return switch (moveFix.getMode()) {
             case "None" -> MovementFix.OFF;

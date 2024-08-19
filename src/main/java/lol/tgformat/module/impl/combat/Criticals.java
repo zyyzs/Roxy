@@ -29,8 +29,6 @@ public class Criticals extends Module {
     public Criticals() {
         super("Criticals", ModuleType.Combat);
     }
-    public final BooleanSetting repeatC02 = new BooleanSetting("RepeatC02", true);
-    private final NumberSetting repeatAmount = new NumberSetting("RepeatAmount",1, 10, 1,1);
     @Listener
     public void onWorld(WorldEvent event) {
         mc.theWorld.skiptick = 0;
@@ -43,7 +41,7 @@ public class Criticals extends Module {
         } else {
             KillAura aura = ModuleManager.getModule(KillAura.class);
             if (KillAura.target != null) {
-                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState()) {
+                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState() && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.0f) {
                     mc.theWorld.skiptick++;
                 } else {
                     if (!isNull() && (!aura.isState())) {
