@@ -55,7 +55,6 @@ import java.util.Objects;
 @StringEncryption
 public class NoSlow extends Module {
     private final ModeSetting mode = new ModeSetting("Mode", "Vanilla","Vanilla", "Grim");
-    private final ModeSetting grimMode = new ModeSetting("Grim Mode", "GrimC07","GrimC07", "GrimC09");
     private final BooleanSetting sword = new BooleanSetting("Sword", true);
     private final BooleanSetting food = new BooleanSetting("Food", false);
     private final BooleanSetting bow = new BooleanSetting("Bow", false);
@@ -101,27 +100,10 @@ public class NoSlow extends Module {
             this.slow = false;
         }
         if (Objects.requireNonNull(mode.getMode()).equals("Grim") && !isFood()) {
-            switch (grimMode.getMode()) {
-                case "GrimC09":
-                    if (isSlow() && !isFood()) {
-                        PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                        PacketUtil.send1_12Block();
-                        PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
-                    }
-                    break;
-                case "GrimC07":
-                    if (isSlow()) {
-                        if (!isBow() && !isFood()) {
-                            PacketUtil.send1_12Block();
-                            PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                        }
-                        if (isBow()) {
-                            PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                            PacketUtil.sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-                            PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
-                        }
-                    }
-                    break;
+            if (isSlow() && !isFood()) {
+                PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+                PacketUtil.send1_12Block();
+                PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
             }
         }
     }
@@ -133,15 +115,10 @@ public class NoSlow extends Module {
         }
         if (!isFood()) {
             if (mode.getMode().equals("Grim")) {
-                switch (grimMode.getMode()) {
-                    case "GrimC09":
-                    case "GrimC07":
-                        if (isSlow() && !isFood() && !isBow()) {
-                            if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
-                                PacketUtil.send1_12Block();
-                            }
-                        }
-                        break;
+                if (isSlow() && !isFood() && !isBow()) {
+                    if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
+                        PacketUtil.send1_12Block();
+                    }
                 }
             }
         }
