@@ -1,25 +1,17 @@
 package lol.tgformat.module.impl.combat;
 
 import lol.tgformat.api.event.Listener;
-import lol.tgformat.events.AttackEvent;
-import lol.tgformat.events.TickEvent;
+import lol.tgformat.events.CriticalsEvent;
 import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.movement.MoveInputEvent;
 import lol.tgformat.events.movement.StrafeEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
-import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.module.values.impl.BooleanSetting;
-import lol.tgformat.module.values.impl.NumberSetting;
-import lol.tgformat.utils.network.PacketUtil;
-import lol.tgformat.utils.player.CurrentRotationUtil;
-import lol.tgformat.utils.timer.TimerUtil;
+import lol.tgformat.utils.client.LogUtil;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0APacketAnimation;
 
 /**
  * @author TG_format
@@ -29,12 +21,14 @@ public class Criticals extends Module {
     public Criticals() {
         super("Criticals", ModuleType.Combat);
     }
+    private final BooleanSetting display = new BooleanSetting("Display Criticals", true);
     @Listener
     public void onWorld(WorldEvent event) {
         mc.theWorld.skiptick = 0;
     }
     @Listener
     public void onMoveInput(MoveInputEvent event) {
+        if (isGapple()) setState(false);
         if (KillAura.target == null) return;
         if (cantCrit(KillAura.target)) {
             reset();
@@ -59,10 +53,16 @@ public class Criticals extends Module {
             }
         }
     }
+    @Listener
+    public void onCritical(CriticalsEvent event) {
+        if (event.getEntity() == KillAura.target && display.isEnabled()) {
+            LogUtil.addChatMessage("Critical Success");
+        }
+    }
     public boolean cantCrit(EntityLivingBase targetEntity) {
         EntityPlayerSP player = mc.thePlayer;
         return player.isOnLadder() || player.isInWeb || player.isInWater() || player.isInLava() || player.ridingEntity != null
-                || targetEntity.hurtTime > 10 || targetEntity.getHealth() <= 0;
+                || targetEntity.hurtTime > 10 || targetEntity.getHealth() <= 0 || isGapple();
     }
     private void reset() {
         mc.theWorld.skiptick = 0;

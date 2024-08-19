@@ -66,7 +66,6 @@ public class ModernClickGui extends GuiScreen {
     }
 
     @Override
-    
     public void initGui() {
         if (firstOpen) {
             drag.setX(width / 2F - rectWidth / 2F);
@@ -77,7 +76,6 @@ public class ModernClickGui extends GuiScreen {
             modpanel = new ModulesPanel();
         }
 
-        //Client.instance.getSideGui().initGui();
         currentCategory = ClickGui.getActiveCategory();
         categories.forEach(Component::initGui);
         openingAnimation = new DecelerateAnimation(300, 1);

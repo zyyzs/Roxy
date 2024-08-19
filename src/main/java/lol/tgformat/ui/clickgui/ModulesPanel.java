@@ -11,6 +11,7 @@ import net.netease.utils.RenderUtil;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class ModulesPanel extends Panel {
 
-    public List<ModuleRect> modules;
+    public List<ModuleRect> modules = new ArrayList<>();
     public Animation expandAnim;
     public Animation expandAnim2;
     Scroll settingScroll = new Scroll();

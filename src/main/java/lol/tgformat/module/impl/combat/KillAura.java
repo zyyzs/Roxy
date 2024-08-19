@@ -36,6 +36,7 @@ import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
@@ -101,6 +102,27 @@ public class KillAura extends Module {
             if (notAttack(entity)) continue;
             target = (EntityLivingBase) entity;
         }
+        if (isPlayerNear()) {
+            switch (autoblockmods.getMode()) {
+                case "Packet": {
+                    if (isSword()) {
+                        PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+                        PacketUtil.send1_12Block();
+                        PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
+                    }
+                    break;
+                }
+                case "Off": {
+                    break;
+                }
+                case "GrimAC":{
+                    if (isSword()) {
+                        mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+                    }
+                }
+            }
+        }
         if (target == null) return;
         if (notAttack(target)) {
             target = null;
@@ -112,35 +134,8 @@ public class KillAura extends Module {
             Vector2f rotation = RotationUtil.getRotations(target);
             RotationComponent.setRotations(rotation, rotationspeed.getValue(), getMovementFixType());
         }
-        switch (autoblockmods.getMode()) {
-            case "Packet": {
-                if (isSword()) {
-                    PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                    mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-                    PacketUtil.send1_12Block();
-                    PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
-                }
-                break;
-            }
-            case "Off": {
-                break;
-            }
-            case "GrimAC":{
-                if (isSword()) {
-                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-                }
-            }
-        }
         if (attackmode.is("Pre")) return;
-        if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()) {
-            if(keepsprint.isEnabled()) {
-                mc.playerController.attackEntityNoSlow(target);
-                this.attackTimer.reset();
-            } else {
-                mc.playerController.attackEntity(mc.thePlayer, target);
-                this.attackTimer.reset();
-            }
-        }
+        attack();
     }
     @Listener
     public void onPost(PostMotionEvent event) {
@@ -173,15 +168,14 @@ public class KillAura extends Module {
             }
         }
         if (attackmode.is("Post")) return;
-        if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()){
-            if(keepsprint.isEnabled()) {
-                mc.playerController.attackEntityNoSlow(target);
-                this.attackTimer.reset();
-            } else {
-                mc.playerController.attackEntity(mc.thePlayer, target);
-                this.attackTimer.reset();
-            }
+        attack();
+    }
+    public boolean isPlayerNear() {
+        for (Entity entity : mc.theWorld.loadedEntityList) {
+            if (entityCant(entity) || !(entity instanceof EntityPlayer)) continue;
+            return true;
         }
+        return false;
     }
     @Listener
     public void onReceive(PacketReceiveEvent event) {
@@ -195,9 +189,20 @@ public class KillAura extends Module {
             }
         }
     }
-    public boolean isGrimBlocking() {
-        return target != null && autoblockmods.is("GrimAC") && isSword() && isState();
+    public void attack() {
+        if (isLookingAtEntity(isGapple() ? RotationComponent.rotations : CurrentRotationUtil.currentRotation , target) && shouldAttack()) {
+            if(keepsprint.isEnabled()) {
+                mc.playerController.attackEntityNoSlow(target);
+                this.attackTimer.reset();
+            } else {
+                mc.playerController.attackEntity(mc.thePlayer, target);
+                this.attackTimer.reset();
+            }
+        }
     }
+//    public boolean isGrimBlocking() {
+//        return target != null && autoblockmods.is("GrimAC") && isSword() && isState();
+//    }
     private boolean notAttack(Entity entity) {
         Scaffold sca = ModuleManager.getModule(Scaffold.class);
         Blink blink = ModuleManager.getModule(Blink.class);
@@ -207,6 +212,24 @@ public class KillAura extends Module {
                 || entity == mc.thePlayer
                 || !entity.isEntityAlive()
                 || !(mc.thePlayer.getClosestDistanceToEntity(entity) < startrange.getValue())
+                || sca.isState()
+                || entity == Blink.getFakePlayer()
+                || blink.isState()
+                || ModuleManager.getModule(Stuck.class).isState()
+                || antiBot.isServerBot(entity)
+                || Teams.isSameTeam(entity)
+                || timer.isState()
+                || FriendsCollection.isIRCFriend(entity);
+    }
+    private boolean entityCant(Entity entity) {
+        Scaffold sca = ModuleManager.getModule(Scaffold.class);
+        Blink blink = ModuleManager.getModule(Blink.class);
+        Timer timer = ModuleManager.getModule(Timer.class);
+        AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
+        return !(entity instanceof EntityLivingBase)
+                || entity == mc.thePlayer
+                || !entity.isEntityAlive()
+                || !(mc.thePlayer.getClosestDistanceToEntity(entity) < 6)
                 || sca.isState()
                 || entity == Blink.getFakePlayer()
                 || blink.isState()
@@ -230,15 +253,7 @@ public class KillAura extends Module {
     @Listener
     public void onTick(TickEvent event) {
         if (attackmode.is("Tick")) {
-            if (isLookingAtEntity(CurrentRotationUtil.currentRotation, target) && shouldAttack()){
-                if(keepsprint.isEnabled()) {
-                    mc.playerController.attackEntityNoSlow(target);
-                    this.attackTimer.reset();
-                } else {
-                    mc.playerController.attackEntity(mc.thePlayer, target);
-                    this.attackTimer.reset();
-                }
-            }
+            attack();
         }
     }
     @Listener

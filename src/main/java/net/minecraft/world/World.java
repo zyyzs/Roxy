@@ -1859,7 +1859,6 @@ public abstract class World implements IBlockAccess
             entityIn.prevRotationYaw = entityIn.rotationYaw;
             entityIn.prevRotationPitch = entityIn.rotationPitch;
 
-            //怎么个改法等等哦ok
 
             if (forceUpdate && entityIn.addedToChunk) {
                 ++entityIn.ticksExisted;

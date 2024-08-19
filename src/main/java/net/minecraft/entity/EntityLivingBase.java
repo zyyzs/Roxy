@@ -1975,10 +1975,7 @@ public abstract class EntityLivingBase extends Entity
      */
     public void onLivingUpdate()
     {
-        if (this.jumpTicks > 0)
-        {
-            --this.jumpTicks;
-        }
+        jumpTicks = 0;
 
         if (this.newPosRotationIncrements > 0)
         {

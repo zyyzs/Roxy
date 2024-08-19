@@ -27,7 +27,6 @@ import java.awt.*;
  * @since 2024/7/28 下午8:26
  */
 public class Gapple extends Module {
-    public BooleanSetting auto = new BooleanSetting("Auto", true);
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
     private final boolean stopMove = true;
@@ -104,18 +103,9 @@ public class Gapple extends Module {
             PacketStoringComponent.send(new C09PacketHeldItemChange(this.slot), true);
             PacketStoringComponent.send(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()), true);
             PacketStoringComponent.stopStoringPackets();
-            ModuleManager.getModule(Criticals.class).cantCrit(KillAura.target);
             PacketStoringComponent.send(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem), true);
             pulsing = false;
-            if (this.auto.isEnabled()) {
-                this.c03s = 0;
-                this.slot = InventoryUtil.findItem(36, 45, Items.golden_apple);
-                if (this.slot != -1) {
-                    this.slot -= 36;
-                }
-            } else {
-                this.setState(false);
-            }
+            this.setState(false);
             LogUtil.addChatMessage("Eat");
             return;
         }

@@ -11,6 +11,8 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 public class CurrentRotationUtil implements IMinecraft {
     public static Vector2f currentRotation = new Vector2f(0, 0);
     public static void getCurrentRotation(C03PacketPlayer rotationPacket) {
-        currentRotation = new Vector2f(rotationPacket.getYaw(), rotationPacket.getPitch());
+        if (rotationPacket.rotating) {
+            currentRotation = new Vector2f(rotationPacket.getYaw(), rotationPacket.getPitch());
+        }
     }
 }

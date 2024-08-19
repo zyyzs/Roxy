@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import lol.tgformat.Client;
 import lol.tgformat.api.event.EventManager;
+import lol.tgformat.events.CriticalsEvent;
 import lol.tgformat.events.VelocityEvent;
 import lol.tgformat.module.impl.misc.Disabler;
 import net.minecraft.block.Block;
@@ -902,6 +903,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             else if (packetIn.getAnimationType() == 4)
             {
+                EventManager.call(new CriticalsEvent(entity));
                 this.gameController.effectRenderer.emitParticleAtEntity(entity, EnumParticleTypes.CRIT);
             }
             else if (packetIn.getAnimationType() == 5)
