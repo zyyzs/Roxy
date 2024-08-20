@@ -39,6 +39,7 @@ public class AntiVoid extends Module {
     private final ModeSetting mode = new ModeSetting("Mode","GrimAC","GrimAC","Watchdog");
     public NumberSetting pullbackTime = new NumberSetting("Pullback Time", 1000.0, 2000.0, 1000.0, 100.0);
     public NumberSetting catcherDistance = new NumberSetting("Catcher Distance", 3, 50, 1, 1);
+    public NumberSetting catcherTicks = new NumberSetting("Catcher Distance", 10, 100, 1, 1);
     public NumberSetting stuckDistance = new NumberSetting("Stuck Distance", 4, 50, 1, 1);
     public AntiVoid() {
         super("AntiVoid", ModuleType.Player);
@@ -75,7 +76,7 @@ public class AntiVoid extends Module {
         if (mode.is("GrimAC")) {
             if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue() && !isBlockUnder()) {
                 if (!lastSkip) {
-                    mc.theWorld.skiptick = 5;
+                    mc.theWorld.skiptick = catcherTicks.getValue().intValue();
                     lastSkip = true;
                 }
                 ModuleManager.getModule(Scaffold.class).setState(true);
