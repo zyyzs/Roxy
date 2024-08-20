@@ -8,6 +8,7 @@ import lol.tgformat.events.movement.StrafeEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.utils.client.LogUtil;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -28,7 +29,10 @@ public class Criticals extends Module {
     }
     @Listener
     public void onMoveInput(MoveInputEvent event) {
-        if (isGapple()) setState(false);
+        if (Disabler.noPost()) {
+            reset();
+            return;
+        }
         if (KillAura.target == null) return;
         if (cantCrit(KillAura.target)) {
             reset();

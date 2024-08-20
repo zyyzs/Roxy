@@ -93,7 +93,7 @@ public class Stuck extends Module {
         if (event.getPacket() instanceof C03PacketPlayer) {
             Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
             if(scaffold.isState()){
-//                scaffold.setState(false);
+                scaffold.setState(false);
             }
             event.setCancelled(true);
         }

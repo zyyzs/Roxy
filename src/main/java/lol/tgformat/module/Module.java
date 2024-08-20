@@ -79,8 +79,8 @@ public class Module implements IMinecraft {
             NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
         } else {
             EventManager.unregister(this);
-            NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
             onDisable();
+            NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
         }
     }
     public void setSuffix(Object suffix) {
@@ -131,9 +131,11 @@ public class Module implements IMinecraft {
         if (state) {
             onEnable();
             EventManager.register(this);
+            NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
         } else {
             EventManager.unregister(this);
             onDisable();
+            NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
         }
     }
     public boolean isGapple() {

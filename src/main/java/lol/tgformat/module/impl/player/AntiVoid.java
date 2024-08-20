@@ -8,8 +8,10 @@ import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
+import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.block.Block;
@@ -36,6 +38,8 @@ import java.util.ArrayList;
 public class AntiVoid extends Module {
     private final ModeSetting mode = new ModeSetting("Mode","GrimAC","GrimAC","Watchdog");
     public NumberSetting pullbackTime = new NumberSetting("Pullback Time", 1000.0, 2000.0, 1000.0, 100.0);
+    public NumberSetting catcherDistance = new NumberSetting("Catcher Distance", 3, 50, 1, 1);
+    public NumberSetting stuckDistance = new NumberSetting("Stuck Distance", 4, 50, 1, 1);
     public AntiVoid() {
         super("AntiVoid", ModuleType.Player);
     }
@@ -61,12 +65,19 @@ public class AntiVoid extends Module {
         }
     }
     @Listener
-    
     public void onUpdate(PreUpdateEvent event) {
         if (isNull()) return;
+        if (catcherDistance.getValue() >= stuckDistance.getValue()) {
+            catcherDistance.setValue(stuckDistance.getValue() - 1);
+            LogUtil.addChatMessage("Catcher Distance 必须大于 Stuck Distance, 已将Catcher Distance设置为" + (stuckDistance.getValue() - 1));
+        }
         if (ModuleManager.getModule(Blink.class).isState()) return;
         if (mode.is("GrimAC")) {
-            if (mc.thePlayer.fallDistance > 3F) {
+            if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue() && !isBlockUnder()) {
+                mc.theWorld.skiptick = 5;
+                ModuleManager.getModule(Scaffold.class).setState(true);
+            }
+            if (mc.thePlayer.fallDistance > stuckDistance.getValue()) {
                 if (!ModuleManager.getModule(Stuck.class).isState() && !isBlockUnder()) {
                     ModuleManager.getModule(Stuck.class).setState(true);
                 }
@@ -75,7 +86,6 @@ public class AntiVoid extends Module {
     }
 
     @Listener
-    
     public void onSend(PacketSendEvent event) {
         if (mode.is("Watchdog")) {
             if (mc.thePlayer != null && mc.thePlayer.ticksExisted < 100) {
@@ -112,7 +122,6 @@ public class AntiVoid extends Module {
     }
 
     @Listener
-    
     public void onReceive(PacketReceiveEvent event) {
         if (event.getPacket() instanceof S08PacketPlayerPosLook packet && mode.is("Watchdog")) {
             packets.clear();

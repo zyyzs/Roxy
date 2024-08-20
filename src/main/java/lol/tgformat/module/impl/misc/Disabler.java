@@ -268,7 +268,7 @@ public class Disabler extends Module {
             storedPackets.clear();
         }
     }
-    private static boolean noPost() {
+    public static boolean noPost() {
         return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing;
     }
     
