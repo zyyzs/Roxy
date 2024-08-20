@@ -54,7 +54,7 @@ public class GuiLogin extends GuiScreen {
     private final Color black;
     private final Color blueish;
     private final Color blue;
-    public static String uid;
+    public static String uid = "zyyzs";
     private float hHeight;
     private float hWidth;
     private float errorBoxHeight;

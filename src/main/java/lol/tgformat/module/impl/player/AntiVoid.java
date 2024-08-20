@@ -39,7 +39,7 @@ public class AntiVoid extends Module {
     private final ModeSetting mode = new ModeSetting("Mode","GrimAC","GrimAC","Watchdog");
     public NumberSetting pullbackTime = new NumberSetting("Pullback Time", 1000.0, 2000.0, 1000.0, 100.0);
     public NumberSetting catcherDistance = new NumberSetting("Catcher Distance", 3, 50, 1, 1);
-    public NumberSetting catcherTicks = new NumberSetting("Catcher Distance", 10, 100, 1, 1);
+    public NumberSetting catcherTicks = new NumberSetting("Catcher Ticks", 10, 100, 1, 1);
     public NumberSetting stuckDistance = new NumberSetting("Stuck Distance", 4, 50, 1, 1);
     public AntiVoid() {
         super("AntiVoid", ModuleType.Player);
@@ -74,12 +74,18 @@ public class AntiVoid extends Module {
         }
         if (ModuleManager.getModule(Blink.class).isState()) return;
         if (mode.is("GrimAC")) {
-            if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue() && !isBlockUnder()) {
-                if (!lastSkip) {
-                    mc.theWorld.skiptick = catcherTicks.getValue().intValue();
-                    lastSkip = true;
+            if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue()) {
+                if (!isBlockUnder()) {
+                    if (!lastSkip) {
+                        mc.theWorld.skiptick = catcherTicks.getValue().intValue();
+                        lastSkip = true;
+                    }
+                    ModuleManager.getModule(Scaffold.class).setState(true);
+                } else {
+                    mc.theWorld.skiptick = 0;
+                    lastSkip = false;
+                    ModuleManager.getModule(Scaffold.class).setState(false);
                 }
-                ModuleManager.getModule(Scaffold.class).setState(true);
             }
             if (mc.thePlayer.fallDistance > stuckDistance.getValue()) {
                 if (!ModuleManager.getModule(Stuck.class).isState() && !isBlockUnder()) {

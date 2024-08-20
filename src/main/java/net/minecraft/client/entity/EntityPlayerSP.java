@@ -6,7 +6,9 @@ import lol.tgformat.events.PreUpdateEvent;
 import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.movement.SlowEvent;
+import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.combat.Gapple;
+import lol.tgformat.module.impl.combat.Velocity;
 import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.utils.vector.Vector2f;
 import net.minecraft.client.Minecraft;
@@ -211,6 +213,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
             double d4 = pitch - this.lastReportedPitch;
             boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4 || this.positionUpdateTicks >= 20;
             flag3 = d3 != 0.0 || d4 != 0.0;
+            Velocity velocity = ModuleManager.getModule(Velocity.class);
             if (this.ridingEntity == null) {
                 if (flag2 && flag3) {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, yaw, pitch, this.onGround));
@@ -224,6 +227,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
             } else {
                 this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0, this.motionZ, yaw, pitch, this.onGround));
                 flag2 = false;
+            }
+            if (velocity.sprintShould && !velocity.shouldVelo){
+                this.serverSprintState = true;
+                velocity.sprintShould = false;
             }
             Disabler.processPackets();
             ++this.positionUpdateTicks;

@@ -9,6 +9,7 @@ import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
+import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
@@ -17,6 +18,7 @@ import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
+import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.component.PacketStoringComponent;
 import lol.tgformat.utils.network.PacketUtil;
@@ -89,7 +91,6 @@ public class Disabler extends Module {
                         event.setCancelled(true);
                     }
                     this.lastSprinting = true;
-                    c03Check = true;
                 }
                 if (c0b.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
                     if (!this.lastSprinting) {
@@ -168,7 +169,18 @@ public class Disabler extends Module {
 
         }
     }
-    
+    @Listener
+    public void onHigher(PacketSendHigherEvent event) {
+        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.START_SPRINTING)) {
+            c03Check = true;
+        }
+        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
+            LogUtil.addChatMessage("VL++");
+        }
+        if (event.getPacket() instanceof C03PacketPlayer) {
+            c03Check = false;
+        }
+    }
     public static float getRandomYaw(float requestedYaw){
         int rand = MathUtil.getRandomInRange(1,200);
         return requestedYaw + (360 * rand);

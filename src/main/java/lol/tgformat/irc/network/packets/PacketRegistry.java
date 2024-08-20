@@ -25,6 +25,7 @@ public class PacketRegistry {
         packetManager.registerServerPacket(3, ServerChatMessagePacket::new);
         packetManager.registerServerPacket(4, ServerLoginStatusPacket::new);
         packetManager.registerServerPacket(5, ServerResponseOnlineUsersPacket::new);
+        packetManager.registerServerPacket(6, SKeepAlive::new);
     }
 
     private void registerServerHandlers() {
@@ -33,5 +34,6 @@ public class PacketRegistry {
         packetManager.registerPacketHandler(ServerChatMessagePacket.class, new ChatMessagePacketHandler());
         packetManager.registerPacketHandler(ServerLoginStatusPacket.class, new LoginStatusPacketHandler());
         packetManager.registerPacketHandler(ServerResponseOnlineUsersPacket.class, new OnlineUsersHandler());
+        packetManager.registerPacketHandler(SKeepAlive.class, new SKeepAliveHandler());
     }
 }

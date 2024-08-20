@@ -4,11 +4,14 @@ import lol.tgformat.irc.network.packets.Packet;
 import lol.tgformat.irc.network.packets.PacketBuffer;
 import lol.tgformat.irc.network.packets.PacketManager;
 import lol.tgformat.irc.network.packets.PacketRegistry;
+import lol.tgformat.irc.network.packets.client.CKeepAlive;
 import lol.tgformat.irc.network.packets.client.ClientGetRankPacket;
 import lol.tgformat.irc.network.packets.client.ClientHandshakePacket;
+import lol.tgformat.irc.network.packets.server.SKeepAlive;
 import lol.tgformat.irc.network.packets.server.ServerHandshakePacket;
 import lol.tgformat.irc.utils.logger.Logger;
 import lol.tgformat.utils.client.LogUtil;
+import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.verify.GuiLogin;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +42,6 @@ public class SocketClient {
         packetManager = new PacketManager();
         PacketRegistry packetRegistry = new PacketRegistry(packetManager);
         packetRegistry.register();
-
         process();
     }
 
@@ -53,6 +55,9 @@ public class SocketClient {
                         ClientGetRankPacket getRankPacket = new ClientGetRankPacket(GuiLogin.uid);
                         packetManager.sendPacket(packetBuffer, getRankPacket, 3);
                     }
+                }
+                if (packet instanceof SKeepAlive) {
+                    packetManager.sendPacket(packetBuffer, new CKeepAlive(), 6);
                 }
             }
         } catch (Exception e) {

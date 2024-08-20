@@ -3,7 +3,7 @@ package lol.tgformat.utils.timer;
 import java.util.Random;
 
 public class TimerUtil {
-    private long time = -1L;
+    private final long time = -1L;
     private long lastMS;
     private boolean run = true;
     public long getCurrentMS() {

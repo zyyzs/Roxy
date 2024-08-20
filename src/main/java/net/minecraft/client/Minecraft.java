@@ -594,24 +594,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.ingameGUI = new GuiIngame(this);
 
         Client.instance.onStart();
-
-        //启用验证就取消注释
-//        if (SkyVerify.SkyWoman.username == null && Client.validationStatus != 2){
-//            new SkyVerify().start();
-//        }
         SplashScreen.drawScreen();
 
         this.guiLogin = new GuiLogin();
-        this.displayGuiScreen(this.guiLogin);
-
-//        if (this.serverName != null)
-//        {
-//            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
-//        }
-//        else
-//        {
-//            this.displayGuiScreen(new GuiMainMenu());
-//        }
+        this.displayGuiScreen(new MainMenu());
 
         this.renderEngine.deleteTexture(this.mojangLogo);
         this.mojangLogo = null;

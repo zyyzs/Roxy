@@ -12,6 +12,7 @@ import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.component.MovementComponent;
 import lol.tgformat.component.PacketStoringComponent;
+import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.player.InventoryUtil;
 import lol.tgformat.utils.render.GlowUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -101,7 +102,7 @@ public class Gapple extends Module {
         } else {
             eating = true;
         }
-        if (this.c03s >= 33) {
+        if (this.c03s >= 32) {
             eating = false;
             pulsing = true;
             PacketStoringComponent.resetBlackList();

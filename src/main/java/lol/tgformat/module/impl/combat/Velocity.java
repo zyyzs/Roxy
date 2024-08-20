@@ -1,16 +1,20 @@
 package lol.tgformat.module.impl.combat;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.vector.Vector3d;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntityFishHook;
@@ -19,104 +23,132 @@ import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
+import net.minecraft.util.ChatComponentText;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
-/**
- * @author TG_format
- * @since 2024/6/1 0:36
- */
 @Renamer
 @StringEncryption
 public class Velocity extends Module {
-    private final BooleanSetting invalidEntity = new BooleanSetting("Attack Invalid", false);
-    private final int c02s = 5;
-    public boolean getKB = false;
-
-    public Velocity() {
+    private final ModeSetting mode = new ModeSetting("Mode", "GrimAC", "GrimAC", "Watchdog");
+    private final BooleanSetting invalidEntity = new BooleanSetting("Attack Invalid Entity",true);
+    private final BooleanSetting debug = new BooleanSetting("Debug", true);
+    public Velocity(){
         super("Velocity", ModuleType.Combat);
+        invalidEntity.addParent(mode, modeSetting -> mode.is("GrimAC"));
+        debug.addParent(mode, modeSetting -> mode.is("GrimAC"));
     }
-
-    @Override
-    public void onEnable() {
-        this.getKB = false;
-    }
-
-    @Override
-    public void onDisable() {
-        this.getKB = false;
-    }
-
+    public boolean shouldVelo, sprintShould;
+    Entity target;
     @Listener
-    public void onUpdate(PreUpdateEvent event) {
-        if (this.getKB) {
-            Velocity.reduce();
-            this.getKB = false;
-        }
-    }
-
-    @Listener
-    public void onPacketReceiveSync(PacketReceiveEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (event.getPacket() instanceof S12PacketEntityVelocity && ((S12PacketEntityVelocity)event.getPacket()).getEntityID() == mc.thePlayer.getEntityId()) {
-            this.getKB = true;
-        }
-    }
-
-    public static void reduce() {
-        Velocity velocity = ModuleManager.getModule(Velocity.class);
-        if (!velocity.isState()) {
-            return;
-        }
-        if (velocity.getTarget() == null) return;
-        Entity target = velocity.getTarget();
-        velocity.getKB = true;
-        for (int i = 0; i < velocity.c02s; ++i) {
-            Gapple gapple;
-            mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-            mc.thePlayer.setSprinting(true);
-            mc.thePlayer.serverSprintState = true;
-            PacketUtil.sendPacket(new C0APacketAnimation());
-            PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-            if ((gapple = ModuleManager.getModule(Gapple.class)).isState() && gapple.noC02 && Gapple.eating) {
-                return;
+    public void onReceive(PacketReceiveEvent event){
+        if(isNull())return;
+        if (mode.is("GrimAC")) {
+            if (event.getPacket() instanceof S12PacketEntityVelocity s12) {
+                double strength = new Vector3d(s12.getMotionX(), s12.getMotionY(), s12.getMotionZ()).length();
+                if (s12.getEntityID() == mc.thePlayer.getEntityId() && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWeb) {
+                    target = getNearTarget();
+                    if (target == null) return;
+                    if (mc.thePlayer.getDistanceToEntity(target) > 3.3F) {
+                        reset();
+                        return;
+                    }
+                    shouldVelo = true;
+                    if (debug.isEnabled()) {
+                        mc.thePlayer.addChatMessage(new ChatComponentText("[" + ChatFormatting.RED + "Received Velocity" + ChatFormatting.RESET + "]" + strength + " " + (mc.thePlayer.onGround ? "on Ground" : "on Air") + (target != null ? " - Distance: " + mc.thePlayer.getClosestDistanceToEntity(target) : "")));
+                    }
+                }
             }
-            mc.thePlayer.motionX *= 0.6;
-            mc.thePlayer.motionZ *= 0.6;
+        }
+        if (mode.is("Watchdog")) {
+            this.setSuffix("Watchdog");
+            if (event.getPacket() instanceof S12PacketEntityVelocity s12) {
+                if (mc.thePlayer != null && s12.getEntityID() == mc.thePlayer.getEntityId()) {
+                    s12.motionX *= (0 / 100);
+                    s12.motionZ *= (0 / 100);
+                }
+            }
         }
     }
-    public Entity getTarget() {
-        if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.5f) {
-            return KillAura.target;
+    @Listener
+    public void onWorld(WorldEvent event){
+        if (mode.is("GrimAC")) {
+            reset();
+        }
+    }
+
+    private Entity getNearTarget() {
+        Entity target = null;
+        EntityLivingBase clientTarget = KillAura.target;
+        if (clientTarget != null) {
+            target = clientTarget;
+            return target;
         } else {
             for (Entity entity : mc.theWorld.loadedEntityList) {
                 if (!entity.equals(mc.thePlayer) && !entity.isDead && invalidEntity.isEnabled()) {
                     if (entity instanceof EntityArrow entityArrow) {
                         if (entityArrow.getTicksInGround() <= 0) {
-                            return entityArrow;
+                            target = entityArrow;
                         }
                     }
 
                     if (entity instanceof EntitySnowball) {
-                        return entity;
+                        target = entity;
                     }
 
                     if (entity instanceof EntityEgg) {
-                        return entity;
+                        target = entity;
                     }
 
                     if (entity instanceof EntityTNTPrimed) {
-                        return entity;
+                        target = entity;
                     }
+
                     if (entity instanceof EntityFishHook) {
-                        return entity;
+                        target = entity;
                     }
                 }
             }
         }
-        return null;
+
+        return target;
+    }
+
+    @Listener
+    public void onUpdate(PreUpdateEvent event){
+        if(isNull())return;
+        if (mode.is("GrimAC")) {
+            if (shouldVelo) {
+                if (mc.thePlayer.hurtTime == 0) {
+                    reset();
+                    return;
+                }
+                if (mc.thePlayer.getDistanceToEntity(target) > 3.0) {
+                    reset();
+                    return;
+                }
+                if (ModuleManager.getModule(Gapple.class).isState() && ModuleManager.getModule(Gapple.class).noC02 && Gapple.eating) {
+                    return;
+                }
+                if (!mc.thePlayer.serverSprintState) {
+                    sprintShould = true;
+                    PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
+                }
+                for (int i = 0; i < 6; i++) {
+                    PacketUtil.sendPacket(new C0APacketAnimation());
+                    PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+                }
+                for (int i = 0; i < 5; i++) {
+                    mc.thePlayer.motionX *= 0.6F;
+                    mc.thePlayer.motionZ *= 0.6F;
+                }
+                shouldVelo = false;
+            }
+        }
+    }
+
+    private void reset(){
+        shouldVelo = false;
+        target = null;
     }
 }
-
