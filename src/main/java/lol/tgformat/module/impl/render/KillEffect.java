@@ -8,6 +8,7 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.values.impl.ModeSetting;
+import lol.tgformat.utils.player.PlayerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -25,6 +26,8 @@ import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Objects;
+
+import static org.json.XMLTokener.entity;
 
 /**
  * @Author KuChaZi

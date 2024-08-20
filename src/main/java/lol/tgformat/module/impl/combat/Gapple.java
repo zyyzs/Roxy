@@ -22,6 +22,8 @@ import net.netease.utils.RoundedUtils;
 
 import java.awt.*;
 
+import static lol.tgformat.module.impl.combat.KillAura.target;
+
 /**
  * @author TG_format
  * @since 2024/7/28 下午8:26
@@ -29,6 +31,7 @@ import java.awt.*;
 public class Gapple extends Module {
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
+    public BooleanSetting auto = new BooleanSetting("Auto", false);
     private final boolean stopMove = true;
     public boolean noCancelC02 = false;
     public boolean noC02 = false;
@@ -38,6 +41,7 @@ public class Gapple extends Module {
     private boolean canStart = false;
     public static boolean eating = false;
     public static boolean pulsing = false;
+    public static boolean restart = false;
 
     public Gapple() {
         super("Gapple", ModuleType.Misc);
@@ -55,6 +59,7 @@ public class Gapple extends Module {
     @Override
     public void onDisable() {
         eating = false;
+
         if (this.canStart) {
             pulsing = false;
             PacketStoringComponent.stopStoringPackets();
@@ -107,6 +112,19 @@ public class Gapple extends Module {
             pulsing = false;
             this.setState(false);
             LogUtil.addChatMessage("Eat");
+            if (auto.isEnabled()){
+                if (target.getName()!=null){
+                    LogUtil.addChatMessage("Stop");
+                    restart = true;
+                    if (restart){
+                        setState(true);
+                        restart = false;
+                        LogUtil.addChatMessage("Restart");
+                    }
+                }
+            }else {
+                restart = false;
+            }
             return;
         }
         if (mc.thePlayer.ticksExisted % delay.getValue() == 0) {
@@ -121,10 +139,10 @@ public class Gapple extends Module {
         int startX = sr.getScaledWidth() / 2 - 68;
         int startY = sr.getScaledHeight() / 2 + 30;
         GlStateManager.disableAlpha();
-        String text = "Eating.. " + target + "%";
-        FontUtil.tenacityFont20.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont20.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 255).getRGB());
-        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
-        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
+        String text = target + "%";
+        FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
+        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 2.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
+        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 2.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
         GlStateManager.disableAlpha();
     }
 }

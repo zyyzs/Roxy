@@ -12,6 +12,7 @@ import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.combat.Gapple;
 import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
@@ -269,7 +270,8 @@ public class Disabler extends Module {
         }
     }
     public static boolean noPost() {
-        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing;
+        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing || ModuleManager.getModule(Gapple.class).isState();
+
     }
     
     public static void fixC0F(C0FPacketConfirmTransaction packet) {

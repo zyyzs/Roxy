@@ -46,7 +46,7 @@ public class Criticals extends Module {
         } else {
             KillAura aura = ModuleManager.getModule(KillAura.class);
             if (KillAura.target != null) {
-                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState() && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.0f) {
+                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState() && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 2.0f) {
                     mc.theWorld.skiptick++;
                 } else {
                     if (!isNull() && (!aura.isState())) {
@@ -59,7 +59,7 @@ public class Criticals extends Module {
     @Listener
     public void onStrafe(StrafeEvent event) {
         if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.pressed) {
-            if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.0f) {
+            if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 2.0f) {
                 mc.thePlayer.jump();
             }
         }
@@ -67,7 +67,7 @@ public class Criticals extends Module {
     @Listener
     public void onCritical(CriticalsEvent event) {
         if (event.getEntity() == KillAura.target && display.isEnabled()) {
-            LogUtil.addChatMessage("Critical Success");
+            LogUtil.addChatMessage("Crit");
         }
     }
     public boolean cantCrit(EntityLivingBase targetEntity) {

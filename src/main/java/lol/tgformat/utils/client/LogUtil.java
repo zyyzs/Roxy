@@ -35,11 +35,10 @@ public class LogUtil implements IMinecraft {
         mc.thePlayer.addChatMessage(new ChatComponentText(message));
     }
     private static String name() {
-        String name = "Rise";
+        String name = "Riec";
         if (!clientName.getString().isEmpty()) {
             name = clientName.getString().replace("%time%", new SimpleDateFormat("HH:mm").format(new Date()));
         }
-
         return name;
     }
 }

@@ -173,8 +173,8 @@ public class Blink extends Module {
             int startX = sr.getScaledWidth() / 2 - 68;
             int startY = sr.getScaledHeight() / 2 + 30;
             GlStateManager.disableAlpha();
-            String text = "Stored Packets:" + packets.size();
-            FontUtil.tenacityFont20.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont20.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 255).getRGB());
+            String text = "" + packets.size();
+            FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
             RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
             RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(packets.size() / 10.0f, 60.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
             GlStateManager.disableAlpha();

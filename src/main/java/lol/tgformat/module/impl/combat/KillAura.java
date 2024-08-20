@@ -36,6 +36,8 @@ import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -187,6 +189,7 @@ public class KillAura extends Module {
         }
     }
     public void attack() {
+
         if (isLookingAtEntity(isGapple() ? RotationComponent.rotations : CurrentRotationUtil.currentRotation , target) && shouldAttack()) {
             if(keepsprint.isEnabled()) {
                 mc.playerController.attackEntityNoSlow(target);
@@ -216,7 +219,8 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
-                || FriendsCollection.isIRCFriend(entity);
+                || FriendsCollection.isIRCFriend(entity)
+                || entity instanceof EntitySquid;
     }
     private boolean entityCant(Entity entity) {
         Scaffold sca = ModuleManager.getModule(Scaffold.class);

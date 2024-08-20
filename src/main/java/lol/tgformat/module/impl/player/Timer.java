@@ -179,8 +179,8 @@ public class Timer extends Module {
             int startY = sr.getScaledHeight() / 2 + 30;
             int Packet = balance;
             GlStateManager.disableAlpha();
-            String text = "Balance:" + Packet;
-            FontUtil.tenacityFont20.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont20.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 255).getRGB());
+            String text = "" + Packet;
+            FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
             RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
             RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(Packet / 50.0f, 120.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
             GlStateManager.disableAlpha();

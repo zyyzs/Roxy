@@ -88,7 +88,7 @@ public class Velocity extends Module {
         }
     }
     public Entity getTarget() {
-        if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.0f) {
+        if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 3.5f) {
             return KillAura.target;
         } else {
             for (Entity entity : mc.theWorld.loadedEntityList) {
