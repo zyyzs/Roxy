@@ -96,7 +96,7 @@ public class Gapple extends Module {
         } else {
             eating = true;
         }
-        if (this.c03s >= 32) {
+        if (this.c03s >= 33) {
             eating = false;
             pulsing = true;
             PacketStoringComponent.resetBlackList();

@@ -23,6 +23,7 @@ public class Criticals extends Module {
         super("Criticals", ModuleType.Combat);
     }
     private final BooleanSetting display = new BooleanSetting("Display Criticals", true);
+    boolean gappleNoGround = false;
     @Listener
     public void onWorld(WorldEvent event) {
         mc.theWorld.skiptick = 0;
@@ -34,6 +35,12 @@ public class Criticals extends Module {
             return;
         }
         if (KillAura.target == null) return;
+        if (isGapple() && !mc.thePlayer.onGround) {
+            gappleNoGround = true;
+        }
+        if (!isGapple() && gappleNoGround && mc.thePlayer.onGround) {
+            gappleNoGround = false;
+        }
         if (cantCrit(KillAura.target)) {
             reset();
         } else {
@@ -66,7 +73,7 @@ public class Criticals extends Module {
     public boolean cantCrit(EntityLivingBase targetEntity) {
         EntityPlayerSP player = mc.thePlayer;
         return player.isOnLadder() || player.isInWeb || player.isInWater() || player.isInLava() || player.ridingEntity != null
-                || targetEntity.hurtTime > 10 || targetEntity.getHealth() <= 0 || isGapple();
+                || targetEntity.hurtTime > 10 || targetEntity.getHealth() <= 0 || isGapple() || gappleNoGround;
     }
     private void reset() {
         mc.theWorld.skiptick = 0;

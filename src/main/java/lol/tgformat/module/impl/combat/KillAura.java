@@ -180,9 +180,6 @@ public class KillAura extends Module {
     @Listener
     public void onReceive(PacketReceiveEvent event) {
         if (isNull()) return;
-        if (event.getPacket() instanceof S06PacketUpdateHealth s06 && target != null) {
-            LogUtil.addChatMessage(String.valueOf(s06.getHealth() - mc.thePlayer.getHealth()));
-        }
         if (event.getPacket() instanceof S2FPacketSetSlot s2f && target != null && autoblockmods.is("GrimAC") && s2f.getItem().getItem() instanceof ItemSword) {
             if (isSword() && mc.thePlayer.isUsingItem()) {
                 event.setCancelled();

@@ -46,7 +46,7 @@ public class AntiVoid extends Module {
     private float[] last = new float[3];
     public TimerUtil timer = new TimerUtil();
     public ArrayList<Packet<?>> packets = new ArrayList<>();
-
+    boolean lastSkip = false;
     @Listener
     public void onMotion(PreMotionEvent event) {
         this.setSuffix(mode.getMode());
@@ -74,7 +74,10 @@ public class AntiVoid extends Module {
         if (ModuleManager.getModule(Blink.class).isState()) return;
         if (mode.is("GrimAC")) {
             if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue() && !isBlockUnder()) {
-                mc.theWorld.skiptick = 5;
+                if (!lastSkip) {
+                    mc.theWorld.skiptick = 5;
+                    lastSkip = true;
+                }
                 ModuleManager.getModule(Scaffold.class).setState(true);
             }
             if (mc.thePlayer.fallDistance > stuckDistance.getValue()) {
@@ -82,6 +85,9 @@ public class AntiVoid extends Module {
                     ModuleManager.getModule(Stuck.class).setState(true);
                 }
             }
+        }
+        if (!ModuleManager.getModule(Scaffold.class).isState()) {
+            lastSkip = false;
         }
     }
 
