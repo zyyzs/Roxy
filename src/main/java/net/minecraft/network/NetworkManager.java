@@ -284,8 +284,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         if (inPacket instanceof C03PacketPlayer c03) {
             CurrentRotationUtil.getCurrentRotation(c03);
         }
+        inPacket = higherEvent.getPacket();
         final EnumConnectionState enumconnectionstate = EnumConnectionState.getFromPacket(inPacket);
-        final EnumConnectionState enumconnectionstate1 = (EnumConnectionState)this.channel.attr(attrKeyConnectionState).get();
+        final EnumConnectionState enumconnectionstate1 = this.channel.attr(attrKeyConnectionState).get();
 
         if (enumconnectionstate1 != enumconnectionstate)
         {

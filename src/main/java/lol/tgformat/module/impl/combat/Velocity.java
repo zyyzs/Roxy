@@ -38,7 +38,7 @@ public class Velocity extends Module {
         invalidEntity.addParent(mode, modeSetting -> mode.is("GrimAC"));
         debug.addParent(mode, modeSetting -> mode.is("GrimAC"));
     }
-    public boolean shouldVelo, sprintShould;
+    public boolean shouldVelo;
     Entity target;
     @Listener
     public void onReceive(PacketReceiveEvent event){
@@ -130,15 +130,14 @@ public class Velocity extends Module {
                 if (ModuleManager.getModule(Gapple.class).isState() && ModuleManager.getModule(Gapple.class).noC02 && Gapple.eating) {
                     return;
                 }
-                if (!mc.thePlayer.serverSprintState) {
-                    sprintShould = true;
-                    PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-                }
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 5; i++) {
+                    if (!mc.thePlayer.serverSprintState) {
+                        PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
+                        mc.thePlayer.setSprinting(true);
+                        mc.thePlayer.serverSprintState = true;
+                    }
                     PacketUtil.sendPacket(new C0APacketAnimation());
                     PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-                }
-                for (int i = 0; i < 5; i++) {
                     mc.thePlayer.motionX *= 0.6F;
                     mc.thePlayer.motionZ *= 0.6F;
                 }

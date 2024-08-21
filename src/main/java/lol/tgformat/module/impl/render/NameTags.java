@@ -89,11 +89,8 @@ public class NameTags extends Module {
                 WarnRank = "§4[KBBall] ";
             } else if (PlayerUtil.hyt.hasEatenGoldenApple((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
                 WarnRank = "§4[GApple] ";
-            }
-            for (User friends : FriendsCollection.IRC_friends) {
-                if (Objects.equals(friends.getIGN(), renderingEntity.getDisplayName().getUnformattedText())) {
-                    WarnRank = "§4[IRC] (" + friends.getUid() +")";
-                }
+            } else if (FriendsCollection.isIRCFriend(renderingEntity)) {
+                WarnRank = "§a[Friend] ";
             }
 
             if (mc.gameSettings.thirdPersonView == 0 && entity == mc.thePlayer) {

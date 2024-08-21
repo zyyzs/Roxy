@@ -12,6 +12,7 @@ import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author TG_format
@@ -23,11 +24,13 @@ public class IRC extends Module {
     public IRC() {
         super("IRC", ModuleType.Misc);
     }
+    String name = "";
     @Override
     public void onEnable() {
         Client.instance.getExecutor().execute(() -> {
             try {
                 Client.instance.getIrcServer().getClient().connect("103.40.13.87", 28673);
+                //Client.instance.getIrcServer().getClient().connect("127.0.0.1", 45600);
             } catch (IOException e) {
                 LogUtil.print("Failed to connect to the server: " + e.getMessage());
             }
@@ -40,8 +43,11 @@ public class IRC extends Module {
     @Listener
     public void onWorldChange(WorldEvent e) {
         try {
-            Client.instance.getIrcServer().getClient().getPacketManager().sendPacket(Client.instance.getIrcServer().getClient().getPacketBuffer(),
-                    new ClientUpdateIGNPacket(GuiLogin.uid, mc.thePlayer.getDisplayName().getUnformattedText()), 5);
+            if (!Objects.equals(name, mc.thePlayer.getName())) {
+                Client.instance.getIrcServer().getClient().getPacketManager().sendPacket(Client.instance.getIrcServer().getClient().getPacketBuffer(),
+                        new ClientUpdateIGNPacket(mc.thePlayer.getName()), 5);
+                name = mc.thePlayer.getName();
+            }
         } catch (IOException ex) {
             LogUtil.addChatMessage(ex.getMessage());
         }

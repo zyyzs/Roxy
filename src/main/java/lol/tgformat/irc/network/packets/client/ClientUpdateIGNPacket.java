@@ -18,17 +18,14 @@ import java.io.IOException;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientUpdateIGNPacket implements Packet {
-    private String uid;
     private String IGN;
     @Override
     public void read(PacketBuffer buffer) throws IOException {
-        this.uid = buffer.readString();
         this.IGN = buffer.readString();
     }
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {
-        buffer.writeString(this.uid);
         buffer.writeString(this.IGN);
     }
 }

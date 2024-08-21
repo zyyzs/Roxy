@@ -175,6 +175,8 @@ public class Disabler extends Module {
             c03Check = true;
         }
         if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
+            lastSprinting = true;
+            event.setPacket(new C0FPacketConfirmTransaction(114, (short) 514, true));
             LogUtil.addChatMessage("VL++");
         }
         if (event.getPacket() instanceof C03PacketPlayer) {
@@ -282,7 +284,7 @@ public class Disabler extends Module {
         }
     }
     public static boolean noPost() {
-        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing || ModuleManager.getModule(Gapple.class).isState();
+        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing;
 
     }
     
