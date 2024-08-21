@@ -178,7 +178,7 @@ public class Scaffold extends Module {
                 this.drawItemStack(mc.thePlayer.getHeldItem(), x + 2.5f, y + 1);
             }
 
-            tenacityBoldFont18.drawString("Blocks:  " + mc.thePlayer.getHeldItem().stackSize, x + 21, (y + 6), new Color(255, 255, 255).getRGB());
+            tenacityBoldFont18.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, x + 21, (y + 6), new Color(255, 255, 255).getRGB());
             GL11.glPopMatrix();
         }
 

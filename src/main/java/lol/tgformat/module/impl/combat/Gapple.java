@@ -78,7 +78,7 @@ public class Gapple extends Module {
             return;
         }
         if (this.slot == -1) {
-            LogUtil.addChatMessage("没苹果玩你妈逼");
+            LogUtil.addChatMessage("没苹果");
             this.setState(false);
             return;
         }

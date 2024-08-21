@@ -7,6 +7,7 @@ import lol.tgformat.events.WorldEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.impl.combat.KillAura;
+import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.utils.player.PlayerUtil;
 import net.minecraft.block.Block;
@@ -27,6 +28,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
+import static lol.tgformat.module.impl.misc.AutoL.getRandomText;
 import static org.json.XMLTokener.entity;
 
 /**
@@ -39,6 +41,7 @@ import static org.json.XMLTokener.entity;
 public class KillEffect extends Module {
     private final ModeSetting killEffectValue = new ModeSetting("KillEffect", "Squid", "LightningBolt", "Totem", "Flame", "Smoke", "Love", "Blood", "Off", "Squid");
     private final ModeSetting killSoundValue = new ModeSetting("KillSound", "Squid", "Off", "Squid", "MNSJ");
+    private final BooleanSetting autoL = new BooleanSetting("AutoL",false);
     private final ContinualAnimation animations = new ContinualAnimation();
     private EntityLivingBase target;
     private EntitySquid squid;
@@ -90,6 +93,9 @@ public class KillEffect extends Module {
             squid.squidRotation = 90.0f;
         }
         if (target != null && target.getHealth() <= 0.0f && !mc.theWorld.loadedEntityList.contains(target)) {
+            if (autoL.isEnabled()){
+                mc.thePlayer.sendChatMessage(getRandomText());
+            }
             if (killSoundValue.is("MNSJ")) {
                 kills++;
                 playSound(getSoundType(), 0.6f);

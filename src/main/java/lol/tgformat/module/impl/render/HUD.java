@@ -15,6 +15,7 @@ import lol.tgformat.ui.font.CustomFont;
 import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.font.Pair;
 import lol.tgformat.ui.hud.AnimationType;
+import lol.tgformat.ui.utils.MathUtils;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.ServerUtil;
@@ -55,8 +56,7 @@ import java.util.*;
 
 import static lol.tgformat.ui.clickgui.Utils.*;
 import static lol.tgformat.utils.math.MathUtil.DF_1;
-import static net.netease.font.FontManager.arial16;
-import static net.netease.font.FontManager.arial18;
+import static net.netease.font.FontManager.*;
 
 /**
  * @Author KuChaZi
@@ -70,7 +70,7 @@ public class HUD extends Module {
     public static final StringSetting clientName = new StringSetting("Client Name");
     public static final ModeSetting theme = Theme.getModeSetting("Theme Selection", "MINT_BLUE");
     private final BooleanSetting target = new BooleanSetting("TargetHUD", true);
-    public final ModeSetting targetMode = new ModeSetting("TargetHUDMods","Naven","Acrimony", "Naven", "Lovely");
+    public final ModeSetting targetMode = new ModeSetting("TargetHUDMods","Naven","Acrimony", "Naven", "Lovely","Rise");
     private final NumberSetting X_post = new NumberSetting("TatgetHUD-X", 0,640,-520, 1);
     private final NumberSetting Y_post = new NumberSetting("TargetHUD-Y", 0,345,-305, 1);
     public final BooleanSetting hotBar = new BooleanSetting("HotBar", false);
@@ -387,12 +387,32 @@ public class HUD extends Module {
                         float height = 50;
 
                         RoundedUtil.drawRound(x, y, width, height, 5, new Color(10, 10, 30, 120));
-                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 30, 30);
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 20, 20);
                         RoundedUtil.drawRound(x + 5, y + height - 7, (entity.getHealth() / entity.getMaxHealth()) * width - 10, 3, 2, new Color(160, 42, 42));
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
                         arial18.drawString(entity.getName(), x + 40, y + 10, -1);
                         arial16.drawString("Health: " + decimalFormat.format(entity.getHealth()), x + 40, y + 22, -1);
                         arial16.drawString("Distance: " + decimalFormat.format(entity.getDistanceToEntity(mc.thePlayer)), x + 40, y + 30, -1);
+
+                        break;
+                    }
+                    case "Rise":{
+                        float width;
+                        float height;
+                        height = 32;
+                        width = Math.max(120.0F, arial20.getStringWidth(target.getName()) + 51.0F);
+                        float healthPercentme = MathHelper.clamp_float((mc.thePlayer.getHealth() + mc.thePlayer.getAbsorptionAmount()) / (mc.thePlayer.getMaxHealth() + mc.thePlayer.getAbsorptionAmount()), 0, 1);
+                        RoundedUtil.drawRound(x,y,width,height,5, new Color(10, 10, 30, 120));
+                        RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), width - 37.2F, 8, 1, new Color(0, 0, 0, 150), new Color(0, 0, 0, 85));
+                        RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), entity.getHealth() / entity.getMaxHealth() * (width - 37.2F), 8, 1, new Color(126, 0, 252, 203), new Color(126, 0, 252, 203));
+                        final int scaleOffset = (int)(entity.hurtTime * 0.7f);
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 2 + scaleOffset / 2, y + 2 + scaleOffset / 2,29 - scaleOffset, 29 - scaleOffset);
+                        StencilUtil.uninitStencilBuffer();
+                        GlStateManager.disableBlend();
+                        arial20.drawString(entity.getName(), x + 33f, (float) (y + 3.5) + 1f, Color.WHITE.getRGB());
+                        float healthPercent = MathHelper.clamp_float((entity.getHealth() + entity.getAbsorptionAmount()) / (entity.getMaxHealth() + entity.getAbsorptionAmount()), 0, 1);
+                        String healthText = (int) MathUtils.round(healthPercent * 100, .01) + ".0%";
+                        tenacityFont18.drawString(healthText, x + 59, y + 19.5f, Color.WHITE.getRGB());
 
                         break;
                     }
