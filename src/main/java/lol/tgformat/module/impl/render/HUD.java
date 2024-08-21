@@ -387,7 +387,7 @@ public class HUD extends Module {
                         float height = 50;
 
                         RoundedUtil.drawRound(x, y, width, height, 5, new Color(10, 10, 30, 120));
-                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 20, 20);
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 25, 25);
                         RoundedUtil.drawRound(x + 5, y + height - 7, (entity.getHealth() / entity.getMaxHealth()) * width - 10, 3, 2, new Color(160, 42, 42));
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
                         arial18.drawString(entity.getName(), x + 40, y + 10, -1);
