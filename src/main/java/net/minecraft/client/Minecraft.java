@@ -597,7 +597,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         SplashScreen.drawScreen();
 
         this.guiLogin = new GuiLogin();
-        this.displayGuiScreen(new MainMenu());
+        this.displayGuiScreen(this.guiLogin);
 
         this.renderEngine.deleteTexture(this.mojangLogo);
         this.mojangLogo = null;

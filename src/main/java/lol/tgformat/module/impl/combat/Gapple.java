@@ -117,11 +117,9 @@ public class Gapple extends Module {
                 if (target.getName()!=null){
                     LogUtil.addChatMessage("Stop");
                     restart = true;
-                    if (restart){
-                        setState(true);
-                        restart = false;
-                        LogUtil.addChatMessage("Restart");
-                    }
+                    setState(true);
+                    restart = false;
+                    LogUtil.addChatMessage("Restart");
                 }
             }else {
                 restart = false;

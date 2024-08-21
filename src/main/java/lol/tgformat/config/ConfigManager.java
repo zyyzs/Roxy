@@ -111,7 +111,6 @@ public class ConfigManager {
         Module[] modules = gson.fromJson(data, Module[].class);
 
         for (Module module : ModuleManager.modules) {
-
             for (Module configModule : modules) {
                 if (module.getName().equalsIgnoreCase(configModule.getName())) {
                     try {

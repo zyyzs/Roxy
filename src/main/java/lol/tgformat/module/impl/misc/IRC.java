@@ -27,7 +27,7 @@ public class IRC extends Module {
     public void onEnable() {
         Client.instance.getExecutor().execute(() -> {
             try {
-                Client.instance.getIrcServer().getClient().connect("127.0.0.1", 45600);
+                Client.instance.getIrcServer().getClient().connect("103.40.13.87", 28673);
             } catch (IOException e) {
                 LogUtil.print("Failed to connect to the server: " + e.getMessage());
             }

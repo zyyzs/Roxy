@@ -1,11 +1,14 @@
 package lol.tgformat.component;
 
+import lol.tgformat.Client;
 import lol.tgformat.accessable.IMinecraft;
 import lol.tgformat.api.event.Listener;
+import lol.tgformat.config.ConfigManager;
 import lol.tgformat.events.ChatInputEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.utils.client.LogUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import org.lwjgl.input.Keyboard;
 import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
@@ -13,6 +16,7 @@ import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,6 +51,7 @@ public class CommandComponent implements IMinecraft {
                     event.setCancelled(true);
                     LogUtil.print(e.getMessage());
                 }
+                event.setCancelled(true);
                 break;
             case "binds":
                 for (Module module : ModuleManager.getModules()) {
@@ -55,9 +60,16 @@ public class CommandComponent implements IMinecraft {
                     }
                     LogUtil.addChatMessage(module.getName() + " " + Keyboard.getKeyName(module.getKey()));
                 }
+                event.setCancelled(true);
                 break;
             case "config":
-                //TODO:懒得写
+                if (command[1].equals("load")) {
+                    Client.instance.getConfigManager().loadConfig(Client.instance.getConfigManager().readConfigData(
+                            new File(Minecraft.getMinecraft().mcDataDir + "/" + Client.instance.getName() + "/Configs/" + command[2] + ".json").toPath()
+                    ));
+                    LogUtil.addChatMessage("Config loaded");
+                }
+                event.setCancelled(true);
         }
     }
 
