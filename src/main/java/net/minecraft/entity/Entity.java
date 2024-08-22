@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import lol.tgformat.Client;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.movement.MoveEvent;
 import lol.tgformat.events.movement.StrafeEvent;

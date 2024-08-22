@@ -60,6 +60,7 @@ public enum Client {
     public static final int validationStatus = 0;
     private final HashMap<Object, Module> moduleMap = new HashMap<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
+    public String XuJingLiangSiMa = "Update Logs";
 
     @NativeObfuscation.Inline
     public void onStart() {

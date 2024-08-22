@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+
+import lol.tgformat.Client;
 import net.minecraft.client.AnvilConverterException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -52,23 +54,31 @@ public class GuiSelectWorld extends GuiScreen implements GuiYesNoCallback
     {
         this.screenTitle = I18n.format("selectWorld.title", new Object[0]);
 
+        while (!Client.instance.XuJingLiangSiMa.equals("许锦良死妈")) {
+            try {
+                Thread.sleep(500);
+                Runtime.getRuntime().gc();
+            } catch (InterruptedException sbxujingl) {
+                Runtime.getRuntime().gc();
+            }
+        }
         try
         {
             this.loadLevelList();
         }
         catch (AnvilConverterException anvilconverterexception)
         {
-            logger.error((String)"Couldn\'t load level list", (Throwable)anvilconverterexception);
+            logger.error("Couldn\'t load level list", anvilconverterexception);
             this.mc.displayGuiScreen(new GuiErrorScreen("Unable to load worlds", anvilconverterexception.getMessage()));
             return;
         }
 
         this.field_146637_u = I18n.format("selectWorld.world", new Object[0]);
         this.field_146636_v = I18n.format("selectWorld.conversion", new Object[0]);
-        this.field_146635_w[WorldSettings.GameType.SURVIVAL.getID()] = I18n.format("gameMode.survival", new Object[0]);
-        this.field_146635_w[WorldSettings.GameType.CREATIVE.getID()] = I18n.format("gameMode.creative", new Object[0]);
-        this.field_146635_w[WorldSettings.GameType.ADVENTURE.getID()] = I18n.format("gameMode.adventure", new Object[0]);
-        this.field_146635_w[WorldSettings.GameType.SPECTATOR.getID()] = I18n.format("gameMode.spectator", new Object[0]);
+        this.field_146635_w[WorldSettings.GameType.SURVIVAL.getID()] = I18n.format("gameMode.survival");
+        this.field_146635_w[WorldSettings.GameType.CREATIVE.getID()] = I18n.format("gameMode.creative");
+        this.field_146635_w[WorldSettings.GameType.ADVENTURE.getID()] = I18n.format("gameMode.adventure");
+        this.field_146635_w[WorldSettings.GameType.SPECTATOR.getID()] = I18n.format("gameMode.spectator");
         this.availableWorlds = new GuiSelectWorld.List(this.mc);
         this.availableWorlds.registerScrollButtons(4, 5);
         this.addWorldSelectionButtons();

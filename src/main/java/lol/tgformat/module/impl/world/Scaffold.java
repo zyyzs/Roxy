@@ -86,6 +86,7 @@ public class Scaffold extends Module {
     private boolean canTellyPlace;
     private int prevItem = 0;
     private EnumFacing facing;
+    private Vector2f rotation = new Vector2f(0,0);
 
     public Scaffold() {
         super("Scaffold", ModuleType.World);
@@ -106,6 +107,7 @@ public class Scaffold extends Module {
         this.data = null;
         this.slot = -1;
         this.facing = null;
+        rotation = new Vector2f(0,0);
     }
 
     @Override
@@ -142,7 +144,7 @@ public class Scaffold extends Module {
 
             double distance = mc.thePlayer.getDistance(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
 
-            int maxDistance = 8; // Max Range
+            int maxDistance = 8;
             int alpha = (int) Math.max(0, 255 - (distance / maxDistance) * 255);
 
             if (alpha <= 0) {
@@ -186,7 +188,6 @@ public class Scaffold extends Module {
         if (tower.isEnabled()) {
             onTower();
         }
-
         if (this.eagle.isEnabled()) {
             if (Eagle.getBlockUnderPlayer(mc.thePlayer) instanceof BlockAir) {
                 if (mc.thePlayer.onGround) {
@@ -281,6 +282,24 @@ public class Scaffold extends Module {
             countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         }
         search();
+        if (data != null) {
+            float yaw = RotationUtil.getRotationBlock(this.data)[0];
+            float pitch = RotationUtil.getRotationBlock(this.data)[1];
+            rotation = new Vector2f(yaw, pitch);
+        }
+        if (this.telly.isEnabled()) {
+            if (this.canTellyPlace && !mc.thePlayer.onGround && MoveUtil.isMoving()) {
+                mc.thePlayer.setSprinting(false);
+            }
+            this.canTellyPlace = mc.thePlayer.offGroundTicks >= 1;
+        }
+        if (!this.canTellyPlace) {
+            return;
+        }
+        if (this.data != null && rotation != null) {
+            RotationComponent.setRotations(rotation, 180.0f, MovementFix.NORMAL);
+        }
+
     }
 
     @Listener
@@ -297,8 +316,8 @@ public class Scaffold extends Module {
         if (mc.thePlayer == null) {
             return;
         }
-        if (raycast.isEnabled()) {
-
+        if (raycast.isEnabled() && !RayCastUtil.overBlock(rotation, facing, data, false)) {
+            return;
         }
         this.place();
         mc.sendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown() && mc.inGameHasFocus);
@@ -314,21 +333,6 @@ public class Scaffold extends Module {
             Client.instance.getSlotSpoofComponent().startSpoofing(oldSlot);
         }
         mc.thePlayer.inventory.currentItem = this.slot;
-        this.search();
-        if (this.telly.isEnabled()) {
-            if (this.canTellyPlace && !mc.thePlayer.onGround && MoveUtil.isMoving()) {
-                mc.thePlayer.setSprinting(false);
-            }
-            this.canTellyPlace = mc.thePlayer.offGroundTicks >= 1;
-        }
-        if (!this.canTellyPlace) {
-            return;
-        }
-        if (this.data != null) {
-            float yaw = RotationUtil.getRotationBlock(this.data)[0];
-            float pitch = RotationUtil.getRotationBlock(this.data)[1];
-            RotationComponent.setRotations(new Vector2f(yaw, pitch), 180.0f, MovementFix.NORMAL);
-        }
     }
 
     private void place() {

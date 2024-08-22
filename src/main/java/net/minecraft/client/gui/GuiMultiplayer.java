@@ -4,6 +4,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
+
+import lol.tgformat.Client;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -50,6 +52,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
      */
     public void initGui()
     {
+        while (!Client.instance.XuJingLiangSiMa.equals("许锦良死妈")) {
+            try {
+                Thread.sleep(500);
+                Runtime.getRuntime().gc();
+            } catch (InterruptedException sbxujingl) {
+                Runtime.getRuntime().gc();
+            }
+        }
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
 

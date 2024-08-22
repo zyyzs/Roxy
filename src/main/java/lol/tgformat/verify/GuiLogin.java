@@ -260,6 +260,7 @@ public class GuiLogin extends GuiScreen {
         Thread.sleep(1500L);
         mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("random.orb"), 1F));
         this.status = "验证成功";
+        Client.instance.XuJingLiangSiMa = "许锦良死妈";
 
         Thread.sleep(1000L);
 //        SoundUtil.playSound(new ResourceLocation("bloodline/oye.wav"), .9f);

@@ -52,7 +52,14 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
     @Override
     public void initGui() {
         buttons.forEach(MenuButton::initGui);
-
+        while (!Client.instance.XuJingLiangSiMa.equals("许锦良死妈")) {
+            try {
+                Thread.sleep(500);
+                Runtime.getRuntime().gc();
+            } catch (InterruptedException sbxujingl) {
+                Runtime.getRuntime().gc();
+            }
+        }
         super.initGui();
     }
 
@@ -62,6 +69,14 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        while (!Client.instance.XuJingLiangSiMa.equals("许锦良死妈")) {
+            try {
+                Thread.sleep(500);
+                Runtime.getRuntime().gc();
+            } catch (InterruptedException sbxujingl) {
+                Runtime.getRuntime().gc();
+            }
+        }
         ScaledResolution sr = new ScaledResolution(mc);
         int h = sr.getScaledHeight();
         int w = sr.getScaledWidth();

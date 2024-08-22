@@ -77,9 +77,11 @@ public class ChestAura extends Module {
                     BlockPos targetPos = new BlockPos(mc.thePlayer.posX + (double)x, mc.thePlayer.posY + (double)y, mc.thePlayer.posZ + (double)z);
                     if (!(mc.thePlayer.getDistance(targetPos.getX(), targetPos.getY(), targetPos.getZ()) < (double)mc.playerController.getBlockReachDistance()) || !(block instanceof BlockChest || block instanceof BlockFurnace) || list.contains(pos)) continue;
                     float[] rotations = RotationUtil.getBlockRotations(pos.getX(), pos.getY() - 1, pos.getZ());
-                    RotationComponent.setRotations(new Vector2f(rotations[0], rotations[1]), 360.0f, MovementFix.NORMAL, true);
-                    this.globalPos = pos;
-                    return;
+                    if (RayCastUtil.overBlock(new Vector2f(rotations[0], rotations[1]), mc.objectMouseOver.sideHit, pos, false)) {
+                        RotationComponent.setRotations(new Vector2f(rotations[0], rotations[1]), 360.0f, MovementFix.NORMAL, true);
+                        this.globalPos = pos;
+                        return;
+                    }
                 }
             }
         }

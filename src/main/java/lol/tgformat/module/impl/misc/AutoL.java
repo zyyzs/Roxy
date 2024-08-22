@@ -58,6 +58,7 @@ public class AutoL extends Module {
 
     public static String[] hytText = {
             "其实jnic是许锦良开发的 他一手创建了中国jnic",
+            "Get best JNIObfuscator >> jnic.xinxin.cfd || 喜欢许锦良的来支持一下我的JNIC哦 绝对秒杀幻影盾",
             "你现在有没有入权了?",
             "SilenceFix is God in QuickMacro",
             "SilenceFix花雨庭第一 获取去xinxin.fan",

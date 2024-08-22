@@ -24,9 +24,7 @@ import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.DecelerateAnimation;
 import lol.tgformat.ui.utils.Direction;
 import lol.tgformat.ui.utils.RenderUtil;
-import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.enums.MovementFix;
-import lol.tgformat.utils.keyboard.KeyBoardUtil;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.player.CurrentRotationUtil;
@@ -36,13 +34,12 @@ import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySquid;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.network.play.server.S06PacketUpdateHealth;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.util.*;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
@@ -220,6 +217,7 @@ public class KillAura extends Module {
                 || Teams.isSameTeam(entity)
                 || timer.isState()
                 || FriendsCollection.isIRCFriend(entity)
+                || entity instanceof EntityVillager
                 || entity instanceof EntitySquid;
     }
     private boolean entityCant(Entity entity) {
