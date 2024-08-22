@@ -408,7 +408,7 @@ public class HUD extends Module {
                         float healthPercentme = MathHelper.clamp_float((mc.thePlayer.getHealth() + mc.thePlayer.getAbsorptionAmount()) / (mc.thePlayer.getMaxHealth() + mc.thePlayer.getAbsorptionAmount()), 0, 1);
                         RoundedUtil.drawRound(x,y,width,height,5, new Color(10, 10, 30, 120));
                         RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), width - 37.2F, 8, 1, new Color(0, 0, 0, 150), new Color(0, 0, 0, 85));
-                        RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), entity.getHealth() / entity.getMaxHealth() * (width - 37.2F), 8, 1, new Color(126, 0, 252, 203), new Color(126, 0, 252, 203));
+                        RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), entity.getHealth() / entity.getMaxHealth() * (width - 37.2F), 8, 1, new Color(181, 112, 255, 203), new Color(190, 109, 255, 203));
                         final int scaleOffset = (int)(entity.hurtTime * 0.7f);
                         DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 3 + scaleOffset / 2, y + 2 + scaleOffset / 2,27 - scaleOffset, 27 - scaleOffset);
                         StencilUtil.uninitStencilBuffer();
@@ -420,7 +420,6 @@ public class HUD extends Module {
 
                         break;
                     }
-
                     case "Acrimony": {
                         DrawUtil.drawRoundedRect(x, y, x + 140 + 20, y + 50 + 10, 2.0, Integer.MIN_VALUE);
                         DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
