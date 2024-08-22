@@ -416,7 +416,7 @@ public class HUD extends Module {
                         arial20.drawString(entity.getName(), x + 33f, (float) (y + 3.5) + 1f, Color.WHITE.getRGB());
                         float healthPercent = MathHelper.clamp_float((entity.getHealth() + entity.getAbsorptionAmount()) / (entity.getMaxHealth() + entity.getAbsorptionAmount()), 0, 1);
                         String healthText = (int) MathUtils.round(healthPercent * 100, .01) + ".0%";
-                        tenacityBoldFont16.drawString(healthText, x + 63, y + 20.2f, Color.WHITE.getRGB());
+                        tenacityBoldFont16.drawString(healthText, x + 63, y + 20.8f, Color.WHITE.getRGB());
 
                         break;
                     }

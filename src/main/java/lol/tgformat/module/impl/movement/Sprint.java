@@ -5,8 +5,6 @@ import lol.tgformat.events.PreUpdateEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
-import lol.tgformat.module.impl.player.Spammer;
-import org.lwjgl.input.Keyboard;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 /**
@@ -21,7 +19,6 @@ public class Sprint extends Module {
     }
     @Listener
     public void onUpdate(PreUpdateEvent event) {
-        ModuleManager.getModule(Spammer.class).setState(true);
         mc.gameSettings.keyBindSprint.setPressed(true);
         if (mc.thePlayer.sprintToggleTimer <= 0) {
             if (!mc.thePlayer.isInWeb) {
