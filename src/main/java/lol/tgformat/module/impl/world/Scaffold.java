@@ -280,6 +280,7 @@ public class Scaffold extends Module {
         } else {
             countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         }
+        search();
     }
 
     @Listener
@@ -297,10 +298,7 @@ public class Scaffold extends Module {
             return;
         }
         if (raycast.isEnabled()) {
-            MovingObjectPosition mouseOver = RayCastUtil.raytraceLegit(RotationComponent.rotations.x, RotationComponent.rotations.y, RotationComponent.rotations.x, RotationComponent.rotations.y);
-            if (mouseOver == null || mouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || !new BlockPos(mouseOver.getBlockPos().getX(), mouseOver.getBlockPos().getY(), mouseOver.getBlockPos().getZ()).equals(this.data)) {
-                return;
-            }
+
         }
         this.place();
         mc.sendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown() && mc.inGameHasFocus);

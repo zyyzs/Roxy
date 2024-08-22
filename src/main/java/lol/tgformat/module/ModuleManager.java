@@ -80,6 +80,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new FakePlayer());
         addModule(new PacketDebug());
         addModule(new IRC());
+        addModule(new Spammer());
         //Misc
 
 
@@ -93,6 +94,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new SpeedMine());
         addModule(new NoFall());
         addModule(new Stuck());
+        addModule(new SilenceHub());
         //Player
 
 
