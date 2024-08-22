@@ -1,6 +1,7 @@
 package lol.tgformat.module.impl.player;
 
 import lol.tgformat.api.event.Listener;
+import lol.tgformat.component.MovementComponent;
 import lol.tgformat.events.PreUpdateEvent;
 import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
@@ -47,7 +48,6 @@ public class AntiVoid extends Module {
     private float[] last = new float[3];
     public TimerUtil timer = new TimerUtil();
     public ArrayList<Packet<?>> packets = new ArrayList<>();
-    boolean lastSkip = false;
     @Listener
     public void onMotion(PreMotionEvent event) {
         this.setSuffix(mode.getMode());
@@ -63,6 +63,7 @@ public class AntiVoid extends Module {
             if (ModuleManager.getModule(Stuck.class).isState()) {
                 ModuleManager.getModule(Stuck.class).setState(false);
             }
+            MovementComponent.resetMove();
         }
     }
     @Listener
@@ -76,14 +77,10 @@ public class AntiVoid extends Module {
         if (mode.is("GrimAC")) {
             if (mc.thePlayer.fallDistance >= catcherDistance.getValue() && mc.thePlayer.fallDistance < stuckDistance.getValue()) {
                 if (!isBlockUnder()) {
-                    if (!lastSkip) {
-                        mc.theWorld.skiptick = catcherTicks.getValue().intValue();
-                        lastSkip = true;
-                    }
+                    MovementComponent.cancelMove();
                     ModuleManager.getModule(Scaffold.class).setState(true);
                 } else {
-                    mc.theWorld.skiptick = 0;
-                    lastSkip = false;
+                    MovementComponent.resetMove();
                     ModuleManager.getModule(Scaffold.class).setState(false);
                 }
             }
@@ -92,9 +89,6 @@ public class AntiVoid extends Module {
                     ModuleManager.getModule(Stuck.class).setState(true);
                 }
             }
-        }
-        if (!ModuleManager.getModule(Scaffold.class).isState()) {
-            lastSkip = false;
         }
     }
 

@@ -22,6 +22,7 @@ import lol.tgformat.utils.timer.TimeHelper;
 import lol.tgformat.utils.vector.Vector2f;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.inventory.ContainerChest;
@@ -74,7 +75,7 @@ public class ChestAura extends Module {
                     BlockPos pos = new BlockPos(mc.thePlayer.posX - 0.5 + (double)x, mc.thePlayer.posY - 0.5 + (double)y, mc.thePlayer.posZ - 0.5 + (double)z);
                     Block block = mc.theWorld.getBlockState(pos).getBlock();
                     BlockPos targetPos = new BlockPos(mc.thePlayer.posX + (double)x, mc.thePlayer.posY + (double)y, mc.thePlayer.posZ + (double)z);
-                    if (!(mc.thePlayer.getDistance(targetPos.getX(), targetPos.getY(), targetPos.getZ()) < (double)mc.playerController.getBlockReachDistance()) || !(block instanceof BlockChest) || list.contains(pos)) continue;
+                    if (!(mc.thePlayer.getDistance(targetPos.getX(), targetPos.getY(), targetPos.getZ()) < (double)mc.playerController.getBlockReachDistance()) || !(block instanceof BlockChest || block instanceof BlockFurnace) || list.contains(pos)) continue;
                     float[] rotations = RotationUtil.getBlockRotations(pos.getX(), pos.getY() - 1, pos.getZ());
                     RotationComponent.setRotations(new Vector2f(rotations[0], rotations[1]), 360.0f, MovementFix.NORMAL, true);
                     this.globalPos = pos;

@@ -18,7 +18,6 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
-import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.block.*;
 import lol.tgformat.utils.enums.MovementFix;
@@ -53,8 +52,6 @@ import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import static lol.tgformat.ui.clickgui.Utils.tenacityBoldFont18;
-import static net.netease.font.FontManager.arial18;
-import static net.netease.font.FontManager.arial20;
 
 /**
  * @author TG_format
@@ -70,7 +67,6 @@ public class Scaffold extends Module {
     public final BooleanSetting eagle = new BooleanSetting("Eagle", false);
     public final BooleanSetting telly = new BooleanSetting("Telly", true);
     public final BooleanSetting autojump = new BooleanSetting("AutoJump", false);
-    public final BooleanSetting samey = new BooleanSetting("SameY", false);
     public final BooleanSetting fakeslot = new BooleanSetting("FakeSlot", false);
     public final BooleanSetting raycast = new BooleanSetting("RayCast", false);
     public final BooleanSetting tower = new BooleanSetting("Tower", false);
@@ -78,7 +74,7 @@ public class Scaffold extends Module {
     public final BooleanSetting count = new BooleanSetting("Count", true);
     public boolean tip = false;
     protected Random rand = new Random();
-    private List<BlockPos> placedBlocks = new ArrayList<>();
+    private final List<BlockPos> placedBlocks = new ArrayList<>();
     private double countscale = 0;
     private boolean towers = false;
     private int ticks = 0;
@@ -223,7 +219,6 @@ public class Scaffold extends Module {
                 ticks = 0;
             }
             if (holdticks < 19) {
-                BlockPos pos = mc.thePlayer.getPosition();
                 mc.thePlayer.motionY = 0.41965;
                 float speed = 0.241f;
                 EntityPlayerSP thePlayer = mc.thePlayer;
@@ -362,25 +357,20 @@ public class Scaffold extends Module {
             }
         }
     }
-    private double calcStepSize(double range) {
-        double accuracy = 6.0D;
-        accuracy += accuracy % 2.0D;
-        return Math.max(range / accuracy, 0.01D);
-    }
 
-    private boolean search() {
+    private void search() {
         EntityPlayerSP player = Scaffold.mc.thePlayer;
         WorldClient world = Scaffold.mc.theWorld;
         double posX = player.posX;
         double posZ = player.posZ;
         double minY = player.getEntityBoundingBox().minY;
-        Vec3 vec3 = getPlacePossibility(0.0, 0.0, 0.0, true, new BlockPos(0.0, Math.min((double)(mc.thePlayer.posY - 1), Scaffold.mc.thePlayer.getEntityBoundingBox().minY), 0.0));
+        Vec3 vec3 = getPlacePossibility(0.0, 0.0, 0.0, true);
         if (vec3 == null) {
-            return false;
+            return;
         }
         BlockPos pos = new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord);
         if (!Scaffold.mc.theWorld.getBlockState(pos).getBlock().getMaterial().isReplaceable()) {
-            return false;
+            return;
         }
         for (EnumFacing facingType : EnumFacing.values()) {
             BlockPos neighbor = pos.offset(facingType);
@@ -417,19 +407,17 @@ public class Scaffold extends Module {
                         }
                         this.data = neighbor;
                         this.facing = facingType.getOpposite();
-                        return true;
+                        return;
                     }
                 }
             }
         }
-        return false;
     }
     public static boolean canBeClick(BlockPos pos) {
         return mc.theWorld.getBlockState(pos).getBlock().canCollideCheck(mc.theWorld.getBlockState(pos), false) && mc.theWorld.getWorldBorder().contains(pos);
     }
-    public static Vec3 getPlacePossibility(double offsetX, double offsetY, double offsetZ, boolean searchUP, BlockPos lastPos) {
-        ArrayList<Vec3> possibilities = new ArrayList<Vec3>();
-        ArrayList reals = new ArrayList();
+    public static Vec3 getPlacePossibility(double offsetX, double offsetY, double offsetZ, boolean searchUP) {
+        ArrayList<Vec3> possibilities = new ArrayList<>();
         int range = (int)(6.0 + (Math.abs(offsetX) + Math.abs(offsetZ)));
         Vec3 playerPos = new Vec3(mc.thePlayer.posX + offsetX, mc.thePlayer.posY - 1.0 + offsetY, mc.thePlayer.posZ + offsetZ);
         if (!(mc.theWorld.getBlockState(new BlockPos(playerPos)).getBlock() instanceof BlockAir)) {
@@ -454,9 +442,6 @@ public class Scaffold extends Module {
         }
         possibilities.removeIf(vec3 -> {
             BlockPos blockPos = new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord);
-            if (!(mc.theWorld.getBlockState(blockPos).getBlock() instanceof BlockAir)) {
-                reals.add(vec3);
-            }
             if (mc.thePlayer.getPosition().getX() == blockPos.getX() && mc.thePlayer.getPosition().getY() == blockPos.getY() && mc.thePlayer.getPosition().getZ() == blockPos.getZ()) {
                 return true;
             }
@@ -488,7 +473,7 @@ public class Scaffold extends Module {
             double d2 = mc.thePlayer.posZ + offsetZ - vec3.zCoord;
             return MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
         }));
-        return (Vec3)possibilities.get(0);
+        return possibilities.getFirst();
     }
     public static Vec3 getVectorForRotation(Vector2f rotation) {
         float yawCos = (float)Math.cos(-rotation.x * ((float)Math.PI / 180) - (float)Math.PI);

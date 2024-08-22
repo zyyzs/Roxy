@@ -161,9 +161,7 @@ public class Disabler extends Module {
                 BlockPos blockPos = ((C07PacketPlayerDigging)event.getPacket()).getPosition();
                 mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(net.minecraft.network.play.client.C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, blockPos, EnumFacing.DOWN));
             }
-
-            Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
-            if (scaffold.isState() && packet instanceof C03PacketPlayer c03) {
+            if (RotationComponent.active && packet instanceof C03PacketPlayer c03 && c03.rotating) {
                 c03.setYaw(getRandomYaw(c03.getYaw()));
             }
 

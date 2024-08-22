@@ -612,6 +612,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         {
             Display.setVSyncEnabled(this.gameSettings.enableVsync);
         }
+
         catch (OpenGLException var2)
         {
             this.gameSettings.enableVsync = false;

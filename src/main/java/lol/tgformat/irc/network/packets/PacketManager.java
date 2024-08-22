@@ -3,7 +3,9 @@ package lol.tgformat.irc.network.packets;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -14,7 +16,7 @@ import java.util.function.Supplier;
 public class PacketManager {
     private final Map<Integer, Supplier<Packet>> serverPacketRegistry = new HashMap<>();
     private final Map<Class<? extends Packet>, PacketHandler<?>> packetHandlers = new HashMap<>();
-
+    private List<Packet> sendQueue = new ArrayList<>();
     public Packet processPacket(PacketBuffer buffer) throws IOException {
         try {
             int packetId = buffer.readInt();
