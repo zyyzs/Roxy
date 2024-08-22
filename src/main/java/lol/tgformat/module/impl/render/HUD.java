@@ -48,6 +48,7 @@ import org.lwjgl.opengl.GL11;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -56,6 +57,8 @@ import java.util.*;
 
 import static lol.tgformat.ui.clickgui.Utils.*;
 import static lol.tgformat.utils.math.MathUtil.DF_1;
+import static lol.tgformat.utils.render.Easing.EASE_OUT_ELASTIC;
+import static lol.tgformat.utils.render.Easing.EASE_OUT_SINE;
 import static net.netease.font.FontManager.*;
 
 /**
@@ -115,6 +118,7 @@ public class HUD extends Module {
                 if (ModuleManager.getModule(KillAura.class).isState() && KillAura.getTarget() != null && KillAura.getTarget() instanceof EntityPlayer) {
                     targets = (EntityPlayer) KillAura.getTarget();
                 }
+
 
                 render(targets, canRender);
             } else {
@@ -387,7 +391,7 @@ public class HUD extends Module {
                         float height = 50;
 
                         RoundedUtil.drawRound(x, y, width, height, 5, new Color(10, 10, 30, 120));
-                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 25, 25);
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 7, y + 7, 30, 30);
                         RoundedUtil.drawRound(x + 5, y + height - 7, (entity.getHealth() / entity.getMaxHealth()) * width - 10, 3, 2, new Color(160, 42, 42));
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
                         arial18.drawString(entity.getName(), x + 40, y + 10, -1);
@@ -406,16 +410,17 @@ public class HUD extends Module {
                         RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), width - 37.2F, 8, 1, new Color(0, 0, 0, 150), new Color(0, 0, 0, 85));
                         RoundedUtil.drawGradientHorizontal(x + 34f, (y + height - 13), entity.getHealth() / entity.getMaxHealth() * (width - 37.2F), 8, 1, new Color(126, 0, 252, 203), new Color(126, 0, 252, 203));
                         final int scaleOffset = (int)(entity.hurtTime * 0.7f);
-                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 2 + scaleOffset / 2, y + 2 + scaleOffset / 2,29 - scaleOffset, 29 - scaleOffset);
+                        DrawUtil.drawHead(((AbstractClientPlayer)entity).getLocationSkin(), x + 3 + scaleOffset / 2, y + 2 + scaleOffset / 2,27 - scaleOffset, 27 - scaleOffset);
                         StencilUtil.uninitStencilBuffer();
                         GlStateManager.disableBlend();
                         arial20.drawString(entity.getName(), x + 33f, (float) (y + 3.5) + 1f, Color.WHITE.getRGB());
                         float healthPercent = MathHelper.clamp_float((entity.getHealth() + entity.getAbsorptionAmount()) / (entity.getMaxHealth() + entity.getAbsorptionAmount()), 0, 1);
                         String healthText = (int) MathUtils.round(healthPercent * 100, .01) + ".0%";
-                        tenacityFont18.drawString(healthText, x + 59, y + 19.5f, Color.WHITE.getRGB());
+                        tenacityBoldFont16.drawString(healthText, x + 63, y + 20.2f, Color.WHITE.getRGB());
 
                         break;
                     }
+
                     case "Acrimony": {
                         DrawUtil.drawRoundedRect(x, y, x + 140 + 20, y + 50 + 10, 2.0, Integer.MIN_VALUE);
                         DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
@@ -435,6 +440,7 @@ public class HUD extends Module {
                         FontManager.arial26.drawStringWithShadow(entity.getHealth() <= mc.thePlayer.getHealth() ? "Winning" : "Losing", x + 44, y + 44, entity.getHealth() <= mc.thePlayer.getHealth() ? Color.GREEN.getRGB() : Color.RED.getRGB());
                         break;
                     }
+
 
 
                 }

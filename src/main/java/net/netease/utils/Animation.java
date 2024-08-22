@@ -1,5 +1,7 @@
 package net.netease.utils;
 
+import lol.tgformat.utils.render.Easing;
+
 /**
  * @author TG_format
  * @since 2024/6/1 13:32
@@ -9,10 +11,18 @@ public abstract class Animation {
     protected int duration;
     protected double endPoint;
     protected Direction direction;
+    private Easing easing;
+    private long startTime;
 
     public Animation(int ms, double endPoint) {
         this(ms, endPoint, Direction.FORWARDS);
     }
+    public Animation(final Easing easing, final long duration) {
+        this.easing = easing;
+        this.startTime = System.currentTimeMillis();
+        this.duration = (int) duration;
+    }
+
 
     public Animation(int ms, double endPoint, Direction direction) {
         this.timerUtil = new AnimTimeUtil();

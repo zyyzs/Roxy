@@ -1,11 +1,15 @@
 package lol.tgformat.ui.notifications;
 
+import lol.tgformat.Client;
 import lol.tgformat.ui.clickgui.Utils;
+import lol.tgformat.ui.font.CustomFont;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.EaseOutSine;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.ui.utils.TimerUtil;
 import lombok.Getter;
+import net.minecraft.client.gui.Gui;
 
 import java.awt.*;
 
@@ -40,4 +44,5 @@ public class Notification implements Utils {
         RoundedUtil.drawRound(x + 2f, y + 6f, 2, 12, 0.5f,  notificationType.getColor());
         RoundedUtil.drawGradientHorizontal(x, y, ((getTime() - getTimerUtil().getTime()) / getTime()) * width, height, 2,new Color(0, 249, 255, 119),new Color(211, 24, 255, 97));
     }
+
 }

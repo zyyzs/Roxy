@@ -120,7 +120,7 @@ public class ChestAura extends Module {
             double x = (double)pos.getX() - RenderManager.renderPosX;
             double y = (double)pos.getY() - RenderManager.renderPosY;
             double z = (double)pos.getZ() - RenderManager.renderPosZ;
-            RenderUtil.drawEntityESP(x, y, z, x + 1.0, y + 1.0, z + 1.0, 0.0f, 255.0f, 255.0f, 0.4f);
+            RenderUtil.drawEntityESP(x, y, z, x + 1.0, y + 1.0, z + 1.0, 0.0f, 255.0f, 255.0f, 50.0f);
         }
     }
 
