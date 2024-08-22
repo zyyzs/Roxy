@@ -312,7 +312,7 @@ public class GuiLogin extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            this.mc.displayGuiScreen(null);
+            this.status = "null";
         } else {
             this.field.textboxKeyTyped(typedChar, keyCode);
         }

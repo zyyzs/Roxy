@@ -45,6 +45,7 @@ import net.minecraft.util.ResourceLocation;
 import net.netease.font.FontManager;
 import net.netease.utils.*;
 import org.lwjgl.opengl.GL11;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -69,6 +70,7 @@ import static net.netease.font.FontManager.*;
 
 @Renamer
 @StringEncryption
+@NativeObfuscation
 public class HUD extends Module {
     public static final StringSetting clientName = new StringSetting("Client Name");
     public static final ModeSetting theme = Theme.getModeSetting("Theme Selection", "MINT_BLUE");
@@ -149,18 +151,7 @@ public class HUD extends Module {
         }
 
         if (info.isEnabled() && hud.isState()) {
-            float x2 = sr.getScaledWidth() - 3;
-            float y2 = sr.getScaledHeight() - 10;
-            String uname = GuiLogin.uid;
-            String date = Client.instance.getDate();
-            String version = Client.instance.getVersion();
-
-
-            mc.fontRendererObj.drawStringWithShadow(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - "  + uname,
-                    x2 - mc.fontRendererObj.getStringWidth(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - " + uname),
-                    y2,
-                    -1
-            );
+            oninfo();
         }
 
         if (health.isEnabled() && hud.isState()) {
@@ -175,6 +166,27 @@ public class HUD extends Module {
             renderpotion();
         }
     }
+    @NativeObfuscation.Inline
+    public static void oninfo() {
+        if (GuiLogin.uid == null) {
+            System.exit(0);
+            mc.shutdown();
+            return;
+        }
+        float x2 = sr.getScaledWidth() - 3;
+        float y2 = sr.getScaledHeight() - 10;
+        String uname = GuiLogin.uid;
+        String date = Client.instance.getDate();
+        String version = Client.instance.getVersion();
+
+
+        mc.fontRendererObj.drawStringWithShadow(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - "  + uname,
+                x2 - mc.fontRendererObj.getStringWidth(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - " + uname),
+                y2,
+                -1
+        );
+    }
+
     public static Color color(int tick) {
         return new Color(RenderUtil.colorSwitch(getClientColors().getFirst(), getClientColors().getSecond(),2000.0f, -(tick * 200) / 40, 75L, 2.0));
     }

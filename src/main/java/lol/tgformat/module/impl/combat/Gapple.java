@@ -20,6 +20,8 @@ import net.minecraft.init.Items;
 import net.minecraft.network.play.client.*;
 import net.netease.font.FontManager;
 import net.netease.utils.RoundedUtils;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
+import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.awt.*;
 
@@ -29,6 +31,7 @@ import static lol.tgformat.module.impl.combat.KillAura.target;
  * @author TG_format
  * @since 2024/7/28 下午8:26
  */
+@StringEncryption
 public class Gapple extends Module {
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);

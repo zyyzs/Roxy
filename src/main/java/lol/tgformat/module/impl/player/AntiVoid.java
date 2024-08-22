@@ -37,7 +37,7 @@ import java.util.ArrayList;
 
 @StringEncryption
 public class AntiVoid extends Module {
-    private final ModeSetting mode = new ModeSetting("Mode","GrimAC","GrimAC","Watchdog");
+    private final ModeSetting mode = new ModeSetting("Mode","GrimAC","GrimAC", "Watchdog");
     public NumberSetting pullbackTime = new NumberSetting("Pullback Time", 1000.0, 2000.0, 1000.0, 100.0);
     public NumberSetting catcherDistance = new NumberSetting("Catcher Distance", 3, 50, 1, 1);
     public NumberSetting catcherTicks = new NumberSetting("Catcher Ticks", 10, 100, 1, 1);

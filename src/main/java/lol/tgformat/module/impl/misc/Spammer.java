@@ -8,11 +8,13 @@ import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.network.play.client.C01PacketChatMessage;
+import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 /**
  * @author TG_format
  * @since 2024/8/22 下午8:17
  */
+@StringEncryption
 public class Spammer extends Module {
     public Spammer() {
         super("Spammer", ModuleType.Misc);

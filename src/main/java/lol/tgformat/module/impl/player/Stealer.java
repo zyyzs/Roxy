@@ -43,7 +43,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 @Renamer
-
 @StringEncryption
 public class Stealer extends Module {
     private final NumberSetting delay = new NumberSetting("Delay", 0.0, 1000.0, 0.0, 10.0);

@@ -35,7 +35,6 @@ import java.util.Map;
  */
 
 @Renamer
-
 @StringEncryption
 public class AutoSkyWars extends Module {
 

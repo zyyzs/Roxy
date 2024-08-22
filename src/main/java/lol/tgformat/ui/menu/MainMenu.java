@@ -35,11 +35,12 @@ import java.util.List;
 public class MainMenu extends GuiScreen implements GuiYesNoCallback {
     private float currentX = 0f;
     private float currentY = 0f;
-
     private int photo = 1;
     private final MSTimer time = new MSTimer();
     public MainMenu() {
-        //RegionalAbuseUtil.getAddressByIP();
+        if (GuiLogin.uid == null) {
+            mc.shutdown();
+        }
     }
     private final List<MenuButton> buttons = new ArrayList<>() {{
         add(new MenuButton("SinglePlayer"));
@@ -106,7 +107,7 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
             count += (int) (buttonHeight + 5);
         }
         String username = GuiLogin.uid;
-        Display.setTitle("Minecraft 1.8.9 " + " Use: " + username + "[" + (RegionalAbuseUtil.country + "入") + "]");
+        Display.setTitle("Minecraft 1.8.9 " + " Use: " + username + "[" + ("妈妈入") + "]");
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -114,23 +115,6 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         buttons.forEach(button -> button.mouseClicked(mouseX, mouseY, mouseButton));
-    }
-
-    @Override
-    public void updateScreen() {
-        if (time.hasTimePassed(0)) {
-            if (photo + 1 > 357) {
-                photo = 1;
-            } else {
-                photo += 1;
-            }
-            time.reset();
-        }
-    }
-
-    //这个是真的麻烦        哈哈哈已脱离傻子图片循环
-    private ResourceLocation drawBackGround() {
-        return new ResourceLocation("bloodline/bg/" + photo + ".jpg");
     }
 }
 

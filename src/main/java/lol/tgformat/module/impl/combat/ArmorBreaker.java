@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
  */
 @StringEncryption
 public class ArmorBreaker extends Module {
-    public static boolean eating;
     private EntityLivingBase target;
     private int currentItem = 0;
     public ArmorBreaker() {
@@ -57,38 +56,21 @@ public class ArmorBreaker extends Module {
     public void onUpdate(PreUpdateEvent event) {
         if (target != null) {
             Entity entity = KillAura.target;
-            InvManager invManager = ModuleManager.getModule(InvManager.class);
             if (entity == target) {
-                if (!Gapple.eating) {
-                    List<Slot> slots = new ArrayList<>(mc.thePlayer.inventoryContainer.inventorySlots.stream()
-                            .filter(slot -> slot.getHasStack() && slot.getStack().getItem() instanceof ItemSword)
-                            .sorted(Comparator.comparingDouble(value -> InventoryUtil.getSwordStrength(((Slot) value).getStack())).reversed())
-                            .collect(Collectors.toList()));
+                List<Slot> slots = new ArrayList<>(mc.thePlayer.inventoryContainer.inventorySlots.stream()
+                        .filter(slot -> slot.getHasStack() && slot.getStack().getItem() instanceof ItemSword)
+                        .sorted(Comparator.comparingDouble(value -> InventoryUtil.getSwordStrength(((Slot) value).getStack())).reversed())
+                        .collect(Collectors.toList()));
 
-                    if (currentItem >= slots.size())
-                        currentItem = 0;
+                if (currentItem >= slots.size())
+                    currentItem = 0;
 
-                    eating = true;
+                mc.playerController.windowClick(0, slots.get(currentItem).slotNumber, mc.thePlayer.inventory.currentItem, 2, mc.thePlayer);
+                mc.thePlayer.swingItem();
 
-                    ItemStack selectedWeapon = slots.get(currentItem).getStack();
-                    String weaponName = selectedWeapon.getDisplayName();
-
-                    if (target != null) {
-                        this.setSuffix("");
-                    } else {
-                        this.setSuffix(weaponName);
-                    }
-
-
-                    PacketUtil.send1_12Block();
-                    mc.playerController.windowClick(0, slots.get(currentItem).slotNumber, mc.thePlayer.inventory.currentItem, 2, mc.thePlayer);
-                    mc.thePlayer.swingItem();
-
-                    currentItem++;
-                }
+                currentItem++;
             } else {
                 target = null;
-                eating = false;
             }
         }
     }
