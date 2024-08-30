@@ -14,6 +14,8 @@ import lol.tgformat.module.values.Setting;
 import lol.tgformat.module.values.impl.KeybindSetting;
 import lol.tgformat.ui.clickgui.ModernClickGui;
 import lol.tgformat.utils.client.LogUtil;
+import lol.tgformat.utils.render.ESPColor;
+import lol.tgformat.utils.render.Nohurtcam;
 import lombok.Getter;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
@@ -23,6 +25,7 @@ import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author TG_format
@@ -94,7 +97,8 @@ public class ModuleManager implements IMinecraft {
         addModule(new SpeedMine());
         addModule(new NoFall());
         addModule(new Stuck());
-        addModule(new SilenceHub());
+        addModule(new AutoHub());
+        addModule(new Autoplay());
         //Player
 
 
@@ -107,16 +111,17 @@ public class ModuleManager implements IMinecraft {
         addModule(new ArrayListMod());
         addModule(new SessionHUD());
         addModule(new Cape());
-        addModule(new Chams());
         addModule(new KillEffect());
         addModule(new MoBends());
         addModule(new FullBright());
         addModule(new NameTags());
         addModule(new HUD());
-        addModule(new ESP());
+        addModule(new ESPChams());
         addModule(new Watermark());
         addModule(new Projectile());
         addModule(new ToolTipsAnim());
+        addModule(new MotionBlur());
+        addModule(new Nohurtcam());
         //Render
     }
     @Listener
@@ -135,7 +140,6 @@ public class ModuleManager implements IMinecraft {
         if (!getModule(IRC.class).isState()) {
             getModule(IRC.class).state();
         }
-        Module.sr = new ScaledResolution(mc);
     }
     public static <T>T getModule(Class<T> clazz) {
         for (Module m : modules) {

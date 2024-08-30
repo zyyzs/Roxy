@@ -1,5 +1,9 @@
 package lol.tgformat.ui.utils;
 
+import lol.tgformat.api.event.Listener;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author TG_format
  * @since 2024/6/9 下午7:00
@@ -29,9 +33,11 @@ public class TimerUtil {
         return hasTimeElapsed((long) time);
     }
 
+
     public long getTime() {
         return System.currentTimeMillis() - lastMS;
     }
+
 
     public void setTime(long time) {
         lastMS = time;

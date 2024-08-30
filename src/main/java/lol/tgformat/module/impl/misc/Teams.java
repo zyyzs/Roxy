@@ -33,6 +33,9 @@ public class Teams extends Module {
     
     public static boolean isSameTeam(final Entity entity) {
         if (entity instanceof EntityPlayer entityPlayer) {
+            if (entityPlayer == mc.thePlayer){
+                return false;
+            }
             return ModuleManager.getModule(Teams.class).isState() && ((armor.isEnabled() && PlayerUtil.armorTeam(entityPlayer))
                     || (color.isEnabled() && PlayerUtil.colorTeam(entityPlayer))
                     || (scoreboard.isEnabled() && PlayerUtil.scoreTeam(entityPlayer)));

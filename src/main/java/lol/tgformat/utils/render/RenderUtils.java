@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,7 +28,7 @@ import static org.lwjgl.opengl.GL11.glPopMatrix;
 public class RenderUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
     public static boolean ring_c = false;
-
+    private static final Frustum FRUSTUM = new Frustum();
     public static void renderBlock(BlockPos blockPos, int color, boolean outline, boolean shade) {
         renderBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1, 1, 1, color, outline, shade);
     }
@@ -55,7 +56,15 @@ public class RenderUtils {
 
         GL11.glScissor((int) x, (int) (y - height), (int) width, (int) height);
     }
+    public static boolean isInViewFrustrum(final Entity entity) {
+        return (isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck);
+    }
 
+    private static boolean isInViewFrustrum(final AxisAlignedBB bb) {
+        final Entity current = mc.getRenderViewEntity();
+        FRUSTUM.setPosition(current.posX, current.posY, current.posZ);
+        return FRUSTUM.isBoundingBoxInFrustum(bb);
+    }
     public static void drawRoundedRect(float x, float y, float width, float height, float edgeRadius, int color, float borderWidth, int borderColor) {
         if (color == 16777215) color = Color.WHITE.getRGB();
         if (borderColor == 16777215) borderColor = Color.WHITE.getRGB();

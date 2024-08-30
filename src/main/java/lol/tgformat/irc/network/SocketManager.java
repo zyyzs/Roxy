@@ -8,7 +8,7 @@ import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.ChatInputEvent;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.misc.IRC;
-import lol.tgformat.verify.GuiLogin;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.Gui;
@@ -43,7 +43,7 @@ public class SocketManager {
         event.setCancelled(true);
 
         String msg = message.substring(ircPrefix.length());
-        sendPacket(new ClientChatMessagePacket(msg, GuiLogin.uid, getRank(GuiLogin.uid)));
+        sendPacket(new ClientChatMessagePacket(msg, "zyyzs", getRank("zyyzs")));
     }
     public String getRank(String uid) {
         return switch (uid) {

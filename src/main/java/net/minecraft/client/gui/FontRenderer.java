@@ -1133,4 +1133,6 @@ public class FontRenderer implements IResourceManagerReloadListener
     public int getHeight() {
         return FONT_HEIGHT;
     }
+
+
 }

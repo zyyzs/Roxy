@@ -236,18 +236,13 @@ public class GuiLogin extends GuiScreen {
     //高雅
     @NativeObfuscation.Inline
     private void performLogin(String uid) {
-        if (Client.instance.getIrcServer().getClient().isConnected()) {
-            GuiLogin.uid = uid;
+        GuiLogin.uid = uid;
             try {
-                Client.instance.getIrcServer().getClient().getPacketManager().sendPacket(
-                        Client.instance.getIrcServer().getClient().getPacketBuffer(),
-                        new ClientLoginPacket(uid, getHwid()),
-                        4
-                );
+                handleSuccessfulLogin();
             } catch (Exception e) {
                 handleError(e);
             }
-        }
+
     }
 
     //神笔

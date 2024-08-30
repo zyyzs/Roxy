@@ -1,6 +1,7 @@
 package lol.tgformat.utils.rotation;
 
 import lol.tgformat.accessable.IMinecraft;
+import lol.tgformat.utils.block.Rotation;
 import lol.tgformat.utils.math.MathConst;
 import lol.tgformat.utils.vector.Vector2f;
 import lol.tgformat.utils.vector.Vector3d;
@@ -277,6 +278,13 @@ public class RotationUtil implements IMinecraft {
         }
 
         return new Vector2f(yaw, pitch);
+    }
+    public static Vec3 getVectorForRotation(Rotation rotation) {
+        float yawCos = MathHelper.cos(-rotation.getYaw() * ((float)Math.PI / 180) - (float)Math.PI);
+        float yawSin = MathHelper.sin(-rotation.getYaw() * ((float)Math.PI / 180) - (float)Math.PI);
+        float pitchCos = -MathHelper.cos(-rotation.getPitch() * ((float)Math.PI / 180));
+        float pitchSin = MathHelper.sin(-rotation.getPitch() * ((float)Math.PI / 180));
+        return new Vec3(yawSin * pitchCos, pitchSin, yawCos * pitchCos);
     }
 
     private static float[] getRotationsByVec(Vec3 origin, Vec3 position) {

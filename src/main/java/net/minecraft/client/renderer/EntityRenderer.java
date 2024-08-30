@@ -13,6 +13,8 @@ import java.util.concurrent.Callable;
 
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.render.Render3DEvent;
+import lol.tgformat.module.ModuleManager;
+import lol.tgformat.utils.render.Nohurtcam;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -677,6 +679,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
     private void hurtCameraEffect(float partialTicks)
     {
+        if (ModuleManager.getModule(Nohurtcam.class).isState()) {
+            return;
+        }
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
         {
             EntityLivingBase entitylivingbase = (EntityLivingBase)this.mc.getRenderViewEntity();

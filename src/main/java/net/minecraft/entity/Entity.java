@@ -9,6 +9,7 @@ import lol.tgformat.Client;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.movement.MoveEvent;
 import lol.tgformat.events.movement.StrafeEvent;
+import lol.tgformat.utils.timer.StopWatch;
 import lol.tgformat.utils.vector.Vector3d;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -264,6 +265,7 @@ public abstract class Entity implements ICommandSender
         this.entityId = id;
     }
 
+    public boolean render = true, renderNameTag = true;
     /**
      * Called by the /kill command.
      */
@@ -312,6 +314,18 @@ public abstract class Entity implements ICommandSender
     public boolean equals(Object p_equals_1_)
     {
         return p_equals_1_ instanceof Entity ? ((Entity)p_equals_1_).entityId == this.entityId : false;
+    }
+
+    public StopWatch timer = new StopWatch();
+    public StopWatch timerName = new StopWatch();
+    public void hide() {
+        timer.reset();
+        render = false;
+    }
+
+    public void hideNameTag() {
+        timerName.reset();
+        renderNameTag = false;
     }
 
     public int hashCode()

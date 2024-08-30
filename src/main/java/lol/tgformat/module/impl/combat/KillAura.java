@@ -32,6 +32,7 @@ import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySquid;
@@ -49,6 +50,9 @@ import tech.skidonion.obfuscator.annotations.StringEncryption;
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+
 /**
  * @author TG_format
  * @since 2024/5/31 23:56
@@ -65,7 +69,7 @@ public class KillAura extends Module {
     private final NumberSetting rotationspeed = new NumberSetting("RotationSpeed",10f,10f,0f,1f);
     private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet", "Off");
     private final ModeSetting moveFix = new ModeSetting("MovementFix", "Silent", "Silent", "Strict", "None", "BackSprint");
-    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan");
+    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","AsakaBox","Polygon");
     private final BooleanSetting keepsprint = new BooleanSetting("KeepSprint", true);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
     public KillAura() {
@@ -186,7 +190,6 @@ public class KillAura extends Module {
         }
     }
     public void attack() {
-
         if (isLookingAtEntity(isGapple() ? RotationComponent.rotations : CurrentRotationUtil.currentRotation , target) && shouldAttack()) {
             if(keepsprint.isEnabled()) {
                 mc.playerController.attackEntityNoSlow(target);
@@ -282,6 +285,34 @@ public class KillAura extends Module {
                 javax.vecmath.Vector2f vector2f = RenderUtil.targetESPSPos(target);
                 if (vector2f != null) RenderUtil.drawTargetESP2D(vector2f.x, vector2f.y, Color.RED, Color.BLUE, Color.GREEN, Color.PINK, (1.0F - MathHelper.clamp_float(Math.abs(dst - 6.0F) / 60.0F, 0.0F, 0.75F)), 1);
             }
+            case "AsakaBox": {
+                Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
+                if (target != null) {
+                    ESPTarget = target;
+                }
+                if (Anim.finished(Direction.BACKWARDS)) {
+                    ESPTarget = null;
+                }
+                if (ESPTarget != null) {
+                    RenderUtil.renderBoundingBox(ESPTarget, new Color(0, 255, 0, 30), Anim.getOutput().floatValue());
+                }
+                break;
+            }
+            case "Polygon":{
+                if (target == null) return;
+                Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
+                if (target != null) {
+                    ESPTarget = target;
+                }
+                if (Anim.finished(Direction.BACKWARDS)) {
+                    ESPTarget = null;
+                }
+                if (ESPTarget != null) {
+                    drawCircle(6,new Color(0,0,0).getRGB());
+                    drawCircle(4,new Color(255,255,255).getRGB());
+                }
+                break;
+            }
         }
     }
 
@@ -310,4 +341,44 @@ public class KillAura extends Module {
         float f3 = MathHelper.sin(-p_getVectorForRotation_1_ * ((float)Math.PI / 180));
         return new Vec3(f1 * f2, f3, f * f2);
     }
+    private void drawCircle(float lineWidth, int color) {
+        if (target == null) return;
+        glPushMatrix();
+        RenderUtil.color(color, (float) ((Anim.getOutput().floatValue() / 1) / 2F));
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+        glLineWidth(lineWidth);
+        glEnable(GL_BLEND);
+        glEnable(GL_LINE_SMOOTH);
+
+        glBegin(GL_LINE_STRIP);
+        float partialTicks = net.minecraft.util.Timer.elapsedPartialTicks;
+        double rad = 1;
+        double d = (Math.PI * 2.0) / 8;
+
+        double posX = target.posX, posY = target.posY, posZ = target.posZ;
+        double lastTickX = target.lastTickPosX, lastTickY = target.lastTickPosY, lastTickZ = target.lastTickPosZ;
+        double renderPosX = mc.getRenderManager().renderPosX, renderPosY = mc.getRenderManager().renderPosY, renderPosZ = mc.getRenderManager().renderPosZ;
+
+        double y = lastTickY + (posY - lastTickY) * partialTicks - renderPosY;
+        for (double i = 0; i < Math.PI * 2.0; i += d) {
+            double x = lastTickX + (posX - lastTickX) * partialTicks + StrictMath.sin(i) * rad - renderPosX,
+                    z = lastTickZ + (posZ - lastTickZ) * partialTicks + StrictMath.cos(i) * rad - renderPosZ;
+            glVertex3d(x, y, z);
+        }
+        double x = lastTickX + (posX - lastTickX) * partialTicks - renderPosX,
+                z = lastTickZ + (posZ - lastTickZ) * partialTicks + rad - renderPosZ;
+        glVertex3d(x, y, z);
+        glEnd();
+
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDepthMask(true);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glColor4f(1, 1, 1, 1);
+        glPopMatrix();
+    }
+
 }

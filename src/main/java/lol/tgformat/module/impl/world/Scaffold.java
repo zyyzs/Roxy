@@ -18,6 +18,8 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.module.values.impl.ModeSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.block.*;
 import lol.tgformat.utils.enums.MovementFix;
@@ -29,6 +31,7 @@ import lol.tgformat.utils.render.RenderUtils;
 import lol.tgformat.utils.rotation.RayCastUtil;
 import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.vector.Vector2f;
+import lombok.Builder;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -51,6 +54,7 @@ import org.lwjgl.opengl.GL11;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+import static lol.tgformat.ui.clickgui.Utils.tahomaFont;
 import static lol.tgformat.ui.clickgui.Utils.tenacityBoldFont18;
 
 /**
@@ -72,6 +76,7 @@ public class Scaffold extends Module {
     public final BooleanSetting tower = new BooleanSetting("Tower", false);
     public final BooleanSetting esp = new BooleanSetting("ESP", true);
     public final BooleanSetting count = new BooleanSetting("Count", true);
+    public final ModeSetting countmode = new ModeSetting("Count Mode","Default","Default","Simple");
     public boolean tip = false;
     protected Random rand = new Random();
     private final List<BlockPos> placedBlocks = new ArrayList<>();
@@ -86,7 +91,6 @@ public class Scaffold extends Module {
     private boolean canTellyPlace;
     private int prevItem = 0;
     private EnumFacing facing;
-    private Vector2f rotation = new Vector2f(0,0);
 
     public Scaffold() {
         super("Scaffold", ModuleType.World);
@@ -107,7 +111,6 @@ public class Scaffold extends Module {
         this.data = null;
         this.slot = -1;
         this.facing = null;
-        rotation = new Vector2f(0,0);
     }
 
     @Override
@@ -144,7 +147,7 @@ public class Scaffold extends Module {
 
             double distance = mc.thePlayer.getDistance(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
 
-            int maxDistance = 8;
+            int maxDistance = 8; // Max Range
             int alpha = (int) Math.max(0, 255 - (distance / maxDistance) * 255);
 
             if (alpha <= 0) {
@@ -163,21 +166,26 @@ public class Scaffold extends Module {
         int y = sr.getScaledHeight() / 2 + 12;
         float height = 18;
         if (count.isEnabled()) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(x + (width / 2F), y + (height / 2F), 0);
-            GL11.glScaled(countscale, countscale, countscale);
-            GL11.glTranslated(-(x + (width / 2F)), -(y + (height / 2F)), 0);
-            RoundedUtil.drawRound(x, y, width + 5f, height, 3, new Color(0, 0, 0, 50));
-            GlowUtils.drawGlow(x, y, width + 5f, height, 22, new Color(20,20,20, 128));
+            switch (countmode.getMode()){
+                case "Default":{
 
-            if (mc.thePlayer.getHeldItem() == null || mc.thePlayer.getHeldItem().stackSize == 0) {
-                mc.fontRendererObj.drawString("?", x + 4, y, new Color(40, 44, 52).getRGB());
-            } else {
-                this.drawItemStack(mc.thePlayer.getHeldItem(), x + 2.5f, y + 1);
+                    if (mc.thePlayer.getHeldItem() == null || mc.thePlayer.getHeldItem().stackSize == 0) {
+                        mc.fontRendererObj.drawString("?", x + 4, y, new Color(40, 44, 52).getRGB());
+                    } else {
+                        this.drawItemStack(mc.thePlayer.getHeldItem(), x + 2.5f, y + 1);
+                    }
+
+                    tenacityBoldFont18.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, x + 21, (y + 6), new Color(255, 255, 255).getRGB());
+                    GL11.glPopMatrix();
+                    break;
+                }
+                case "Simple":{
+                    int X = sr.getScaledWidth() / 2 - 68;
+                    mc.fontRendererObj.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, (int) (X + 10 + 60 - tahomaFont.boldSize(18).getStringWidth("Blocks " + mc.thePlayer.getHeldItem().stackSize)/2), (y + 6), new Color(255, 255, 255).getRGB());
+                }
+
             }
 
-            tenacityBoldFont18.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, x + 21, (y + 6), new Color(255, 255, 255).getRGB());
-            GL11.glPopMatrix();
         }
 
     }
@@ -188,6 +196,7 @@ public class Scaffold extends Module {
         if (tower.isEnabled()) {
             onTower();
         }
+
         if (this.eagle.isEnabled()) {
             if (Eagle.getBlockUnderPlayer(mc.thePlayer) instanceof BlockAir) {
                 if (mc.thePlayer.onGround) {
@@ -282,24 +291,6 @@ public class Scaffold extends Module {
             countscale = AnimationUtil.moveUD((float) countscale, (float) 0, (float) (30 * RenderUtil.deltaTime()), (float) (20 * RenderUtil.deltaTime()));
         }
         search();
-        if (data != null) {
-            float yaw = RotationUtil.getRotationBlock(this.data)[0];
-            float pitch = RotationUtil.getRotationBlock(this.data)[1];
-            rotation = new Vector2f(yaw, pitch);
-        }
-        if (this.telly.isEnabled()) {
-            if (this.canTellyPlace && !mc.thePlayer.onGround && MoveUtil.isMoving()) {
-                mc.thePlayer.setSprinting(false);
-            }
-            this.canTellyPlace = mc.thePlayer.offGroundTicks >= 1;
-        }
-        if (!this.canTellyPlace) {
-            return;
-        }
-        if (this.data != null && rotation != null) {
-            RotationComponent.setRotations(rotation, 180.0f, MovementFix.NORMAL);
-        }
-
     }
 
     @Listener
@@ -316,11 +307,12 @@ public class Scaffold extends Module {
         if (mc.thePlayer == null) {
             return;
         }
-        if (raycast.isEnabled() && !RayCastUtil.overBlock(rotation, facing, data, false)) {
-            return;
+        if (raycast.isEnabled()) {
+
         }
         this.place();
         mc.sendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown() && mc.inGameHasFocus);
+
     }
 
     @Listener
@@ -333,6 +325,21 @@ public class Scaffold extends Module {
             Client.instance.getSlotSpoofComponent().startSpoofing(oldSlot);
         }
         mc.thePlayer.inventory.currentItem = this.slot;
+        this.search();
+        if (this.telly.isEnabled()) {
+            if (this.canTellyPlace && !mc.thePlayer.onGround && MoveUtil.isMoving()) {
+                mc.thePlayer.setSprinting(false);
+            }
+            this.canTellyPlace = mc.thePlayer.offGroundTicks >= 1;
+        }
+        if (!this.canTellyPlace) {
+            return;
+        }
+        if (this.data != null) {
+            float yaw = RotationUtil.getRotationBlock(this.data)[0];
+            float pitch = RotationUtil.getRotationBlock(this.data)[1];
+            RotationComponent.setRotations(new Vector2f(yaw, pitch), 180.0f, MovementFix.NORMAL);
+        }
     }
 
     private void place() {
@@ -345,15 +352,17 @@ public class Scaffold extends Module {
         }
         if (this.data != null) {
             if (facing == null) {
-                 return;
+                return;
             }
             Vec3 hitvec = getVec3(data, facing);
-            if (validateBlockRange(hitvec)) {
-                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem(), this.data, facing, hitvec)) {
-                    if (this.swing.isEnabled()) {
-                        mc.thePlayer.swingItem();
-                    } else {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+            if (RayCastUtil.overBlock(RotationComponent.lastServerRotations, facing, data, false)) {
+                if (validateBlockRange(hitvec)) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem(), this.data, facing, hitvec)) {
+                        if (this.swing.isEnabled()) {
+                            mc.thePlayer.swingItem();
+                        } else {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                        }
                     }
                 }
             }

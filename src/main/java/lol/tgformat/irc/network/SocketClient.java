@@ -12,7 +12,7 @@ import lol.tgformat.irc.network.packets.server.ServerHandshakePacket;
 import lol.tgformat.irc.utils.logger.Logger;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.timer.TimerUtil;
-import lol.tgformat.verify.GuiLogin;
+
 import lombok.Getter;
 import lombok.Setter;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
@@ -52,8 +52,6 @@ public class SocketClient {
                 Packet packet = packetManager.processPacket(packetBuffer);
                 if (packet instanceof ServerHandshakePacket wrapper) {
                     if (wrapper.getStatus() == 1) {
-                        ClientGetRankPacket getRankPacket = new ClientGetRankPacket(GuiLogin.uid);
-                        packetManager.sendPacket(packetBuffer, getRankPacket, 3);
                     }
                 }
                 if (packet instanceof SKeepAlive) {

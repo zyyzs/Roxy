@@ -21,7 +21,7 @@ import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.ServerUtil;
 import lol.tgformat.utils.player.RomanNumeralUtil;
 import lol.tgformat.utils.render.*;
-import lol.tgformat.verify.GuiLogin;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -60,7 +60,10 @@ import static lol.tgformat.ui.clickgui.Utils.*;
 import static lol.tgformat.utils.math.MathUtil.DF_1;
 import static lol.tgformat.utils.render.Easing.EASE_OUT_ELASTIC;
 import static lol.tgformat.utils.render.Easing.EASE_OUT_SINE;
+import static net.minecraft.client.gui.inventory.GuiInventory.drawEntityOnScreen;
 import static net.netease.font.FontManager.*;
+import static org.lwjgl.opengl.Display.getHeight;
+import static org.lwjgl.opengl.Display.getWidth;
 
 /**
  * @Author KuChaZi
@@ -75,7 +78,7 @@ public class HUD extends Module {
     public static final StringSetting clientName = new StringSetting("Client Name");
     public static final ModeSetting theme = Theme.getModeSetting("Theme Selection", "MINT_BLUE");
     private final BooleanSetting target = new BooleanSetting("TargetHUD", true);
-    public final ModeSetting targetMode = new ModeSetting("TargetHUDMods","Naven","Acrimony", "Naven", "Lovely","Rise");
+    public final ModeSetting targetMode = new ModeSetting("TargetHUDMods","Naven","Acrimony", "Naven", "Lovely","Rise","Exhibition");
     private final NumberSetting X_post = new NumberSetting("TatgetHUD-X", 0,640,-520, 1);
     private final NumberSetting Y_post = new NumberSetting("TargetHUD-Y", 0,345,-305, 1);
     public final BooleanSetting hotBar = new BooleanSetting("HotBar", false);
@@ -130,6 +133,7 @@ public class HUD extends Module {
 
         if (hotBar.isEnabled() && hud.isState()) {
             if (mc.theWorld != null) {
+                ScaledResolution sr = new ScaledResolution(mc);
                 int middleScreen = sr.getScaledWidth() / 2;
                 RoundedUtils.drawRound(middleScreen - 91, sr.getScaledHeight() - 22, 182, 20, 3, new Color(0, 0, 0, 160));
                 RoundedUtils.drawRound(middleScreen - 91 + mc.thePlayer.inventory.currentItem * 20, sr.getScaledHeight() - 22, 20, 20, 3, new Color(255, 255, 255, 80));
@@ -157,7 +161,7 @@ public class HUD extends Module {
         if (health.isEnabled() && hud.isState()) {
             renderHealth();
         }
-
+        ScaledResolution sr = new ScaledResolution(mc);
         if (armor.isEnabled() && hud.isState()) {
             drawArmor(sr);
         }
@@ -168,14 +172,10 @@ public class HUD extends Module {
     }
     @NativeObfuscation.Inline
     public static void oninfo() {
-        if (GuiLogin.uid == null) {
-            System.exit(0);
-            mc.shutdown();
-            return;
-        }
+        ScaledResolution sr = new ScaledResolution(mc);
         float x2 = sr.getScaledWidth() - 3;
         float y2 = sr.getScaledHeight() - 10;
-        String uname = GuiLogin.uid;
+        String uname = "zyyzs";
         String date = Client.instance.getDate();
         String version = Client.instance.getVersion();
 
@@ -200,6 +200,7 @@ public class HUD extends Module {
         potions.sort(Comparator.comparingDouble(e -> -fr.getStringWidth(I18n.format(e.getEffectName()))));
 
         int count = 0;
+        ScaledResolution sr = new ScaledResolution(mc);
         for (PotionEffect effect : potions) {
             Potion potion = Potion.potionTypes[effect.getPotionID()];
             String name = I18n.format(potion.getName()) + (effect.getAmplifier() > 0 ? " " + RomanNumeralUtil.generate(effect.getAmplifier() + 1) : "");
@@ -446,14 +447,73 @@ public class HUD extends Module {
                         DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
                         Gui.drawRect(x, y + 50 + 8, x + 160, y + 50 + 10, new Color(1, 1, 1, 200).getRGB());
                         DrawUtil.drawRoundedRect(x, y, x, y, 0.0, new Color(255, 255, 255, 255).getRGB());
-                        GuiInventory.drawEntityOnScreen(x + 22, y + 54, 26, -entity.rotationYaw, entity.rotationPitch, entity);
+                        drawEntityOnScreen(x + 22, y + 54, 26, -entity.rotationYaw, entity.rotationPitch, entity);
                         FontManager.arial26.drawStringWithShadow(entity.getName(), x + 44, y + 8, new Color(255, 255, 255).getRGB());
                         FontManager.arial26.drawStringWithShadow(entity.getHealth() <= mc.thePlayer.getHealth() ? "Winning" : "Losing", x + 44, y + 44, entity.getHealth() <= mc.thePlayer.getHealth() ? Color.GREEN.getRGB() : Color.RED.getRGB());
                         break;
                     }
+                    case "Exhibition": {
+                        float width=(Math.max(135, mc.fontRendererObj.getStringWidth("Name: " + "bruh") + 60));
+                        float height=46;
+
+                        Color darkest = ColorUtil.applyOpacity(new Color(10, 10, 10,100),100);
+                        Color textColor = ColorUtil.applyOpacity(Color.WHITE, 255);
+                        Gui.drawRect2(x - 3.5, y - 3.5, width + 7, height + 7, darkest.getRGB());
+                        
+
+                        float size = height - 6;
 
 
+                        mc.fontRendererObj.drawString(entity.getName(), (int) (x + 8 + size), y + 6, textColor.getRGB());
+                        float healthValue = (entity.getHealth() + entity.getAbsorptionAmount()) / (entity.getMaxHealth() + entity.getAbsorptionAmount());
 
+                        Color healthColor = healthValue > .5f ? ColorUtil.interpolateColorC(new Color(255, 255, 10), new Color(10, 255, 10), (healthValue - .5f) / .5f) :
+                                ColorUtil.interpolateColorC(new Color(255, 10, 10), new Color(255, 255, 10), healthValue * 2);
+
+                        healthColor = ColorUtil.applyOpacity(healthColor, 255);
+
+                        float healthBarWidth = width - (size + 12);
+                        Gui.drawRect2(x + 8 + size, y + 15, healthBarWidth, 5, darkest.getRGB());
+                        Gui.drawRect2(x + 8 + size + .5, y + 15.5F, healthBarWidth - 1, 4, ColorUtil.interpolateColor(darkest, healthColor, .2f));
+
+                        float heathBarActualWidth = healthBarWidth - 1;
+                        Gui.drawRect2(x + 8 + size + .5, y + 15.5F, heathBarActualWidth * healthValue, 4, healthColor.getRGB());
+
+                        float increment = heathBarActualWidth / 11;
+                        for (int i = 1; i < 11; i++) {
+                            Gui.drawRect2(x + 8 + size + (increment * i), y + 15.5F, .5f, 4, darkest.getRGB());
+                        }
+
+                        tahomaFont.size(12).drawString("HP: " + MathUtils.round(entity.getHealth() + entity.getAbsorptionAmount(), 1) + " | Dist: " + MathUtils.round(mc.thePlayer.getDistanceToEntity(entity), 1),
+                                x + 8 + size, y + 25, textColor.getRGB());
+
+
+                        float seperation = healthBarWidth / 5;
+                        GLUtil.startBlend();
+                        RenderUtil.color(textColor.getRGB());
+                        //绘制装备或者手持物品
+                        GuiInventory.drawEntityOnScreen((int) (x + 3 + size / 2f), (int) (y + size + 1), 18, entity.rotationYaw, -entity.rotationPitch, entity);
+
+                        RenderHelper.enableGUIStandardItemLighting();
+                        for (int i = 0; i <= 3; i++) {
+                            if (entity.getCurrentArmor(i) == null) continue;
+                            RenderUtil.resetColor();
+                            GLUtil.startBlend();
+                            RenderUtil.color(textColor.getRGB());
+                            mc.getRenderItem().renderItemAndEffectIntoGUI(entity.getCurrentArmor(i), (int) (x + size + 7 + (seperation * (3 - i))), (int) (y + 28));
+                            GLUtil.endBlend();
+                        }
+
+                        if (entity.getHeldItem() != null) {
+                            GLUtil.startBlend();
+                            RenderUtil.resetColor();
+                            RenderUtil.color(textColor.getRGB());
+                            mc.getRenderItem().renderItemAndEffectIntoGUI(entity.getHeldItem(), (int) (x + size + 7 + (seperation * 4)), (int) (y + 28));
+                            GLUtil.endBlend();
+                        }
+                        RenderHelper.disableStandardItemLighting();
+                        break;
+                    }
                 }
 
             }, x, y, x, y);

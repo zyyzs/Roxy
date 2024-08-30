@@ -48,11 +48,6 @@ public class AutoL extends Module {
     @Listener
     public void onUpdate(PreUpdateEvent event){
 
-        if(ModuleManager.getModule(AutoL.class).isState() && time.hasTimeElapsed(100)){
-                mc.thePlayer.sendChatMessage(getRandomText());
-                kills++;
-                time.reset();
-           }
 
     }
 
@@ -82,10 +77,20 @@ public class AutoL extends Module {
 
     };
 
-    public static String getRandomText() {
+
+    public static String[] Nightsensetext={
+            "[NightSense] 不收徒",
+            "[NightSense] 转人工",
+            "[NightSense] 下课",
+            "[NightSense] 低。",
+            "[NightSense] Ez",
+            "[NightSense] 菜就多练。",
+    };
+
+    public static String getRandomText(String[] textGroup) {
         Random random = new Random();
-        int index = random.nextInt(hytText.length);
-        return hytText[index];
+        int index = random.nextInt(textGroup.length);
+        return textGroup[index];
     }
 
 }

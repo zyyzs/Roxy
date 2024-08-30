@@ -79,7 +79,7 @@ public class BackTrack extends Module {
     @Listener
     public void onRender3D(Render3DEvent event) {
         if (this.esp.isEnabled()) {
-            RenderUtil.renderBoundingBox(target, Color.red, 100.0F);
+            RenderUtil.renderBoundingBox(target, Color.red, 70.0F);
             RenderUtil.resetColor();
         }
 

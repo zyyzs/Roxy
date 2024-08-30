@@ -1,6 +1,7 @@
 package net.minecraft.client;
 
 import java.awt.image.BufferedImage;
+import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,19 +23,27 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.logging.Handler;
 
 import javax.imageio.ImageIO;
 
+import com.sun.jna.Library;
 import lol.tgformat.Client;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.*;
+import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.combat.KillAura;
+import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.ui.menu.MainMenu;
 import lol.tgformat.ui.splash.SplashScreen;
 import lol.tgformat.utils.client.SoundUtil;
+import lol.tgformat.utils.move.GappleUtil;
+import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.verify.GuiLogin;
 import net.minecraft.client.main.RatHome;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.netease.font.FontManager;
 import net.viamcp.viamcp.fixes.AttackOrder;
 import org.apache.commons.io.IOUtils;
@@ -202,6 +211,8 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+
+import static lol.tgformat.utils.network.PacketUtil.sendPacket;
 
 @Renamer
 @StringEncryption
@@ -530,7 +541,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
         this.mcMusicTicker = new MusicTicker(this);
         this.fontRendererObj = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
-        SoundUtil.playSound(new ResourceLocation("bloodline/oye.wav"), .9f);
+        //SoundUtil.playSound(new ResourceLocation("bloodline/oye.wav"), .9f);
         if (this.gameSettings.language != null)
         {
             this.fontRendererObj.setUnicodeFlag(this.isUnicode());
@@ -1518,6 +1529,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
     }
 
+
+
     public void sendClickBlockToController(boolean leftClick)
     {
         if (!leftClick)
@@ -2495,6 +2508,25 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public NetHandlerPlayClient getNetHandler()
     {
         return this.thePlayer != null ? this.thePlayer.sendQueue : null;
+    }
+
+    public void addToSendQueue(Packet packet) {
+        if (packet instanceof C02PacketUseEntity && ((C02PacketUseEntity) packet).getEntityId() < 0) return;
+        PacketSendEvent eventSendPacket = new PacketSendEvent(packet);
+        EventManager.call(eventSendPacket);
+
+        if (eventSendPacket.isCancelled()) return;
+
+        GappleUtil.packetEvent(packet);
+        if (!ModuleManager.getModule(Blink.class).isState()) {
+            return;
+        }
+        sendPacket(eventSendPacket.getPacket());
+    }
+
+    public void addToSendQueueDirect(Packet packet) {
+        if (packet instanceof C02PacketUseEntity && ((C02PacketUseEntity) packet).getEntityId() < 0) return;
+        PacketUtil.sendPacketNoEvent(packet);
     }
 
     public static boolean isGuiEnabled()

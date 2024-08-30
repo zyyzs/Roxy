@@ -23,6 +23,8 @@ import java.util.Arrays;
 public class MoveUtil implements IMinecraft {
 
     public static final double WALK_SPEED = 0.221;
+    public static boolean cancelMove = false;
+    public static int moveTicks = 0;
     public static final double BUNNY_SLOPE = 0.66;
     public static final double MOD_SPRINTING = 1.3F;
     public static final double MOD_SNEAK = 0.3F;
@@ -664,6 +666,11 @@ public class MoveUtil implements IMinecraft {
     public static boolean isMoveKeybind(){
         GameSettings gameSettings = mc.gameSettings;
         return gameSettings.keyBindForward.isKeyDown() || gameSettings.keyBindBack.isKeyDown() || gameSettings.keyBindLeft.isKeyDown() || gameSettings.keyBindRight.isKeyDown();
+    }
+
+    public static void resetMove() {
+        cancelMove = false;
+        moveTicks = 0;
     }
 }
 

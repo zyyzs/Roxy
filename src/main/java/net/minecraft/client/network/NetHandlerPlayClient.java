@@ -104,11 +104,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayClient;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraft.network.play.client.C19PacketResourcePackStatus;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
 import net.minecraft.network.play.server.S01PacketJoinGame;
 import net.minecraft.network.play.server.S02PacketChat;
@@ -2147,4 +2143,5 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
     public void addToSendQueueUnregistered(Packet<?> p_147297_1_) {
         this.netManager.sendUnregisteredPacket(p_147297_1_);
     }
+
 }

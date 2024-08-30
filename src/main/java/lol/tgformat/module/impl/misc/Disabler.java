@@ -54,6 +54,7 @@ public class Disabler extends Module {
     private final BooleanSetting test = new BooleanSetting("Test", false);
     private final BooleanSetting higherVersion = new BooleanSetting("Move 1.17+", false);
     private final BooleanSetting fastBreak = new BooleanSetting("Fast Break", false);
+    private final BooleanSetting fabricatedPlace = new BooleanSetting("FabricatedPlace", true);
     private static boolean lastResult;
     int lastSlot;
     boolean lastSprinting , c03Check;
@@ -134,6 +135,13 @@ public class Disabler extends Module {
                     ));
                 }
             }
+            if (this.fabricatedPlace.isEnabled()) {
+                if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
+                    ((C08PacketPlayerBlockPlacement) event.getPacket()).facingX = 0.5f;
+                    ((C08PacketPlayerBlockPlacement) event.getPacket()).facingY = 0.5f;
+                    ((C08PacketPlayerBlockPlacement) event.getPacket()).facingZ = 0.5f;
+                }
+            }
             if (packet instanceof C09PacketHeldItemChange c09) {
                 int slot = c09.getSlotId();
                 if (slot == this.lastSlot && slot != -1) {
@@ -171,11 +179,6 @@ public class Disabler extends Module {
     public void onHigher(PacketSendHigherEvent event) {
         if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.START_SPRINTING)) {
             c03Check = true;
-        }
-        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
-            lastSprinting = true;
-            event.setPacket(new C0FPacketConfirmTransaction(114, (short) 514, true));
-            LogUtil.addChatMessage("VL++");
         }
         if (event.getPacket() instanceof C03PacketPlayer) {
             c03Check = false;
@@ -283,7 +286,6 @@ public class Disabler extends Module {
     }
     public static boolean noPost() {
         return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing;
-
     }
     
     public static void fixC0F(C0FPacketConfirmTransaction packet) {

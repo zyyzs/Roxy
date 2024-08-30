@@ -136,8 +136,11 @@ public class Velocity extends Module {
                         mc.thePlayer.setSprinting(true);
                         mc.thePlayer.serverSprintState = true;
                     }
+                    if (ModuleManager.getModule(Gapple.class).isState() && ModuleManager.getModule(Gapple.class).noC02 && Gapple.eating) {
+                        return;
+                    }else {
                     PacketUtil.sendPacket(new C0APacketAnimation());
-                    PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+                    PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));}
                     mc.thePlayer.motionX *= 0.6F;
                     mc.thePlayer.motionZ *= 0.6F;
                 }

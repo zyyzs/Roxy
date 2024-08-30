@@ -150,6 +150,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         this.closeChannel(new ChatComponentTranslation("disconnect.endOfStream", new Object[0]));
     }
 
+
+
     public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) throws Exception
     {
         ChatComponentTranslation chatcomponenttranslation;

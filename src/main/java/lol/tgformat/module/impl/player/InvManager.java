@@ -6,7 +6,9 @@ import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
+import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.player.InventoryUtil;
@@ -166,7 +168,7 @@ public class InvManager extends Module {
                         }
                     }
                 }
-                boolean busy = !this.trash.isEmpty() || this.equipArmor(false) || this.sortItems(false);
+                boolean busy = !this.trash.isEmpty() || this.equipArmor(false) || this.sortItems(false) || ModuleManager.getModule(Scaffold.class).isState();
                 if (!busy) {
                     if (this.nextTickCloseInventory) {
                         this.close();

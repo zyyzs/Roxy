@@ -2,9 +2,11 @@ package lol.tgformat.module.impl.combat;
 
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.TickEvent;
+import lol.tgformat.events.packet.PacketReceiveEvent;
+import lol.tgformat.events.packet.PacketSendEvent;
+import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.module.Module;
-import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
@@ -12,19 +14,21 @@ import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.component.MovementComponent;
 import lol.tgformat.component.PacketStoringComponent;
+import lol.tgformat.utils.move.MovementCenter;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.player.InventoryUtil;
-import lol.tgformat.utils.render.GlowUtils;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.init.Items;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
-import net.netease.font.FontManager;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.netease.utils.RoundedUtils;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
+import net.optifine.Log;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.awt.*;
 
+import static lol.tgformat.component.PacketStoringComponent.*;
 import static lol.tgformat.module.impl.combat.KillAura.target;
 
 /**
@@ -45,6 +49,7 @@ public class Gapple extends Module {
     private boolean canStart = false;
     public static boolean eating = false;
     public static boolean pulsing = false;
+
     public static boolean restart = false;
 
     public Gapple() {
@@ -85,12 +90,16 @@ public class Gapple extends Module {
             this.setState(false);
             return;
         }
+        if (mc.theWorld.skiptick == 20) {
+            PacketStoringComponent.send(new C0APacketAnimation(), false);
+            PacketStoringComponent.send(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK), false);
+        }
         if (eating) {
             if (this.stopMove) {
                 MovementComponent.cancelMove();
             }
             if (!PacketStoringComponent.storing) {
-                PacketStoringComponent.startStoringPackets(C09PacketHeldItemChange.class, C0EPacketClickWindow.class, C0DPacketCloseWindow.class);
+                PacketStoringComponent.startStoringPackets(C09PacketHeldItemChange.class);
                 PacketStoringComponent.setCanelPackets(C07PacketPlayerDigging.class, it -> ((C07PacketPlayerDigging)it).getStatus() == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM);
                 PacketStoringComponent.setCanelPackets(C08PacketPlayerBlockPlacement.class, it -> ((C08PacketPlayerBlockPlacement)it).getPosition().getY() == -1);
                 PacketStoringComponent.setCanelPackets(C02PacketUseEntity.class, it -> this.noCancelC02);
@@ -109,10 +118,10 @@ public class Gapple extends Module {
             eating = false;
             pulsing = true;
             PacketStoringComponent.resetBlackList();
-            PacketStoringComponent.send(new C09PacketHeldItemChange(this.slot), true);
-            PacketStoringComponent.send(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()), true);
+            PacketStoringComponent.send(new C09PacketHeldItemChange(this.slot), false);
+            PacketStoringComponent.send(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()), false);
             PacketStoringComponent.stopStoringPackets();
-            PacketStoringComponent.send(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem), true);
+            PacketStoringComponent.send(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem), false);
             pulsing = false;
             this.setState(false);
             LogUtil.addChatMessage("Eat");
@@ -129,22 +138,23 @@ public class Gapple extends Module {
             }
             return;
         }
-        if (mc.thePlayer.ticksExisted % delay.getValue() == 0) {
+        if (delay.getValue() == 0) {
             for (int i = 0; i < duringSendTicks.getValue(); ++i) {
                 PacketStoringComponent.releasePacket(true);
             }
         }
     }
+
+
     @Listener
     public void onRender2D(Render2DEvent event) {
+        ScaledResolution sr = new ScaledResolution(mc);
         float target = (float)(120.0f * (this.c03s / 32.0)) * ((float) 100 / 120);
         int startX = sr.getScaledWidth() / 2 - 68;
-        int startY = sr.getScaledHeight() / 2 + 30;
-        GlStateManager.disableAlpha();
-        String text = target + "%";
-        FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
+        int startY = sr.getScaledHeight() / 2 - 20;
+        String text = "Gapple...";
+        //FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
         RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 2.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
         RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 2.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
-        GlStateManager.disableAlpha();
     }
 }

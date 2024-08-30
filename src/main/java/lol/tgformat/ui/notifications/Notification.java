@@ -14,6 +14,9 @@ import net.netease.utils.RoundedUtils;
 
 import java.awt.*;
 
+import static net.netease.font.FontManager.Tahoma14;
+import static net.netease.font.FontManager.Tahoma20;
+
 
 @Getter
 public class Notification implements Utils {
@@ -37,7 +40,6 @@ public class Notification implements Utils {
         this.notificationType = type;
         animation = new EaseOutSine(250, 1);
     }
-
     public void drawDefault(float x, float y, float width, float height) {
         RoundedUtil.drawRound(x, y, width, height, 2, new Color(0, 0, 0, 100));
         tenacityBoldFont20.drawString(getTitle(), x + 11, y + 2f, new Color(255, 255, 255, 255));
@@ -53,6 +55,17 @@ public class Notification implements Utils {
         RoundedUtils.drawRound(x2, y2-10,width, height-10, 2.0f, new Color(0, 0, 0, 100));
         FontManager.arial20.drawString(getTitle()+" "+getDescription() + "!", x2 + 12.0f, y2 + 7.0f-10.0f, textColor.getRGB());
         RoundedUtils.drawRound(x2 + 2.0f, y2 + 10.0f-10, 2.0f, 2.0f, 0.5f, this.notificationType.getColor());
+    }
+
+    public void drawExhi(float x, float y, float width, float height) {
+        Gui.drawRect2(x, y, width, height, new Color(0.1F, 0.1F, 0.1F, .75f).getRGB());
+        float percentage = Math.min((timerUtil.getTime() / getTime()), 1);
+        Gui.drawRect2(x + (width * percentage), y + height - 1, width - (width * percentage), 1, getNotificationType().getColor().getRGB());
+        FontUtil.iconFont40.drawString(getNotificationType().getIcon(), x + 3, (y + FontUtil.iconFont40.getMiddleOfBox(height) + 1), getNotificationType().getColor());
+
+        CustomFont tenacity18 = tenacityFont.size(18);
+        tenacityFont20.drawString(getTitle(), x + 7 + FontUtil.iconFont40.getStringWidth(getNotificationType().getIcon()), y + 4, Color.WHITE.getRGB());
+        tenacityBoldFont14.drawString(getDescription(), x + 7 + FontUtil.iconFont40.getStringWidth(getNotificationType().getIcon()), y + 8.5f + tenacity18.getHeight(), Color.WHITE.getRGB());
     }
 
 

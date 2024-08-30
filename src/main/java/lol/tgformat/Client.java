@@ -18,7 +18,7 @@ import lol.tgformat.component.MovementComponent;
 import lol.tgformat.component.PacketStoringComponent;
 import lol.tgformat.utils.player.BlinkHandler;
 import lol.tgformat.utils.render.Theme;
-import lol.tgformat.verify.GuiLogin;
+
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -44,10 +44,10 @@ import java.util.concurrent.Executors;
 @StringEncryption
 @NativeObfuscation
 public enum Client {
-    instance;
+    instance,;
     private final String name = "BloodLine_Recode";
-    private final String date = "20240822";
-    private final String version = "1.0";
+    private final String date = "0826";
+    private final String version = "1.1";
     private String username;
     private ModuleManager moduleManager;
     private ConfigManager configManager;
@@ -67,7 +67,7 @@ public enum Client {
         FontManager.init();
         FontUtil.setupFonts();
         Theme.init();
-        username = GuiLogin.uid;
+        username = "zyyzs";
         this.moduleManager = new ModuleManager();
         this.moduleManager.initialize();
         this.moduleCollection = new ModuleCollection();

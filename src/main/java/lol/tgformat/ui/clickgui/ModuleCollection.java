@@ -62,5 +62,7 @@ public class ModuleCollection {
     public final List<Module> getArraylistModules(ArrayListMod arraylistMod, List<Module> modules) {
         return modules.stream().filter(module -> module.isState() && !(arraylistMod.importantModules.isEnabled() && module.getCategory().equals(ModuleType.Render))).collect(Collectors.toList());
     }
+
+
 }
 

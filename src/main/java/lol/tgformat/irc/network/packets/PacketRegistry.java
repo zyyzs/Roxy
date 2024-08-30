@@ -32,7 +32,6 @@ public class PacketRegistry {
         packetManager.registerPacketHandler(ServerHandshakePacket.class, new HandshakePacketHandler());
         packetManager.registerPacketHandler(ServerRankPacket.class, new RankPacketHandler());
         packetManager.registerPacketHandler(ServerChatMessagePacket.class, new ChatMessagePacketHandler());
-        packetManager.registerPacketHandler(ServerLoginStatusPacket.class, new LoginStatusPacketHandler());
         packetManager.registerPacketHandler(ServerResponseOnlineUsersPacket.class, new OnlineUsersHandler());
         packetManager.registerPacketHandler(SKeepAlive.class, new SKeepAliveHandler());
     }

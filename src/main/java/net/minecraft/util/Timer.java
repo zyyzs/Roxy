@@ -32,7 +32,7 @@ public class Timer
     /**
      * How much time has elapsed since the last tick, in ticks (range: 0.0 - 1.0).
      */
-    public float elapsedPartialTicks;
+    public static float elapsedPartialTicks;
 
     /**
      * The time reported by the system clock at the last sync, in milliseconds

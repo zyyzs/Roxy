@@ -1,6 +1,7 @@
 package net.netease.font;
 
 import lol.tgformat.Client;
+import lol.tgformat.ui.font.AbstractFontRenderer;
 import lol.tgformat.utils.client.HTTPUtil;
 import lol.tgformat.utils.client.LogUtil;
 import net.minecraft.client.Minecraft;
@@ -84,6 +85,12 @@ public class FontManager {
     public static RapeMasterFontManager opensans18;
     public static RapeMasterFontManager opensans20;
     public static RapeMasterFontManager opensans22;
+    public static RapeMasterFontManager Exhi_icon40;
+    public static RapeMasterFontManager rubik17;
+    public static RapeMasterFontManager rubik15;
+    public static RapeMasterFontManager rubik18;
+    public static RapeMasterFontManager tenacityBold20;
+    public static RapeMasterFontManager tenacityBold16;
     private static File fontFile;
     private static File editFontFile;
     private static File sfthinFile;
@@ -97,6 +104,9 @@ public class FontManager {
     private static File notificationsFile;
     private static File stylesiconsFile;
     private static File opensansFile;
+    private static File ExhiiconFile;
+    private static File rubikFile;
+    private static File tenacityBoldfile;
 
     public static void downloadFont() {
         fontFile = new File(fontsDir, "font.ttf");
@@ -112,47 +122,10 @@ public class FontManager {
         notificationsFile = new File(fontsDir, "notifications.ttf");
         stylesiconsFile = new File(fontsDir, "stylesicons.ttf");
         opensansFile = new File(fontsDir, "opensans.ttf");
+        ExhiiconFile = new File(fontsDir,"Exhi_icon.ttf");
+        rubikFile = new File(fontsDir, "rubik.ttf");
+        tenacityBoldfile = new File(fontsDir,"tenacity-bold.ttf");
 
-        LogUtil.print("Download Fonts...");
-        if (!fontFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/font.ttf", fontFile);
-        }
-        if (!editFontFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/edit.ttf", editFontFile);
-        }
-        if (!sfthinFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/sfthin.ttf", sfthinFile);
-        }
-        if (!boldFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/bold.ttf", boldFile);
-        }
-        if (!tahoma1File.exists()) {
-            HTTPUtil.download("http://123.136.94.3/tahoma1.ttf", tahoma1File);
-        }
-        if (!icontFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/icont.ttf", icontFile);
-        }
-        if (!iconfontFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/iconfont.ttf", iconfontFile);
-        }
-        if (!geologicaFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/geologica.ttf", geologicaFile);
-        }
-        if (!geologicaboldFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/geologica-bold.ttf", geologicaboldFile);
-        }
-        if (!posteramaFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/fz.ttf", posteramaFile);
-        }
-        if (!notificationsFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/notifications.ttf", notificationsFile);
-        }
-        if (!stylesiconsFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/stylesicons.ttf", stylesiconsFile);
-        }
-        if (!opensansFile.exists()) {
-            HTTPUtil.download("http://123.136.94.3/opensans.ttf", opensansFile);
-        }
     }
 
     public static void init() {
@@ -231,6 +204,13 @@ public class FontManager {
         opensans18 = new RapeMasterFontManager(getFont(opensansFile, 18.0F));
         opensans20 = new RapeMasterFontManager(getFont(opensansFile, 20.0F));
         opensans22 = new RapeMasterFontManager(getFont(opensansFile, 22.0F));
+
+        Exhi_icon40 = new RapeMasterFontManager(getFont(ExhiiconFile,40.0F));
+        rubik17 = new RapeMasterFontManager(getFont(rubikFile, 17.0F));
+        rubik15 = new RapeMasterFontManager(getFont(rubikFile, 15.0F));
+        rubik18 = new RapeMasterFontManager(getFont(rubikFile,18.0F));
+        tenacityBold20=new RapeMasterFontManager(getFont(tenacityBoldfile,20.0F));
+        tenacityBold16= new RapeMasterFontManager(getFont(tenacityBoldfile,16.0F));
 
     }
 

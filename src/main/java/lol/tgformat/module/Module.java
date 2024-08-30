@@ -7,9 +7,11 @@ import lol.tgformat.accessable.IMinecraft;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.config.ConfigSetting;
 import lol.tgformat.module.impl.combat.Gapple;
+import lol.tgformat.module.impl.render.NotificationsMod;
 import lol.tgformat.module.values.Setting;
 import lol.tgformat.module.values.impl.KeybindSetting;
 import lol.tgformat.ui.clickgui.Utils;
+import lol.tgformat.ui.notifications.Notification;
 import lol.tgformat.ui.notifications.NotificationManager;
 import lol.tgformat.ui.notifications.NotificationType;
 import lol.tgformat.ui.utils.Animation;
@@ -50,7 +52,6 @@ public class Module implements IMinecraft {
     @Expose
     @SerializedName("settings")
     public ConfigSetting[] cfgSettings;
-    public static ScaledResolution sr;
     private String suffix;
 
     public Module(String name, ModuleType category) {
@@ -76,11 +77,15 @@ public class Module implements IMinecraft {
         if (state) {
             onEnable();
             EventManager.register(this);
-            NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
+            if (NotificationsMod.toggleNotifications.isEnabled()){
+                NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
+            }
         } else {
             EventManager.unregister(this);
             onDisable();
-            NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
+            if (NotificationsMod.toggleNotifications.isEnabled()) {
+                NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
+            }
         }
     }
     public void setSuffix(Object suffix) {
@@ -131,11 +136,15 @@ public class Module implements IMinecraft {
         if (state) {
             onEnable();
             EventManager.register(this);
-            NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
+            if (NotificationsMod.toggleNotifications.isEnabled()){
+                NotificationManager.post(NotificationType.SUCCESS, this.name, "Enabled");
+            }
         } else {
             EventManager.unregister(this);
             onDisable();
-            NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
+            if (NotificationsMod.toggleNotifications.isEnabled()) {
+                NotificationManager.post(NotificationType.DISABLE, this.name, "Disabled");
+            }
         }
     }
     public boolean isGapple() {

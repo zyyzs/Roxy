@@ -347,4 +347,19 @@ public class InventoryUtil implements IMinecraft {
             return this.stack;
         }
     }
+    public static int getGappleSlot()
+    {
+        int item = -1;
+
+        if(mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemAppleGold)return mc.thePlayer.inventory.currentItem;
+        for (int i = 36; i < 45; ++i)
+        {
+            if (mc.thePlayer.inventoryContainer.getSlot(i).getStack() != null && mc.thePlayer.inventoryContainer.getSlot(i).getStack().getItem() instanceof ItemAppleGold)
+            {
+                item = i - 36;
+            }
+        }
+
+        return item;
+    }
 }

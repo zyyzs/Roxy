@@ -108,12 +108,12 @@ public class MoBends extends Module {
 
         if (animatedEntity != null && entity instanceof EntityPlayer) {
             AbstractClientPlayer player = (AbstractClientPlayer) entity;
-            if (ModuleManager.getModule(Chams.class).isState()) {
+            if (ModuleManager.getModule(ESPChams.class).isState()) {
                 GL11.glEnable(32823);
                 GL11.glPolygonOffset(1.0f, -1100000.0f);
             }
             AnimatedEntity.getPlayerRenderer(player).doRender(player, x, y, z, entityYaw, partialTicks);
-            if (ModuleManager.getModule(Chams.class).isState()) {
+            if (ModuleManager.getModule(ESPChams.class).isState()) {
                 GL11.glDisable(32823);
                 GL11.glPolygonOffset(1.0f, 1100000.0f);
             }

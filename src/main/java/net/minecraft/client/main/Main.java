@@ -97,16 +97,6 @@ public class Main {
         final String s1 = (String)optionset.valueOf(optionspec7);
         final String s2 = (String)optionset.valueOf(optionspec8);
 
-        if (!proxy.equals(Proxy.NO_PROXY) && isNullOrEmpty(s1) && isNullOrEmpty(s2))
-        {
-            Authenticator.setDefault(new Authenticator()
-            {
-                protected PasswordAuthentication getPasswordAuthentication()
-                {
-                    return new PasswordAuthentication(s1, s2.toCharArray());
-                }
-            });
-        }
 
         int i = ((Integer)optionset.valueOf(optionspec13)).intValue();
         int j = ((Integer)optionset.valueOf(optionspec14)).intValue();

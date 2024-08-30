@@ -7,7 +7,7 @@ import lol.tgformat.irc.network.packets.client.ClientUpdateIGNPacket;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.utils.client.LogUtil;
-import lol.tgformat.verify.GuiLogin;
+
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 

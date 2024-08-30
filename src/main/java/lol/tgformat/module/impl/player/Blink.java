@@ -66,6 +66,7 @@ public class Blink extends Module {
     private final BooleanSetting itemChange = new BooleanSetting("ItemChange", true);
     private final BooleanSetting usingItem = new BooleanSetting("UsingItem", true);
     private final BooleanSetting debug = new BooleanSetting("Debug", true);
+    private final ModeSetting rendermode = new ModeSetting("Render Mode", "Default", "Default", "Simple");
     private final BlinkUtils blinkUtils = new BlinkUtils();
     private final TimerUtil timer = new TimerUtil();
     private final LinkedList<Packet<INetHandler>> inBus = new LinkedList<>();
@@ -171,12 +172,12 @@ public class Blink extends Module {
         if (releasemode.is("Latency") && debug.isEnabled()) {
             ScaledResolution sr = new ScaledResolution(mc);
             int startX = sr.getScaledWidth() / 2 - 68;
-            int startY = sr.getScaledHeight() / 2 + 30;
-            GlStateManager.disableAlpha();
-            String text = "" + packets.size();
-            FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
-            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
-            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(packets.size() / 10.0f, 60.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
+            int startY = sr.getScaledHeight() / 2 -20;
+            String text = "Blinking...";
+            mc.fontRendererObj.drawString("Blinking...", startX + 10 + 60 - mc.fontRendererObj.getStringWidth(text) / 2, startY + 30, new Color(225, 225, 225, 100).getRGB());
+//            FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
+//            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 3.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
+//            RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(packets.size() / 10.0f, 60.0f), 3.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
             GlStateManager.disableAlpha();
         }
         if (releasemode.is("Instant") && debug.isEnabled()) {

@@ -6,7 +6,7 @@ import lol.tgformat.ui.menu.utils.VideoPlayer;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.client.RegionalAbuseUtil;
 import lol.tgformat.utils.timer.MSTimer;
-import lol.tgformat.verify.GuiLogin;
+
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -38,9 +38,6 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
     private int photo = 1;
     private final MSTimer time = new MSTimer();
     public MainMenu() {
-        if (GuiLogin.uid == null) {
-            mc.shutdown();
-        }
     }
     private final List<MenuButton> buttons = new ArrayList<>() {{
         add(new MenuButton("SinglePlayer"));
@@ -121,8 +118,8 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
             button.drawScreen(mouseX, mouseY);
             count += (int) (buttonHeight + 5);
         }
-        String username = GuiLogin.uid;
-        Display.setTitle("Minecraft 1.8.9 " + " Use: " + username + "[" + ("妈妈入") + "]");
+
+        Display.setTitle("Minecraft 1.8.9 " + " Use: " + "zyyzs" + "[" + ("地球入") + "]");
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

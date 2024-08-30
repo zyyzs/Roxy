@@ -176,7 +176,7 @@ public class Timer extends Module {
         ScaledResolution sr = new ScaledResolution(mc);
         if (render.isEnabled() && mode.is("Balance")) {
             int startX = sr.getScaledWidth() / 2 - 68;
-            int startY = sr.getScaledHeight() / 2 + 30;
+            int startY = sr.getScaledHeight() / 2 -20;
             int Packet = balance;
             GlStateManager.disableAlpha();
             String text = "" + Packet;

@@ -63,6 +63,7 @@ public class ChestAura extends Module {
     @Listener
     public void onPre(PreMotionEvent e) {
         if (isGapple()) return;
+        if (ModuleManager.getModule(Scaffold.class).isState()) return;
         float radius;
         this.globalPos = null;
         if (mc.thePlayer.ticksExisted % 20 == 0 || KillAura.target != null || mc.currentScreen instanceof GuiContainer || ModuleManager.getModule(Scaffold.class).isState() || ModuleManager.getModule(Blink.class).isState() || isFood()) {
@@ -90,6 +91,7 @@ public class ChestAura extends Module {
     @Listener
     public void onPost(PostMotionEvent event) {
         if (isGapple()) return;
+        if (ModuleManager.getModule(Scaffold.class).isState()) return;
         if (isWaitingOpen) {
             if (this.waitBoxOpenTimer.isDelayComplete(600.0)) {
                 isWaitingOpen = false;
@@ -103,6 +105,7 @@ public class ChestAura extends Module {
     @Listener
     public void onPlace(PlaceEvent event) {
         if (isGapple()) return;
+        if (ModuleManager.getModule(Scaffold.class).isState()) return;
         if (!(this.globalPos == null || mc.currentScreen instanceof GuiContainer || list.size() >= 50 || isWaitingOpen || list.contains(this.globalPos))) {
             if (RayCastUtil.overBlock(RotationComponent.rotations, mc.objectMouseOver.sideHit, globalPos, false)){
                 this.sendClick(this.globalPos);
@@ -123,7 +126,7 @@ public class ChestAura extends Module {
             double x = (double)pos.getX() - RenderManager.renderPosX;
             double y = (double)pos.getY() - RenderManager.renderPosY;
             double z = (double)pos.getZ() - RenderManager.renderPosZ;
-            RenderUtil.drawEntityESP(x, y, z, x + 1.0, y + 1.0, z + 1.0, 0.0f, 255.0f, 255.0f, 10.0f);
+            RenderUtil.drawEntityESP(x, y, z, x + 1.0, y + 1.0, z + 1.0, 255.0f, 255.0f, 255.0f, 0.1f);
         }
     }
 
