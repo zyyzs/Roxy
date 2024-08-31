@@ -230,7 +230,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         EventManager.call(event);
         if (event.isCancelled()) return;
         GetC03StatusUtil.packetEvent(packetIn);
-        if (!PacketStoringComponent.onStorePacket(packetIn)) {
+        if (!PacketStoringComponent.onPacket(packetIn)) {
             return;
         }
         if (this.isChannelOpen())

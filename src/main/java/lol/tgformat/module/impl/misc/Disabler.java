@@ -183,6 +183,9 @@ public class Disabler extends Module {
         if (event.getPacket() instanceof C03PacketPlayer) {
             c03Check = false;
         }
+        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
+            LogUtil.addChatMessage("VL++");
+        }
     }
     public static float getRandomYaw(float requestedYaw){
         int rand = MathUtil.getRandomInRange(1,200);
@@ -285,7 +288,7 @@ public class Disabler extends Module {
         }
     }
     public static boolean noPost() {
-        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.storing;
+        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.blinking;
     }
     
     public static void fixC0F(C0FPacketConfirmTransaction packet) {

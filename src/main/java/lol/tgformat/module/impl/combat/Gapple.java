@@ -1,6 +1,7 @@
 package lol.tgformat.module.impl.combat;
 
 import lol.tgformat.api.event.Listener;
+import lol.tgformat.api.event.types.Priority;
 import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
@@ -71,7 +72,7 @@ public class Gapple extends Module {
 
         if (this.canStart) {
             pulsing = false;
-            PacketStoringComponent.stopStoringPackets();
+            PacketStoringComponent.stopBlink();
         }
         if (this.stopMove) {
             MovementComponent.resetMove();
@@ -81,7 +82,7 @@ public class Gapple extends Module {
     @Listener
     public void onTick(TickEvent event) {
         if (mc.thePlayer == null || mc.thePlayer.isDead) {
-            PacketStoringComponent.stopStoringPackets();
+            PacketStoringComponent.stopBlink();
             this.setState(false);
             return;
         }
@@ -90,25 +91,21 @@ public class Gapple extends Module {
             this.setState(false);
             return;
         }
-        if (mc.theWorld.skiptick == 20) {
-            PacketStoringComponent.send(new C0APacketAnimation(), false);
-            PacketStoringComponent.send(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK), false);
-        }
         if (eating) {
             if (this.stopMove) {
                 MovementComponent.cancelMove();
             }
-            if (!PacketStoringComponent.storing) {
-                PacketStoringComponent.startStoringPackets(C09PacketHeldItemChange.class);
-                PacketStoringComponent.setCanelPackets(C07PacketPlayerDigging.class, it -> ((C07PacketPlayerDigging)it).getStatus() == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM);
-                PacketStoringComponent.setCanelPackets(C08PacketPlayerBlockPlacement.class, it -> ((C08PacketPlayerBlockPlacement)it).getPosition().getY() == -1);
-                PacketStoringComponent.setCanelPackets(C02PacketUseEntity.class, it -> this.noCancelC02);
-                PacketStoringComponent.setCanelPackets(C0APacketAnimation.class, it -> this.noCancelC02);
-                PacketStoringComponent.setCancelAction(C03PacketPlayer.class, packet -> ++this.c03s);
-                PacketStoringComponent.setReleaseAction(C03PacketPlayer.class, packet -> --this.c03s);
-                PacketStoringComponent.setReleaseMap(C02PacketUseEntity.class, packet -> !eating && this.noC02);
-                PacketStoringComponent.setCancelAction(C02PacketUseEntity.class, packet -> ++this.c02s);
-                PacketStoringComponent.setReleaseAction(C02PacketUseEntity.class, packet -> --this.c02s);
+            if (!blinking) {
+                PacketStoringComponent.blink(C09PacketHeldItemChange.class, C0EPacketClickWindow.class, C0DPacketCloseWindow.class);
+                PacketStoringComponent.setCancelReturnPredicate(C07PacketPlayerDigging.class, it -> ((C07PacketPlayerDigging) it).getStatus() == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM);
+                PacketStoringComponent.setCancelReturnPredicate(C08PacketPlayerBlockPlacement.class, it -> (((C08PacketPlayerBlockPlacement) it).getPosition().getY() == -1));
+                PacketStoringComponent.setCancelReturnPredicate(C02PacketUseEntity.class, it -> false);
+                PacketStoringComponent.setCancelReturnPredicate(C0APacketAnimation.class, it -> false);
+                PacketStoringComponent.setCancelAction(C03PacketPlayer.class, (packet) -> c03s++);
+                PacketStoringComponent.setReleaseAction(C03PacketPlayer.class, (packet) -> c03s--);
+                PacketStoringComponent.setReleaseReturnPredicateMap(C02PacketUseEntity.class, (packet) -> !eating && noC02);
+                PacketStoringComponent.setCancelAction(C02PacketUseEntity.class, (packet) -> c02s++);
+                PacketStoringComponent.setReleaseAction(C02PacketUseEntity.class, (packet) -> c02s--);
                 this.canStart = true;
             }
         } else {
@@ -120,7 +117,7 @@ public class Gapple extends Module {
             PacketStoringComponent.resetBlackList();
             PacketStoringComponent.send(new C09PacketHeldItemChange(this.slot), false);
             PacketStoringComponent.send(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()), false);
-            PacketStoringComponent.stopStoringPackets();
+            PacketStoringComponent.stopBlink();
             PacketStoringComponent.send(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem), false);
             pulsing = false;
             this.setState(false);
@@ -146,14 +143,14 @@ public class Gapple extends Module {
     }
 
 
-    @Listener
+    @Listener(Priority.HIGHEST)
     public void onRender2D(Render2DEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
         float target = (float)(120.0f * (this.c03s / 32.0)) * ((float) 100 / 120);
         int startX = sr.getScaledWidth() / 2 - 68;
         int startY = sr.getScaledHeight() / 2 - 20;
         String text = "Gapple...";
-        //FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
+        FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
         RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 2.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
         RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 2.0f, 3.0f,new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170), new Color(241, 59, 232, 170));
     }
