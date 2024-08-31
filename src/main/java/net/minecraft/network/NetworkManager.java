@@ -283,6 +283,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     {
         PacketSendHigherEvent higherEvent = new PacketSendHigherEvent(inPacket, false);
         EventManager.call(higherEvent);
+        if (higherEvent.isCancelled()) return;
         if (inPacket instanceof C03PacketPlayer c03) {
             CurrentRotationUtil.getCurrentRotation(c03);
         }
@@ -595,6 +596,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     private void dispatchUnregisteredPacket(final Packet inPacket) {
         PacketSendHigherEvent event = new PacketSendHigherEvent(inPacket, true);
         EventManager.call(event);
+        if (event.isCancelled()) return;
         if (inPacket instanceof C03PacketPlayer c03) {
             CurrentRotationUtil.getCurrentRotation(c03);
         }

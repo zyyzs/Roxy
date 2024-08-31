@@ -57,7 +57,7 @@ public class Disabler extends Module {
     private final BooleanSetting fabricatedPlace = new BooleanSetting("FabricatedPlace", true);
     private static boolean lastResult;
     int lastSlot;
-    boolean lastSprinting , c03Check;
+    boolean lastSprinting , c03Check, shouldFix;
 
     public static List<Packet<INetHandler>> storedPackets;
     public static ConcurrentLinkedDeque<Integer> pingPackets;
@@ -70,6 +70,7 @@ public class Disabler extends Module {
         this.lastSlot = -1;
         this.lastSprinting = false;
         this.c03Check = false;
+        this.shouldFix = false;
     }
     @Listener
     public void onUpdate(PreUpdateEvent event) {
@@ -182,9 +183,16 @@ public class Disabler extends Module {
         }
         if (event.getPacket() instanceof C03PacketPlayer) {
             c03Check = false;
+            if (shouldFix) {
+                PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+                shouldFix = false;
+            }
         }
         if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
             LogUtil.addChatMessage("VL++");
+            lastSprinting = true;
+            event.setCancelled();
+            shouldFix = true;
         }
     }
     public static float getRandomYaw(float requestedYaw){
