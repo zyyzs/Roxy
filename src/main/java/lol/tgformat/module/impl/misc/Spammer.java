@@ -21,7 +21,7 @@ public class Spammer extends Module {
         super("Spammer", ModuleType.Misc);
     }
     private final NumberSetting delay = new NumberSetting("Delay",1000, 5000, 100,10);
-    public final ModeSetting mode = new ModeSetting("TextMode", "SilenceMoment","SilenceMoment","NightSense");
+    public final ModeSetting mode = new ModeSetting("TextMode", "SilenceMoment","SilenceMoment");
     private final TimerUtil timer = new TimerUtil();
     @Listener
     public void onUpdate(PreUpdateEvent event) {
@@ -31,9 +31,6 @@ public class Spammer extends Module {
         }
     }
     public String[] getTextMode() {
-        return switch (mode.getMode()) {
-            case "NightSense" -> AutoL.Nightsensetext;
-            default -> AutoL.hytText;
-        };
+        return AutoL.hytText;
     }
 }
