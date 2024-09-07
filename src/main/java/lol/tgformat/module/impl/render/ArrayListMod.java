@@ -20,6 +20,7 @@ import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.Direction;
 import lol.tgformat.ui.utils.RenderUtil;
 import lol.tgformat.utils.render.Theme;
+import lombok.Getter;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.StringUtils;
@@ -98,7 +99,7 @@ public class ArrayListMod extends Module {
                     break;
                 case "Scale in":
                     if (!moduleAnimation.isDone()) {
-                        RenderUtil.scaleStart((float) (x + font.getStringWidth(displayText) / 2f), (float) (y + heightVal / 2 - font.getHeight() / 2f), (float) moduleAnimation.getOutput().floatValue());
+                        RenderUtil.scaleStart((x + font.getStringWidth(displayText) / 2f), (y + heightVal / 2 - font.getHeight() / 2f), moduleAnimation.getOutput().floatValue());
                     }
                     scaleIn = true;
                     break;
@@ -106,7 +107,6 @@ public class ArrayListMod extends Module {
 
 
             int index = (int) (count * colorIndex.getValue());
-            Pair<Color, Color> colors = Pair.of(new Color(213, 63, 119), new Color(157, 68, 110));
 
             Color textcolor = ColorUtil.interpolateColorsBackAndForth(colorSpeed.getValue().intValue(), index, HUD.getClientColors().getFirst(), HUD.getClientColors().getSecond(), false);
 
@@ -127,8 +127,6 @@ public class ArrayListMod extends Module {
                 }
 
                 switch (rectangle.getMode()) {
-                    default:
-                        break;
                     case "Top":
                         if (count == 0) {
                             Gui.drawRect2(x - 2, y - 1, textWidth + 5 - (offset2), 9, rectangleColor);
@@ -142,6 +140,7 @@ public class ArrayListMod extends Module {
                         }
                         break;
                     case "Outline":
+                    default:
                         break;
                 }
             }
@@ -158,11 +157,8 @@ public class ArrayListMod extends Module {
 
     Module lastModule;
     int lastCount;
+    @Getter
     private final List<Class<? extends Module>> hiddenModules = new ArrayList<>(Arrays.asList(ArrayListMod.class, NotificationsMod.class));
-
-    public List<Class<? extends Module>> getHiddenModules() {
-        return hiddenModules;
-    }
 
     public void getModulesAndSort() {
         if (modules == null || ModuleCollection.reloadModules) {
@@ -233,7 +229,7 @@ public class ArrayListMod extends Module {
                     if (!moduleAnimation.isDone()) {
                         RenderUtil.scaleStart(x + font.getStringWidth(displayText) / 2f, y + heightVal / 2 - font.getHeight() / 2f, (float) moduleAnimation.getOutput().floatValue());
                     }
-                    alphaAnimation = (float) moduleAnimation.getOutput().floatValue();
+                    alphaAnimation = moduleAnimation.getOutput().floatValue();
                     break;
             }
 
@@ -257,8 +253,6 @@ public class ArrayListMod extends Module {
 
             float offset = fontmode.is("Minecraft") ? 1 : 0;
             switch (rectangle.getMode()) {
-                default:
-                    break;
                 case "Top":
                     if (count == 0) {
                         Gui.drawRect2(x - 2, y - 1, textWidth + 5 - offset, 1, textcolor.getRGB());
@@ -306,6 +300,8 @@ public class ArrayListMod extends Module {
 
 
                     break;
+                default:
+                    break;
             }
 
 
@@ -325,10 +321,11 @@ public class ArrayListMod extends Module {
                         mc.fontRendererObj.drawString(StringUtils.stripColorCodes(displayText), (int) (x + 1), (int) (y + font.getMiddleOfBox(heightVal) + 1+0.5f), ColorUtil.darker(color, .5f).getRGB());
                         RenderUtil.resetColor();
                         mc.fontRendererObj.drawString(displayText, (int) x, (int) (y + font.getMiddleOfBox(heightVal)+0.5f), color.getRGB());
-                    }else{
-                    font.drawString(StringUtils.stripColorCodes(displayText), x + 1, y + font.getMiddleOfBox(heightVal) + 1+0.5f, ColorUtil.darker(color, .5f).getRGB());
-                    RenderUtil.resetColor();
-                    font.drawString(displayText, x, y + font.getMiddleOfBox(heightVal)+0.5f, color.getRGB());}
+                    } else {
+                        font.drawString(StringUtils.stripColorCodes(displayText), x + 1, y + font.getMiddleOfBox(heightVal) + 1+0.5f, ColorUtil.darker(color, .5f).getRGB());
+                        RenderUtil.resetColor();
+                        font.drawString(displayText, x, y + font.getMiddleOfBox(heightVal)+0.5f, color.getRGB());
+                    }
                     break;
                 case "Black":
                     RenderUtil.resetColor();

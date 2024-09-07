@@ -8,12 +8,36 @@ import net.minecraft.entity.Entity;
  */
 public class FriendsCollection {
     public static String[] friends = new String[] {};
-    public static boolean isIRCFriend(Entity entity) {
+    public static boolean isFriend(Entity entity) {
         for (String name : friends) {
             if (entity.getName().equals(name)) {
                 return true;
             }
         }
         return false;
+    }
+    public static boolean isFriend(String name) {
+        for (String friend : friends) {
+            if (name.equals(friend)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static void addFriend(String name) {
+        if (isFriend(name)) return;
+        StringBuilder friendsName = new StringBuilder();
+        for (String firend : friends) {
+            friendsName.append(firend).append(" ");
+        }
+        friendsName.append(name).append(" ");
+        friends = friendsName.toString().split(" ");
+    }
+    public static void removeFriend(String name) {
+        StringBuilder friendsName = new StringBuilder();
+        for (String firend : friends) {
+            friendsName.append(firend).append(" ");
+        }
+        friends = friendsName.toString().replace(name + " ", "").split(" ");
     }
 }

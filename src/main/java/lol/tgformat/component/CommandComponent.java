@@ -5,6 +5,7 @@ import lol.tgformat.accessable.IMinecraft;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.config.ConfigManager;
 import lol.tgformat.events.ChatInputEvent;
+import lol.tgformat.firend.FriendsCollection;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.utils.client.LogUtil;
@@ -70,6 +71,21 @@ public class CommandComponent implements IMinecraft {
                     LogUtil.addChatMessage("Config loaded");
                 }
                 event.setCancelled(true);
+                break;
+            case "friend":
+                if (command[1].equals("add")) {
+                    FriendsCollection.addFriend(command[2]);
+                    for (String name : FriendsCollection.friends) {
+                        LogUtil.addChatMessage(name);
+                    }
+                    event.setCancelled();
+                } else if (command[1].equals("remove")) {
+                    FriendsCollection.removeFriend(command[2]);
+                    for (String name : FriendsCollection.friends) {
+                        LogUtil.addChatMessage(name);
+                    }
+                    event.setCancelled();
+                }
         }
     }
 

@@ -221,7 +221,7 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
-                || FriendsCollection.isIRCFriend(entity)
+                || FriendsCollection.isFriend(entity)
                 || entity instanceof EntityVillager
                 || entity instanceof EntitySquid;
     }
@@ -241,7 +241,7 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
-                || FriendsCollection.isIRCFriend(entity);
+                || FriendsCollection.isFriend(entity);
     }
 
 

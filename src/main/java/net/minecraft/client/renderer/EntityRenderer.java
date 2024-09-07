@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.render.Render3DEvent;
 import lol.tgformat.module.ModuleManager;
+import lol.tgformat.module.impl.render.MotionBlur;
 import lol.tgformat.utils.render.Nohurtcam;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -1913,30 +1914,26 @@ public class EntityRenderer implements IResourceManagerReloadListener
         EventManager.call(event);
         GL11.glColor4f(1.0f, 1.0f,1.0f,1.0f);
         GL11.glPopMatrix();
-        if (this.renderHand && !Shaders.isShadowPass)
-        {
-            if (flag)
-            {
+        if (this.renderHand && !Shaders.isShadowPass) {
+            if (flag) {
                 ShadersRender.renderHand1(this, partialTicks, pass);
                 Shaders.renderCompositeFinal();
             }
-
             GlStateManager.clear(256);
-
-            if (flag)
-            {
-                ShadersRender.renderFPOverlay(this, partialTicks, pass);
+            this.mc.mcProfiler.endStartSection("render3DEventBeforeHand");
+            MotionBlur motionBlur = ModuleManager.getModule(MotionBlur.class);
+            if (motionBlur.isState()) {
+                motionBlur.onBlurScreen();
             }
-            else
-            {
+            GlStateManager.clear(256);
+            if (flag) {
+                ShadersRender.renderFPOverlay(this, partialTicks, pass);
+            } else {
                 this.renderHand(partialTicks, pass);
             }
-
             this.renderWorldDirections(partialTicks);
         }
-
-        if (flag)
-        {
+        if (flag) {
             Shaders.endRender();
         }
     }

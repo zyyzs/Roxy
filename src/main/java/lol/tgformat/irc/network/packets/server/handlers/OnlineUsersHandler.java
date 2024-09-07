@@ -11,6 +11,6 @@ import lol.tgformat.irc.network.packets.server.ServerResponseOnlineUsersPacket;
 public class OnlineUsersHandler implements PacketHandler<ServerResponseOnlineUsersPacket> {
     @Override
     public void handle(ServerResponseOnlineUsersPacket packet) {
-        FriendsCollection.friends = packet.getUsers().split(" ");
+        //FriendsCollection.friends = packet.getUsers().split(" ");
     }
 }

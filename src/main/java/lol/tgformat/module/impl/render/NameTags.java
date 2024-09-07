@@ -4,7 +4,6 @@ import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.events.render.Render3DEvent;
 import lol.tgformat.firend.FriendsCollection;
-import lol.tgformat.irc.items.User;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
@@ -13,11 +12,9 @@ import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.MathUtils;
 import lol.tgformat.utils.player.PlayerUtil;
-import lol.tgformat.utils.render.DrawUtil;
 import lol.tgformat.utils.render.GlowUtils;
 import lol.tgformat.utils.render.RenderUtils;
 import lol.tgformat.utils.vector.Vector4f;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -27,17 +24,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.netease.font.FontManager;
-import net.netease.utils.RapeMasterFontManager;
 import net.netease.utils.RoundedUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
-import javax.vecmath.Vector4d;
 import java.awt.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -103,7 +97,7 @@ public class NameTags extends Module {
                 WarnRank = "§4[KBBall] ";
             } else if (PlayerUtil.hyt.hasEatenGoldenApple((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
                 WarnRank = "§4[GApple] ";
-            } else if (FriendsCollection.isIRCFriend(renderingEntity)) {
+            } else if (FriendsCollection.isFriend(renderingEntity)) {
                 WarnRank = "§a[Friend] ";
             }
 
