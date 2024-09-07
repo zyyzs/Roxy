@@ -48,7 +48,6 @@ public enum Client {
     private final String name = "BloodLine_Recode";
     private final String date = "0826";
     private final String version = "1.1";
-    private String username;
     private ModuleManager moduleManager;
     private ConfigManager configManager;
     private VideoComponent videoComponent;
@@ -57,7 +56,6 @@ public enum Client {
     private BadPacketsComponent badPacketsComponent;
     private SideGUI sideGui;
     private SocketManager ircServer;
-    public static final int validationStatus = 0;
     private final HashMap<Object, Module> moduleMap = new HashMap<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
     public String XuJingLiangSiMa = "Update Logs";
@@ -67,7 +65,6 @@ public enum Client {
         FontManager.init();
         FontUtil.setupFonts();
         Theme.init();
-        username = "zyyzs";
         this.moduleManager = new ModuleManager();
         this.moduleManager.initialize();
         this.moduleCollection = new ModuleCollection();

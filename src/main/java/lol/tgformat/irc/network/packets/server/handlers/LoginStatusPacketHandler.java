@@ -11,3 +11,9 @@ import java.io.IOException;
  * @since 2024/7/22 下午1:38
  */
 
+public class LoginStatusPacketHandler implements PacketHandler<ServerLoginStatusPacket> {
+    @Override
+    public void handle(ServerLoginStatusPacket packet) {
+
+    }
+}

@@ -74,6 +74,7 @@ public class Scaffold extends Module {
     public final BooleanSetting fakeslot = new BooleanSetting("FakeSlot", false);
     public final BooleanSetting raycast = new BooleanSetting("RayCast", false);
     public final BooleanSetting tower = new BooleanSetting("Tower", false);
+    public final BooleanSetting sameY = new BooleanSetting("SameY", false);
     public final BooleanSetting esp = new BooleanSetting("ESP", true);
     public final BooleanSetting count = new BooleanSetting("Count", true);
     public final ModeSetting countmode = new ModeSetting("Count Mode","Default","Default","Simple");
@@ -375,7 +376,7 @@ public class Scaffold extends Module {
         double posX = player.posX;
         double posZ = player.posZ;
         double minY = player.getEntityBoundingBox().minY;
-        Vec3 vec3 = getPlacePossibility(0.0, 0.0, 0.0, true);
+        Vec3 vec3 = getPlacePossibility(0.0, 0.0, 0.0, !sameY.isEnabled());
         if (vec3 == null) {
             return;
         }

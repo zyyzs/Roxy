@@ -18,7 +18,13 @@ import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
+import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
+import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+@NativeObfuscation
+@StringEncryption
+@ControlFlowObfuscation
 public class PacketStoringComponent implements IMinecraft  {
     public static final PacketStoringComponent INSTANCE = new PacketStoringComponent();
     public static boolean blinking = false;

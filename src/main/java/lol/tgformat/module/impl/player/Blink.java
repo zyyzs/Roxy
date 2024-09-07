@@ -55,7 +55,7 @@ public class Blink extends Module {
     private static EntityOtherPlayerMP fakePlayer;
     public final ModeSetting releasemode = new ModeSetting("Release Mode", "Latency", "Instant", "Latency");
     private final NumberSetting speed = new NumberSetting("Speed", 10.0, 100.0, 1.0, 1.0);
-    private final BooleanSetting slowPoll = new BooleanSetting("Release Slow", true);
+    public final BooleanSetting slowPoll = new BooleanSetting("Release Slow", true);
     private final NumberSetting pollDelay = new NumberSetting("Release Delay", 100.0, 100.0, 0.0, 1.0);
     private final NumberSetting startPollDelay = new NumberSetting("Start Release Delay", 2000.0, 8000.0, 1000.0, 200.0);
     private final BooleanSetting pulse = new BooleanSetting("Pulse", false);

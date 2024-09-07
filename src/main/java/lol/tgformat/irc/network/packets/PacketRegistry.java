@@ -34,5 +34,6 @@ public class PacketRegistry {
         packetManager.registerPacketHandler(ServerChatMessagePacket.class, new ChatMessagePacketHandler());
         packetManager.registerPacketHandler(ServerResponseOnlineUsersPacket.class, new OnlineUsersHandler());
         packetManager.registerPacketHandler(SKeepAlive.class, new SKeepAliveHandler());
+        packetManager.registerPacketHandler(ServerLoginStatusPacket.class, new LoginStatusPacketHandler());
     }
 }

@@ -9,6 +9,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
+import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -20,8 +21,9 @@ import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.List;
 
-@StringEncryption
 @NativeObfuscation
+@StringEncryption
+@ControlFlowObfuscation
 public class Main {
     public static String[] jvmoptions;
 
@@ -40,7 +42,7 @@ public class Main {
         JavaCheck.run();
         PingCheck.run();
     }
-
+    @NativeObfuscation(verificationLock = "User")
     public static void main(String[] p_main_0_) {
         onCheck();
         new Progress();

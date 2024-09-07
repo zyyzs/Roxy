@@ -9,6 +9,7 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.values.impl.NumberSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.RenderUtil;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.render.GlowUtils;
@@ -68,12 +69,12 @@ public class SessionHUD extends Module {
 
         RoundedUtil.drawRound((float) x,(float) y,(float) width,(float) height, 2, new Color(0,0,0,20));
         HUD.drawLine(x, y + 5, 2, 10, HUD.color(0));
-        FontManager.arial24.drawStringDynamic("Session", x + 21, y + 6, 1, 6);
-        FontManager.icon22.drawStringDynamic("s", x + 7, y + 7, 1, 6);
+        FontUtil.tenacityFont24.drawStringWithShadow("Session", x + 21, y + 6, Color.CYAN);
+        FontUtil.iconFont26.drawStringWithShadow("s", x + 7, y + 7, Color.WHITE);
         RenderUtil.drawPlayerHead(mc.thePlayer.getLocationSkin(), (int)x + 13, (int)y + 24, 36,36);
-        FontManager.arial18.drawStringWithShadow(mc.thePlayer.getName(), x + 55, y + 28, Color.WHITE.getRGB());
-        FontManager.arial18.drawStringWithShadow(getTime(), x + 55, y + 42, Color.GRAY.getRGB());
-        FontManager.arial18.drawStringWithShadow("Kills: " + kills, x + 55, y + 52, Color.GRAY.getRGB());
+        FontUtil.tenacityFont18.drawStringWithShadow(mc.thePlayer.getName(), x + 55, y + 28, Color.WHITE.getRGB());
+        FontUtil.tenacityFont18.drawStringWithShadow(getTime(), x + 55, y + 42, Color.GRAY.getRGB());
+        FontUtil.tenacityFont18.drawStringWithShadow("Kills: " + kills, x + 55, y + 52, Color.GRAY.getRGB());
 
     }
     private void resetTimer() {

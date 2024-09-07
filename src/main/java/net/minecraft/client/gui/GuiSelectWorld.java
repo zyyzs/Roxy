@@ -19,7 +19,13 @@ import net.minecraft.world.storage.WorldInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
+import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+@NativeObfuscation
+@StringEncryption
+@ControlFlowObfuscation
 public class GuiSelectWorld extends GuiScreen implements GuiYesNoCallback
 {
     private static final Logger logger = LogManager.getLogger();
@@ -50,6 +56,7 @@ public class GuiSelectWorld extends GuiScreen implements GuiYesNoCallback
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void initGui()
     {
         this.screenTitle = I18n.format("selectWorld.title", new Object[0]);

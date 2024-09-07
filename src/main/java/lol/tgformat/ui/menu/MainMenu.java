@@ -7,6 +7,7 @@ import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.client.RegionalAbuseUtil;
 import lol.tgformat.utils.timer.MSTimer;
 
+import lol.tgformat.verify.GuiLogin;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -119,7 +120,7 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
             count += (int) (buttonHeight + 5);
         }
 
-        Display.setTitle("Minecraft 1.8.9 " + " Use: " + "zyyzs" + "[" + ("地球入") + "]");
+        Display.setTitle("Minecraft 1.8.9 " + " Use: " + GuiLogin.uid + "[" + ("地球入") + "]");
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

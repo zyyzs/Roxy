@@ -16,6 +16,8 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.*;
 import net.netease.utils.RoundedUtils;
+import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.awt.*;
@@ -28,7 +30,9 @@ import static lol.tgformat.module.impl.combat.KillAura.target;
  * @author TG_format
  * @since 2024/7/28 下午8:26
  */
+@NativeObfuscation
 @StringEncryption
+@ControlFlowObfuscation
 public class Gapple extends Module {
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
@@ -49,6 +53,7 @@ public class Gapple extends Module {
     }
 
     @Override
+    @NativeObfuscation(verificationLock = "User")
     public void onEnable() {
         this.c03s = 0;
         this.slot = InventoryUtil.findItem(36, 45, Items.golden_apple);
@@ -58,6 +63,7 @@ public class Gapple extends Module {
     }
 
     @Override
+    @NativeObfuscation(verificationLock = "User")
     public void onDisable() {
         eating = false;
 
@@ -71,6 +77,7 @@ public class Gapple extends Module {
     }
 
     @Listener
+    @NativeObfuscation(verificationLock = "User")
     public void onTick(TickEvent event) {
         if (mc.thePlayer == null || mc.thePlayer.isDead) {
             PacketStoringComponent.stopBlink();
@@ -136,6 +143,7 @@ public class Gapple extends Module {
 
 
     @Listener
+    @NativeObfuscation(verificationLock = "User")
     public void onRender2D(Render2DEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
         float target = (float)(120.0f * (this.c03s / 32.0)) * ((float) 100 / 120);

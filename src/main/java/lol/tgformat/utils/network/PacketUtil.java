@@ -77,7 +77,7 @@ public class PacketUtil implements IMinecraft {
     }
 
     public static void sendC0F(){
-        PacketUtil.sendPacket(new C0FPacketConfirmTransaction(MathUtil.getRandom(114514, 191981000), (short)MathUtil.getRandomInRange(114514, 191981000), true));
+        PacketUtil.sendPacket(new C0FPacketConfirmTransaction(114514, (short) 191981000, true));
     }
     public static void sendC0FNoEvent() {
         PacketUtil.sendPacketNoEvent(new C0FPacketConfirmTransaction(MathUtil.getRandom(114514, 1919810), (short)MathUtil.getRandom(102, 1000024123), true));

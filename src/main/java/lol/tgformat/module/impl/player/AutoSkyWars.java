@@ -13,6 +13,7 @@ import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.block.BlockUtil;
 import lol.tgformat.utils.client.LogUtil;
+import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.init.Blocks;
@@ -50,9 +51,6 @@ public class AutoSkyWars extends Module {
     private final BooleanSetting debug = new BooleanSetting("Debug",true);
     private final TimerUtil timers = new TimerUtil();
 
-    private final String winMessage = "You won! Want to play again? Click here!",
-            loseMessage = "You died! Want to play again? Click here!";
-
     private boolean waiting;
     private int timer = 0;
     private boolean game = false;
@@ -76,15 +74,16 @@ public class AutoSkyWars extends Module {
         this.setSuffix(modes.getMode());
     }
     @Listener
-    
     public void onUpdate(PreUpdateEvent event) {
         if (modes.is("HYT")) {
             if (ModuleManager.getModule(Blink.class).isState()) {
                 for (Map.Entry<BlockPos, ?> block : BlockUtil.searchBlocks(3).entrySet()) {
                     BlockPos blockpos = block.getKey();
                     if (block.getValue() instanceof BlockGlass) {
-                        mc.getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, blockpos, EnumFacing.DOWN));
-                        mc.getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockpos, EnumFacing.DOWN));
+                        Blink blink = ModuleManager.getModule(Blink.class);
+                        blink.slowPoll.setState(false);
+                        PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, blockpos, EnumFacing.DOWN));
+                        PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockpos, EnumFacing.DOWN));
                         mc.theWorld.setBlockState(blockpos, Blocks.air.getDefaultState(), 2);
                     }
                 }
@@ -93,7 +92,7 @@ public class AutoSkyWars extends Module {
                 game = false;
                 timer = 0;
                 ModuleManager.getModule(Blink.class).setState(false);
-
+                ModuleManager.getModule(Blink.class).slowPoll.setState(true);
                 ModuleManager.getModule(Blink.class).releasemode.setMode("Latency");
             }
             if (game) timer++;
@@ -127,11 +126,12 @@ public class AutoSkyWars extends Module {
 
 
     @Listener
-    
     public void onPacket(PacketReceiveEvent event) {
         Object packet = event.getPacket();
         if (packet instanceof S02PacketChat) {
             String text = ((S02PacketChat) packet).getChatComponent().getUnformattedText();
+            String loseMessage = "You died! Want to play again? Click here!";
+            String winMessage = "You won! Want to play again? Click here!";
             if((text.contains(winMessage) && text.length() < winMessage.length() + 3) || (text.contains(loseMessage) && text.length() < loseMessage.length() + 3)) {
                 waiting = true;
                 timers.reset();
@@ -139,6 +139,7 @@ public class AutoSkyWars extends Module {
             if (text.contains("开始倒计时: 3 秒")) {
                 if (ModuleManager.getModule(Blink.class).releasemode.setMode("Instant")) {
                     ModuleManager.getModule(Blink.class).setState(true);
+                    ModuleManager.getModule(Blink.class).slowPoll.setState(false);
                 }
             }
             if (text.contains("开始倒计时: 1 秒")) {

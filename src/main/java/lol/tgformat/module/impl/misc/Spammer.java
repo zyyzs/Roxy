@@ -22,11 +22,11 @@ public class Spammer extends Module {
     }
     private final NumberSetting delay = new NumberSetting("Delay",1000, 5000, 100,10);
     public final ModeSetting mode = new ModeSetting("TextMode", "SilenceMoment","SilenceMoment","NightSense");
-    private TimerUtil timer = new TimerUtil();
+    private final TimerUtil timer = new TimerUtil();
     @Listener
     public void onUpdate(PreUpdateEvent event) {
         if (timer.hasReached(delay.getValue() * 1.5)) {
-            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage(AutoL.getRandomText(getTextMode())));
+            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage("[Roxy-Private]" + AutoL.getRandomText(getTextMode())));
             timer.reset();
         }
     }

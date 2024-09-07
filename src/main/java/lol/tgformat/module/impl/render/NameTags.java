@@ -10,6 +10,7 @@ import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.impl.misc.Teams;
 import lol.tgformat.module.values.impl.ModeSetting;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.MathUtils;
 import lol.tgformat.utils.player.PlayerUtil;
 import lol.tgformat.utils.render.DrawUtil;
@@ -147,7 +148,7 @@ public class NameTags extends Module {
                         GlowUtils.drawGlow(middle - 3, (float) (y - (fontHeight + 7)), textWidth + 6, (float) ((fontHeight / fontScale)), 50,new Color(10, 10, 10, 120));
                         RoundedUtils.drawRound(middle - 3, (float) (y - (fontHeight + 7)), textWidth + 6, (float) ((fontHeight / fontScale)), 2, new Color(10, 10, 10, 60));
                         RenderUtils.resetColor();
-                        FontManager.tenacityBold16.drawStringWithShadow(text.toString(), middle, (float) (y - (fontHeight + 4)), healthColor.getRGB());
+                        FontUtil.tenacityFont16.drawStringWithShadow(text.toString(), middle, (float) (y - (fontHeight + 4)), healthColor.getRGB());
                     }
                     glPopMatrix();
                     break;
@@ -168,7 +169,7 @@ public class NameTags extends Module {
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)), textWidth + 6.0f + 6.0f, (float)(fontHeight / fontScale), 1.0f, new Color(19, 19, 19, 200));
                     RenderUtils.resetColor();
                     GL11.glPopMatrix();
-                    FontManager.arial16.drawStringWithShadow(text.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
+                    FontUtil.tenacityFont16.drawStringWithShadow(text.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
                     break;
                 }
                 case "Shit":{
@@ -202,8 +203,8 @@ public class NameTags extends Module {
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)) - 2.0f + (float) fontHeight +4f, healthBarWidth, 1.0f, 1.0f, healthColor);
                     RenderUtils.resetColor();
                     GL11.glPopMatrix();
-                    FontManager.arial16.drawStringWithShadow(Exhitext.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
-                    FontManager.arial16.drawStringWithShadow(Health, middle+ arial16.getStringWidth(Exhitext), (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, healthColor.getRGB());
+                    FontUtil.tenacityFont16.drawStringWithShadow(Exhitext.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
+                    FontUtil.tenacityFont16.drawStringWithShadow(Health, middle+ arial16.getStringWidth(Exhitext), (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, healthColor.getRGB());
                     break;
                 }
 

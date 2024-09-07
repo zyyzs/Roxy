@@ -83,7 +83,7 @@ public class GuiLogin extends GuiScreen {
         if (!ModuleManager.getModule(IRC.class).isState()) {
             ModuleManager.getModule(IRC.class).setState(true);
         }
-        Display.setTitle("Bloodline - Not logged in");
+        Display.setTitle("Roxy_Private - Not logged in");
 
         this.buttonList.add(this.button);
         this.buttonList.add(this.hwid);
@@ -219,7 +219,7 @@ public class GuiLogin extends GuiScreen {
         }
     }
 
-    //非常高雅
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     private void tryAutoLogin() {
         if (files.exists()) {
             try {
@@ -234,38 +234,39 @@ public class GuiLogin extends GuiScreen {
     }
 
     //高雅
-    @NativeObfuscation.Inline
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     private void performLogin(String uid) {
-        GuiLogin.uid = uid;
+        if (Client.instance.getIrcServer().getClient().isConnected()) {
+            GuiLogin.uid = uid;
             try {
-                handleSuccessfulLogin();
+                Client.instance.getIrcServer().getClient().getPacketManager().sendPacket(
+                        Client.instance.getIrcServer().getClient().getPacketBuffer(),
+                        new ClientLoginPacket(uid, getHwid()),
+                        4
+                );
             } catch (Exception e) {
                 handleError(e);
             }
-
+        }
     }
 
-    //神笔
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void handleSuccessfulLogin() throws IOException, InterruptedException {
         this.status = "验证中...";
 
         files.createNewFile();
         Files.write(files.toPath(), GuiLogin.uid.getBytes());
-
-        Thread.sleep(1500L);
         mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("random.orb"), 1F));
         this.status = "验证成功";
         Client.instance.XuJingLiangSiMa = "许锦良死妈";
 
         Thread.sleep(1000L);
-//        SoundUtil.playSound(new ResourceLocation("bloodline/oye.wav"), .9f);
-        LogUtil.addChatMessage("成功验证");
 
         this.mc.displayGuiScreen(new MainMenu());
     }
-    public void handleFailedLogin() throws InterruptedException {
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
+    public void handleFailedLogin() {
         this.status = "验证中...";
-        Thread.sleep(1500L);
         mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("random.orb"), -1F));
         this.status = "验证失败";
     }
@@ -283,7 +284,7 @@ public class GuiLogin extends GuiScreen {
         clipboard.setContents(selection, selection);
     }
 
-    @NativeObfuscation.Inline
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public String getHwid() {
         try {
             final String main = System.getenv("COMPUTERNAME") + System.getenv("USERDOMAIN") + System.getenv("USERNAME");
@@ -305,10 +306,10 @@ public class GuiLogin extends GuiScreen {
         return new Color(red, green, blue).getRGB();
     }
 
-    @Override
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            this.status = "null";
+            this.mc.displayGuiScreen(null);
         } else {
             this.field.textboxKeyTyped(typedChar, keyCode);
         }

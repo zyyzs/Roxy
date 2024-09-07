@@ -491,6 +491,7 @@ public abstract class Entity implements ICommandSender
                 {
                     this.portalCounter = 0;
                 }
+
             }
 
             if (this.timeUntilPortal > 0)

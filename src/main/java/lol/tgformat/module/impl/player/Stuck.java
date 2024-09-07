@@ -1,7 +1,9 @@
 package lol.tgformat.module.impl.player;
 
 import lol.tgformat.api.event.Listener;
+import lol.tgformat.component.MovementComponent;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.movement.MoveEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
@@ -33,27 +35,18 @@ import java.util.LinkedList;
 @StringEncryption
 public class Stuck extends Module {
     public BooleanSetting antiSB;
-    private double x;
-    private double y;
-    private double z;
-    private boolean onGround;
     private Vector2f rotation;
     private final LinkedList<Packet<INetHandler>> inBus = new LinkedList<>();
 
     public Stuck() {
         super("Stuck", ModuleType.Player);
         this.antiSB = new BooleanSetting("Anti SB", false);
-        this.onGround = false;
     }
 
     public void onEnable() {
         if (mc.thePlayer == null) {
             return;
         }
-        this.onGround = mc.thePlayer.onGround;
-        this.x = mc.thePlayer.posX;
-        this.y = mc.thePlayer.posY;
-        this.z = mc.thePlayer.posZ;
         this.rotation = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
         float f = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
         float gcd = f * f * f * 1.2f;
@@ -66,7 +59,7 @@ public class Stuck extends Module {
     public void onDisable() {
         inBus.forEach(packet -> packet.processPacket(mc.getNetHandler()));
         inBus.clear();
-        PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1337, z, onGround));
+        PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1337, mc.thePlayer.posZ, mc.thePlayer.onGround));
         if (this.antiSB.isEnabled() && !mc.thePlayer.onGround) {
             this.setState(true);
         }
@@ -82,7 +75,7 @@ public class Stuck extends Module {
             if (this.rotation.x == current.x && this.rotation.y == current.y) return;
             this.rotation = current;
             event.setCancelled(true);
-            PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(current.x, current.y, this.onGround));
+            PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(current.x, current.y, mc.thePlayer.onGround));
             if (isBlock()) {
                 PacketUtil.sendPacketNoEvent(c08);
             }
@@ -99,17 +92,7 @@ public class Stuck extends Module {
         }
     }
     @Listener
-    private void onPacket(PacketReceiveEvent event) {
-        if (AntiVoid.isBlockUnder()) {
-//            this.setState(false);
-        }
-    }
-
-    @Listener
-    public void onUpdate(PreUpdateEvent event) {
-        mc.thePlayer.motionX = 0.0;
-        mc.thePlayer.motionY = 0.0;
-        mc.thePlayer.motionZ = 0.0;
-        mc.thePlayer.setPosition(this.x, this.y, this.z);
+    public void onMove(MoveEvent event) {
+        event.setCancelled();
     }
 }
