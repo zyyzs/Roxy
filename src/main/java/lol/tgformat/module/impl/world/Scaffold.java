@@ -376,6 +376,11 @@ public class Scaffold extends Module {
         double posX = player.posX;
         double posZ = player.posZ;
         double minY = player.getEntityBoundingBox().minY;
+        if (mc.gameSettings.keyBindJump.isKeyDown()) {
+            sameY.setState(false);
+        }else {
+            sameY.setState(true);
+        }
         Vec3 vec3 = getPlacePossibility(0.0, 0.0, 0.0, !sameY.isEnabled());
         if (vec3 == null) {
             return;

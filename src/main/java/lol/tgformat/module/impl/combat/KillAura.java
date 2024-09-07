@@ -32,6 +32,7 @@ import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.utils.vector.Vector2f;
 import lombok.Getter;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -69,7 +70,8 @@ public class KillAura extends Module {
     private final NumberSetting rotationspeed = new NumberSetting("RotationSpeed",10f,10f,0f,1f);
     private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet", "Off");
     private final ModeSetting moveFix = new ModeSetting("MovementFix", "Silent", "Silent", "Strict", "None", "BackSprint");
-    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","AsakaBox","Polygon");
+    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","Exhi");
+    private final BooleanSetting polygon = new BooleanSetting("Polygon",false);
     private final BooleanSetting keepsprint = new BooleanSetting("KeepSprint", true);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
     public KillAura() {
@@ -260,6 +262,35 @@ public class KillAura extends Module {
     }
     @Listener
     public void onRender3D(Render3DEvent event) {
+        AxisAlignedBB axisAlignedBB = target.getEntityBoundingBox();
+        double partialTicks = event.getPartialTicks();
+        double baseX = KillAura.target.prevPosX + (KillAura.target.posX - KillAura.target.prevPosX) * partialTicks - RenderManager.renderPosX;
+        double baseY = KillAura.target.prevPosY + (KillAura.target.posY - KillAura.target.prevPosY) * partialTicks - RenderManager.renderPosY;
+        double baseZ = KillAura.target.prevPosZ + (KillAura.target.posZ - KillAura.target.prevPosZ) * partialTicks - RenderManager.renderPosZ;
+        double tickOffsetX = (KillAura.target.posX - KillAura.target.prevPosX) * (double)event.getPartialTicks();
+        double tickOffsetY = (KillAura.target.posY - KillAura.target.prevPosY) * (double)event.getPartialTicks();
+        double tickOffsetZ = (KillAura.target.posZ - KillAura.target.prevPosZ) * (double)event.getPartialTicks();
+        double playerMotionOffsetX = KillAura.mc.thePlayer.motionX + 0.01;
+        double playerMotionOffsetY = KillAura.mc.thePlayer.motionY - 0.005;
+        double playerMotionOffsetZ = KillAura.mc.thePlayer.motionZ + 0.01;
+        double translateX = baseX + tickOffsetX + playerMotionOffsetX;
+        double translateY = baseY + tickOffsetY + playerMotionOffsetY;
+        double translateZ = baseZ + tickOffsetZ + playerMotionOffsetZ;
+        int color2 = KillAura.target.hurtTime > 3 ? new Color(235, 40, 40, 75).getRGB() : (KillAura.target.hurtTime < 3 ? new Color(150, 255, 40, 35).getRGB() : new Color(255, 255, 255, 75).getRGB());
+        if (polygon.isEnabled()){
+            if (target == null) return;
+            Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
+            if (target != null) {
+                ESPTarget = target;
+            }
+            if (Anim.finished(Direction.BACKWARDS)) {
+                ESPTarget = null;
+            }
+            if (ESPTarget != null) {
+                drawCircle(6,new Color(0,0,0).getRGB());
+                drawCircle(4,new Color(255,255,255).getRGB());
+            }
+        }
         switch (espmode.getMode()) {
             case "Box": {
                 Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -285,7 +316,7 @@ public class KillAura extends Module {
                 javax.vecmath.Vector2f vector2f = RenderUtil.targetESPSPos(target);
                 if (vector2f != null) RenderUtil.drawTargetESP2D(vector2f.x, vector2f.y, Color.RED, Color.BLUE, Color.GREEN, Color.PINK, (1.0F - MathHelper.clamp_float(Math.abs(dst - 6.0F) / 60.0F, 0.0F, 0.75F)), 1);
             }
-            case "AsakaBox": {
+            case "Exhi": {
                 Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
                 if (target != null) {
                     ESPTarget = target;
@@ -294,23 +325,12 @@ public class KillAura extends Module {
                     ESPTarget = null;
                 }
                 if (ESPTarget != null) {
-                    RenderUtil.renderBoundingBox(ESPTarget, new Color(0, 255, 0, 30), Anim.getOutput().floatValue());
+                    GlStateManager.translate(translateX, translateY, translateZ);
+                    AxisAlignedBB offsetBB = axisAlignedBB.offset(-KillAura.target.posX, -KillAura.target.posY, -KillAura.target.posZ).expand(0.1, 0.1, 0.1).offset(0.0, 0.1, 0.0);
+                    RenderUtil.drawAxisAlignedBB(offsetBB, true, color2);
                 }
-                break;
-            }
-            case "Polygon":{
-                if (target == null) return;
-                Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
-                if (target != null) {
-                    ESPTarget = target;
-                }
-                if (Anim.finished(Direction.BACKWARDS)) {
-                    ESPTarget = null;
-                }
-                if (ESPTarget != null) {
-                    drawCircle(6,new Color(0,0,0).getRGB());
-                    drawCircle(4,new Color(255,255,255).getRGB());
-                }
+                RenderUtil.resetColor();
+                GlStateManager.popMatrix();
                 break;
             }
         }

@@ -45,8 +45,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
-import static net.netease.font.FontManager.arial16;
-import static net.netease.font.FontManager.arial20;
+import static net.netease.font.FontManager.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_VIEWPORT;
 
@@ -59,7 +58,7 @@ import static org.lwjgl.opengl.GL11.GL_VIEWPORT;
 
 @StringEncryption
 public class NameTags extends Module {
-    private final ModeSetting mode = new ModeSetting("Mode","Default","Default","Old","Shit");
+    private final ModeSetting mode = new ModeSetting("Mode","Default","Default","Old","Shit","Rise");
     private final Map<Entity, Vector4f> entityPosition = new HashMap<>();
     private final Frustum frustum = new Frustum();
     private final FloatBuffer windPos = BufferUtils.createFloatBuffer(4);
@@ -206,6 +205,20 @@ public class NameTags extends Module {
                     FontUtil.tenacityFont16.drawStringWithShadow(Exhitext.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
                     FontUtil.tenacityFont16.drawStringWithShadow(Health, middle+ arial16.getStringWidth(Exhitext), (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, healthColor.getRGB());
                     break;
+                }
+                case "Rise":{
+                    final float margin = 2;
+                    float x2 = pos.getX();
+                    float y2 = pos.getY();
+                    final float multiplier = 2;
+                    final float nH = (float) (tenacityBold16.getHeight()  + margin * multiplier);
+                    final float nY = y2 - nH;
+                    final float nameWidth = tenacityBold16.getStringWidth(name);
+                    RenderUtils.drawRoundedRectangle(x2 - margin - nameWidth / 2, nY, nameWidth + margin * multiplier, nH, 4, new Color(0, 0, 0, 100).getRGB());
+                    tenacityBold16.drawCenteredString(name, x2, nY + margin * 2, new Color(79, 199, 200).getRGB());
+                    RenderUtils.drawRoundedRectangle(x2 - margin - nameWidth / 2, nY, nameWidth + margin * multiplier, nH,4, new Color(0, 0, 0, 160).getRGB());
+
+
                 }
 
             }
