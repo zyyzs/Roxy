@@ -198,9 +198,9 @@ public class Watermark extends Module {
                 Long dNow = new Date( ).getTime();
                 SimpleDateFormat ft = new SimpleDateFormat("hh:mm:ss");
                 String Time = ft.format(dNow);
-                mc.fontRendererObj.drawString(Client.instance.getName()+" " + "[1.8.x] ["+Time+"]", 3, 3, new Color(0, 0, 0, 255).getRGB());
-                mc.fontRendererObj.drawString(Client.instance.getName()+" " + "§7[§f1.8.x§7] [§f"+Time+"§7]", 2, 2, new Color(255, 255, 255, 255).getRGB());
-                mc.fontRendererObj.drawString(String.valueOf(Client.instance.getName().charAt(0)),2,2,textcolor.getRGB());
+                mc.fontRendererObj.drawString(HUD.name()+" " + "[1.8.x] ["+Time+"]", 3, 3, new Color(0, 0, 0, 255).getRGB());
+                mc.fontRendererObj.drawString(HUD.name()+" " + "§7[§f1.8.x§7] [§f"+Time+"§7]", 2, 2, new Color(255, 255, 255, 255).getRGB());
+                mc.fontRendererObj.drawString(String.valueOf(HUD.name().charAt(0)),2,2,textcolor.getRGB());
                 break;
             }
         }

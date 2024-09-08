@@ -4,6 +4,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import lol.tgformat.Client;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
@@ -15,6 +16,7 @@ import lol.tgformat.ui.font.CustomFont;
 import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.font.Pair;
 import lol.tgformat.ui.hud.AnimationType;
+import lol.tgformat.ui.menu.MainMenu;
 import lol.tgformat.ui.utils.MathUtils;
 import lol.tgformat.ui.utils.RoundedUtil;
 import lol.tgformat.utils.math.MathUtil;
@@ -26,10 +28,7 @@ import lol.tgformat.verify.GuiLogin;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -37,6 +36,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -89,6 +89,7 @@ public class HUD extends Module {
     private static final BooleanSetting potionlow = new BooleanSetting("Lowercase", false);
     private final BooleanSetting armor = new BooleanSetting("ArmorHUD", true);
     private final BooleanSetting info = new BooleanSetting("Info", true);
+    private final BooleanSetting etbinfo = new BooleanSetting("Etb info",false);
     public static final ColorSetting color1 = new ColorSetting("Color-1", new Color(126, 0, 252, 203));
     public static final ColorSetting color2 = new ColorSetting("Color-2", new Color(191, 220, 238, 156));
     private static final Animation openingAnimation = new DecelerateAnimation(175, 1, Direction.BACKWARDS);
@@ -170,8 +171,41 @@ public class HUD extends Module {
         if (potion.isEnabled() && hud.isState()) {
             renderpotion();
         }
+        if (etbinfo.isEnabled()&& hud.isState()){
+            String playerPos = sessionTime();
+            float x = (float) sr.getScaledWidth() / 2.0f - (float) mc.fontRendererObj.getStringWidth(playerPos) / 2.55f;
+            mc.fontRendererObj.drawStringWithShadow(sessionTime(), x, BossStatus.bossName != null && BossStatus.statusBarTime > 0 ? 47.0f : 30.0f, -1);
+        }
     }
     @NativeObfuscation.Inline
+    public static long startTime = System.currentTimeMillis(), endTime = -1;
+    public long getTimeDiff() {
+        return (endTime == -1 ? System.currentTimeMillis() : endTime) - startTime;
+    }
+
+
+    @Listener
+    public void onTick(TickEvent event) {
+        if (endTime == -1 && ((!mc.isSingleplayer() && mc.getCurrentServerData() == null) || mc.currentScreen instanceof MainMenu || mc.currentScreen instanceof GuiMultiplayer || mc.currentScreen instanceof GuiDisconnected)) {
+            endTime = System.currentTimeMillis();
+        } else if (endTime != -1 && (mc.isSingleplayer() || mc.getCurrentServerData() != null)) {
+            startTime = System.currentTimeMillis();
+            endTime = -1;
+        }
+    }
+
+    public String sessionTime() {
+        int elapsedTime = (int) this.getTimeDiff() / 1000;
+        String days = elapsedTime > 86400 ? elapsedTime / 86400 + "d " : "";
+        elapsedTime = !days.isEmpty() ? elapsedTime % 86400 : elapsedTime;
+        String hours = elapsedTime > 3600 ? elapsedTime / 3600 + "h " : "";
+        elapsedTime = !hours.isEmpty() ? elapsedTime % 3600 : elapsedTime;
+        String minutes = elapsedTime > 60 ? elapsedTime / 60 + "m " : "";
+        elapsedTime = !minutes.isEmpty() ? elapsedTime % 60 : elapsedTime;
+        String seconds = elapsedTime > 0 ? elapsedTime + "s " : "";
+        return days + hours + minutes + seconds;
+    }
+
     public static void oninfo() {
         ScaledResolution sr = new ScaledResolution(mc);
         float x2 = sr.getScaledWidth() - 3;
