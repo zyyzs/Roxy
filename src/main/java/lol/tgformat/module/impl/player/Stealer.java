@@ -9,6 +9,7 @@ import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.math.MathUtil;
+import lol.tgformat.utils.player.InventoryUtil;
 import lol.tgformat.utils.vector.Vector3d;
 import lol.tgformat.utils.vector.Vector4d;
 import net.minecraft.block.Block;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -32,10 +34,8 @@ import net.minecraft.util.BlockPos;
 import net.netease.utils.RoundedUtils;
 import net.netease.utils.TimeUtil;
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.glu.GLU;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -46,7 +46,7 @@ import java.util.Optional;
 @StringEncryption
 public class Stealer extends Module {
     private final NumberSetting delay = new NumberSetting("Delay", 0.0, 1000.0, 0.0, 10.0);
-    public BooleanSetting silentValue = new BooleanSetting("Silent", true);
+    public BooleanSetting silent = new BooleanSetting("Silent", true);
     public final BooleanSetting chestView = new BooleanSetting("Stealing View", false);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
 
@@ -54,6 +54,8 @@ public class Stealer extends Module {
     static TimeUtil timer;
     static TimeUtil openChestTimer;
     private BlockPos currentContainerPos;
+    public static int willTake = 0;
+    public static ContainerChest lastChest;
     private static final int[] itemHelmet;
     private static final int[] itemChestPlate;
     private static final int[] itemLeggings;
@@ -101,7 +103,7 @@ public class Stealer extends Module {
                 for (Slot slot : container.inventorySlots) {
                     if (!slot.inventory.equals(mc.thePlayer.inventory)) {
                         int x = (int) (startX + (slot.slotNumber % 9) * 18);
-                        int y = (int) (startY + (slot.slotNumber / 9) * 18);
+                        int y = (int) (startY + ((double) slot.slotNumber / 9) * 18);
 
                         itemRender.renderItemAndEffectIntoGUI(slot.getStack(), x, y);
                     }
@@ -138,42 +140,44 @@ public class Stealer extends Module {
             this.setState(false);
         }
         if (mc.thePlayer.openContainer == null) {
+            willTake = 0;
             return;
         }
-        if (mc.thePlayer.openContainer instanceof ContainerFurnace container) {
-            if (this.isFurnaceEmpty(container) && openChestTimer.delay(100.0f) && timer.delay(100.0f)) {
+        if (mc.thePlayer.openContainer instanceof ContainerFurnace containerFurnace) {
+            if (this.isFurnaceEmpty(containerFurnace) && openChestTimer.delay(100.0f) && timer.delay(100.0f)) {
                 mc.thePlayer.closeScreen();
                 return;
             }
-            for (int i = 0; i < container.tileFurnace.getSizeInventory(); ++i) {
-                if (container.tileFurnace.getStackInSlot(i) != null && timer.delay((float)this.nextDelay)) {
-                    mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+            for (int i = 0; i < containerFurnace.tileFurnace.getSizeInventory(); ++i) {
+                if (containerFurnace.tileFurnace.getStackInSlot(i) != null && timer.delay((float)this.nextDelay)) {
+                    mc.playerController.windowClick(containerFurnace.windowId, i, 0, 1, mc.thePlayer);
                     this.nextDelay = (int)(this.delay.getValue() * MathUtil.getRandomInRange(0.75,1.25));
                     timer.reset();
                 }
             }
         }
-        if (mc.thePlayer.openContainer instanceof ContainerBrewingStand container2) {
-            if (this.isBrewingStandEmpty(container2) && openChestTimer.delay(100.0f) && timer.delay(100.0f)) {
+        if (mc.thePlayer.openContainer instanceof ContainerBrewingStand brewingStand) {
+            for (int i = 0; i < 3; ++i) {
+                InventoryUtil.windowClick(mc, brewingStand.windowId ,i , 0, InventoryUtil.ClickType.SHIFT_CLICK);
+            }
+            if (openChestTimer.delay(100.0f)) {
                 mc.thePlayer.closeScreen();
                 return;
-            }
-            for (int i = 0; i < container2.tileBrewingStand.getSizeInventory(); ++i) {
-                if (container2.tileBrewingStand.getStackInSlot(i) != null && timer.delay((float)this.nextDelay)) {
-                    mc.playerController.windowClick(container2.windowId, i, 0, 1, mc.thePlayer);
-                    this.nextDelay = (int)(this.delay.getValue() * MathUtil.getRandomInRange(0.75,1.25));
-                    timer.reset();
-                }
             }
         }
-        if (mc.thePlayer.openContainer instanceof ContainerChest container3) {
-            if (this.isChestEmpty(container3) && openChestTimer.delay(100.0f) && timer.delay(100.0f)) {
+        if (mc.thePlayer.openContainer instanceof ContainerChest chest) {
+            if (lastChest == null || lastChest != chest) {
+                lastChest = chest;
+                willTake = itemWillTake(chest);
+            }
+            if (this.isChestEmpty(chest) && openChestTimer.delay(100.0f) && timer.delay(100.0f)) {
                 mc.thePlayer.closeScreen();
+                willTake = 0;
                 return;
             }
-            for (int i = 0; i < container3.getLowerChestInventory().getSizeInventory(); ++i) {
-                if (container3.getLowerChestInventory().getStackInSlot(i) != null && timer.delay((float)this.nextDelay) && (this.isItemUseful(container3, i))) {
-                    mc.playerController.windowClick(container3.windowId, i, 0, 1, mc.thePlayer);
+            for (int i = 0; i < chest.getLowerChestInventory().getSizeInventory(); ++i) {
+                if (chest.getLowerChestInventory().getStackInSlot(i) != null && timer.delay((float)this.nextDelay) && (isItemUseful(chest, i))) {
+                    mc.playerController.windowClick(chest.windowId, i, 0, 1, mc.thePlayer);
                     this.nextDelay = (int)(this.delay.getValue() * MathUtil.getRandomInRange(0.75,1.25));
                     timer.reset();
                 }
@@ -184,7 +188,7 @@ public class Stealer extends Module {
 
     private boolean isChestEmpty(ContainerChest c) {
         for (int i = 0; i < c.getLowerChestInventory().getSizeInventory(); ++i) {
-            if (c.getLowerChestInventory().getStackInSlot(i) != null && (this.isItemUseful(c, i))) {
+            if (c.getLowerChestInventory().getStackInSlot(i) != null && (isItemUseful(c, i))) {
                 return false;
             }
         }
@@ -200,54 +204,24 @@ public class Stealer extends Module {
         return true;
     }
 
-    private boolean isBrewingStandEmpty(ContainerBrewingStand c) {
-        for (int i = 0; i < c.tileBrewingStand.getSizeInventory(); ++i) {
-            if (c.tileBrewingStand.getStackInSlot(i) != null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isItemUseful(ContainerChest c, int i) {
+    private static boolean isItemUseful(ContainerChest c, int i) {
         ItemStack itemStack = c.getLowerChestInventory().getStackInSlot(i);
         Item item = itemStack.getItem();
-        return item instanceof ItemAxe || item instanceof ItemPickaxe || item instanceof ItemFood || (item instanceof ItemBow || item == Items.arrow) || (item instanceof ItemPotion && !isPotionNegative(itemStack)) || (item instanceof ItemSword && isBestSword(c, itemStack)) || (item instanceof ItemArmor && isBestArmor(c, itemStack)) || item instanceof ItemBlock || item instanceof ItemEnderPearl || item instanceof ItemSnowball || item instanceof ItemEgg;
+        return item instanceof ItemAxe || item instanceof ItemPickaxe || item instanceof ItemFood || (item instanceof ItemBow || item == Items.arrow) || (item instanceof ItemPotion && !isPotionNegative(itemStack)) || item instanceof ItemSword || (item instanceof ItemArmor && isBestArmor(c, itemStack)) || item instanceof ItemBlock || item instanceof ItemEnderPearl || item instanceof ItemSnowball || item instanceof ItemEgg;
+    }
+    public static int itemWillTake(ContainerChest container) {
+        int items = 0;
+        for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
+            if (container.getLowerChestInventory().getStackInSlot(i) != null && isItemUseful(container, i)) {
+                items++;
+            }
+        }
+        return items;
     }
     public static boolean isPotionNegative(ItemStack itemStack) {
         ItemPotion potion = (ItemPotion)itemStack.getItem();
-        List<PotionEffect> potionEffectList = (List<PotionEffect>)potion.getEffects(itemStack);
+        List<PotionEffect> potionEffectList = potion.getEffects(itemStack);
         return potionEffectList.stream().map(potionEffect -> Potion.potionTypes[potionEffect.getPotionID()]).anyMatch(Potion::isBadEffect);
-    }
-    public static boolean isBestSword(ContainerChest c, ItemStack item) {
-//        float itemdamage1 = getSwordDamage(item);
-//        float itemdamage2 = 0.0f;
-//        for (int i = 0; i < 45; ++i) {
-//            if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()) {
-//                float tempdamage = getSwordDamage(mc.thePlayer.inventoryContainer.getSlot(i).getStack());
-//                if (tempdamage >= itemdamage2) {
-//                    itemdamage2 = tempdamage;
-//                }
-//            }
-//        }
-//        for (int i = 0; i < c.getLowerChestInventory().getSizeInventory(); ++i) {
-//            if (c.getLowerChestInventory().getStackInSlot(i) != null) {
-//                float tempdamage = getSwordDamage(c.getLowerChestInventory().getStackInSlot(i));
-//                if (tempdamage >= itemdamage2) {
-//                    itemdamage2 = tempdamage;
-//                }
-//            }
-//        }
-//        return itemdamage1 == itemdamage2;
-        return true;
-    }
-    public static float getSwordDamage(ItemStack itemStack) {
-        float damage = 0.0f;
-        Optional<AttributeModifier> attributeModifier = itemStack.getAttributeModifiers().values().stream().findFirst();
-        if (attributeModifier.isPresent()) {
-            damage = (float)attributeModifier.get().getAmount();
-        }
-        return damage + EnchantmentHelper.getModifierForCreature(itemStack, EnumCreatureAttribute.UNDEFINED);
     }
     public static boolean isBestArmor(ContainerChest c, ItemStack item) {
         float itempro1 = (float)((ItemArmor)item.getItem()).damageReduceAmount;
@@ -332,9 +306,9 @@ public class Stealer extends Module {
 
     public Vector4d calculate(BlockPos blockPos, int factor) {
         try {
-            double renderX = mc.getRenderManager().getRenderPosX();
-            double renderY = mc.getRenderManager().getRenderPosY();
-            double renderZ = mc.getRenderManager().getRenderPosZ();
+            double renderX = RenderManager.getRenderPosX();
+            double renderY = RenderManager.getRenderPosY();
+            double renderZ = RenderManager.getRenderPosZ();
 
             double x = blockPos.getX() + 0.5 - renderX;
             double y = blockPos.getY() + 0.5 - renderY;

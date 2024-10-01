@@ -18,6 +18,7 @@ import net.netease.utils.ContinualAnimation;
 import net.netease.utils.Direction;
 import net.netease.utils.EaseBackIn;
 import net.netease.utils.RoundedUtils;
+import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -51,7 +52,7 @@ public class PotionsInfo extends Module {
     }
 
     @Listener
-    
+    @NativeObfuscation(verificationLock = "User")
     public void onRender2D(Render2DEvent event) {
         this.effects = mc.thePlayer.getActivePotionEffects().stream().sorted(Comparator.comparingInt(it -> (int) FontUtil.tenacityFont18.getStringWidth(this.get(it)))).collect(Collectors.toList());
         int x = 5;
@@ -81,7 +82,7 @@ public class PotionsInfo extends Module {
             this.animation.setDirection(Direction.BACKWARDS);
         }
         RenderUtil.scaleStart(x + 50, y2 + 15, (float)this.animation.getOutput());
-        FontUtil.tenacityFont18.drawStringWithShadow("Potion Example", x + 52.0f - (float) FontUtil.tenacityFont18.getStringWidth("Potion Example") / 2, (float)(y2 + 18 - FontUtil.tenacityFont18.getHeight() / 2), new Color(255, 255, 255, 80).getRGB());
+        FontUtil.tenacityFont18.drawStringWithShadow("Potion Example", x + 52.0f -  FontUtil.tenacityFont18.getStringWidth("Potion Example") / 2, (float)(y2 + 18 - FontUtil.tenacityFont18.getHeight() / 2), new Color(255, 255, 255, 80).getRGB());
         RenderUtil.scaleEnd();
         if (this.effects.isEmpty()) {
             this.maxString = 0;
@@ -90,21 +91,18 @@ public class PotionsInfo extends Module {
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.disableLighting();
             int l2 = 24;
-            FontManager.arial24.drawStringWithShadow("PotionList", x + 6, y2 - 14, HUD.color(0).getRGB());
+            FontUtil.tenacityFont24.drawStringWithShadow("PotionList", x + 6, y2 - 14, HUD.color(0).getRGB());
             RoundedUtils.drawRound(x, y2 - 20, this.widthanimation.getOutput() - 10, getHieght(), 3, new Color(25,25,25,30));
             GlowUtils.drawGlow(x, y2 - 20, this.widthanimation.getOutput() - 10, getHieght(), 6, new Color(25,25,25,90));
             RoundedUtils.drawRound(x, y2 - 13, 2, 7, 0, HUD.getClientColors().getFirst());
             for (PotionEffect potioneffect : this.effects) {
-                //RoundedUtils.drawRound(x, y2 + i2 - offsetY, this.widthanimation.getOutput(), 1.0f, 1.0f, new Color(126,0, 252, 255));
-                //RoundedUtils.drawRound(x, y2 + i2 - offsetY + 1.5f, (int)this.widthanimation.getOutput(), 24.0f, 0.0f, new Color(19, 19, 19, 102));
-
                 Potion potion = Potion.potionTypes[potioneffect.getPotionID()];
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
                 if (potion.hasStatusIcon()) {
                     mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/inventory.png"));
                     int i1 = potion.getStatusIconIndex();
                     GlStateManager.enableBlend();
-                    mc.ingameGUI.drawTexturedModalRect(x + offsetX - 17, y2 + i2 - offsetY + 2, 0 + i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
+                    mc.ingameGUI.drawTexturedModalRect(x + offsetX - 17, y2 + i2 - offsetY + 2, i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
                 }
                 float potionDurationRatio = (float)potioneffect.getDuration() / (potionMaxDurations.get(potioneffect.getPotionID()) != null ? potionMaxDurations.get(potioneffect.getPotionID()) : 1);
                 String s2 = Potion.getDurationString(potioneffect);

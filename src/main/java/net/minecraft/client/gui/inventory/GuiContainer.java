@@ -1,10 +1,13 @@
 package net.minecraft.client.gui.inventory;
 
 import com.google.common.collect.Sets;
+
+import java.awt.*;
 import java.io.IOException;
 import java.util.Set;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.player.Stealer;
+import lol.tgformat.ui.font.FontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,6 +25,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.netease.font.FontManager;
 import net.netease.utils.RenderUtil;
+import net.netease.utils.RoundedUtils;
 import org.lwjgl.input.Keyboard;
 
 public abstract class GuiContainer extends GuiScreen
@@ -104,20 +108,23 @@ public abstract class GuiContainer extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         final Stealer stealer = ModuleManager.getModule(Stealer.class);
-        if (stealer.isState() && stealer.silentValue.isEnabled()){
+        if (stealer.isState() && stealer.silent.isEnabled()){
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             Minecraft mc = Minecraft.getMinecraft();
             GuiScreen guiScreen = mc.currentScreen;
 
-            if (guiScreen instanceof GuiChest) {
-                GuiChest chest = (GuiChest)guiScreen;
-                if (!(boolean)stealer.silentValue.isEnabled() || chest.lowerChestInventory != null) {
+            if (guiScreen instanceof GuiChest chest) {
+                if (!stealer.silent.isEnabled() || chest.lowerChestInventory != null) {
                     mc.setIngameFocus();
                     mc.currentScreen = guiScreen;
-                    if (stealer.silentValue.isEnabled()) {
-                        RenderUtil.drawLoadingCircle((float) (sr.getScaledWidth() / 2), (float) sr.getScaledHeight() / 2.0F + 25.0F);
-                        String tipString = "Stealing";
-                        FontManager.arial18.drawString(tipString, (float) this.width / 2.0F - (float) FontManager.arial18.getStringWidth(tipString) / 2.0F, (float) this.height / 2.0F + 40.0F, -1, false);
+                    if (stealer.silent.isEnabled() && Stealer.willTake > 0) {
+                        float target = (120.0f * ((float) (Stealer.willTake - Stealer.itemWillTake(Stealer.lastChest) + 1) / Stealer.willTake)) * ((float) 100 / 120);
+                        int startX = sr.getScaledWidth() / 2 - 68;
+                        int startY = sr.getScaledHeight() / 2 - 50;
+                        String text = "Stealing...";
+                        FontUtil.tenacityFont18.drawString(text, startX + 10 + 60 - FontUtil.tenacityFont18.getStringWidth(text) / 2, startY + 20, new Color(225, 225, 225, 100).getRGB());
+                        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), 120.0f, 2.0f, 3.0f, new Color(0, 0, 0, 200), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150));
+                        RoundedUtils.drawGradientRound(startX + 10, (float) (startY + 7.5), Math.min(target, 120.0f), 2.0f, 3.0f,new Color(59, 89, 241, 226), new Color(59, 235, 241, 208), new Color(59, 241, 220, 255), new Color(111, 241, 59, 216));
                     }
                     return;
                 }
@@ -126,10 +133,9 @@ public abstract class GuiContainer extends GuiScreen
             if (guiScreen instanceof GuiFurnace || guiScreen instanceof GuiBrewingStand) {
                 mc.setIngameFocus();
                 mc.currentScreen = guiScreen;
-                if (stealer.silentValue.isEnabled()) {
-                    RenderUtil.drawLoadingCircle((float) (sr.getScaledWidth() / 2), (float) sr.getScaledHeight() / 2.0F + 25.0F);
+                if (stealer.silent.isEnabled()) {
                     String tipString = "Stealing";
-                    FontManager.arial18.drawString(tipString, (float) this.width / 2.0F - (float) FontManager.arial18.getStringWidth(tipString) / 2.0F, (float) this.height / 2.0F + 40.0F, -1, false);
+                    FontUtil.tenacityFont16.drawString(tipString, (float) this.width / 2.0F -  FontUtil.tenacityFont16.getStringWidth(tipString) / 2.0F, (float) this.height / 2.0F + 40.0F, -1, false);
                 }
                 return;
             }

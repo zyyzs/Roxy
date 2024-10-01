@@ -17,8 +17,8 @@ import java.net.Socket;
 public class PingCheck {
     public static boolean isReachable = false;
     public static void run() {
-        String host = "123.136.94.3";
-        int port = 45600;
+        String host = "103.40.13.87";
+        int port = 14250;
         int maxPing = 100;
         int checkInterval = 6000; // check time
 

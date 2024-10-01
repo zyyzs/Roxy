@@ -13,6 +13,7 @@ import java.util.UUID;
 import lol.tgformat.Client;
 import lol.tgformat.PacketFixer;
 import lol.tgformat.api.event.EventManager;
+import lol.tgformat.events.PreUpdateEvent;
 import lol.tgformat.events.movement.JumpEvent;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.render.Animations;
@@ -60,6 +61,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import static lol.tgformat.ui.clickgui.Utils.mc;
 
 public abstract class EntityLivingBase extends Entity
 {

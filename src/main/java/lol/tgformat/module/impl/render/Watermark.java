@@ -16,9 +16,7 @@ import lol.tgformat.utils.render.DrawUtil;
 import lol.tgformat.utils.render.GlowUtils;
 import lol.tgformat.utils.render.GradientUtil;
 
-import lol.tgformat.verify.GuiLogin;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import net.netease.font.FontManager;
 import net.netease.utils.ColorUtil;
@@ -30,7 +28,6 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static lol.tgformat.module.impl.render.HUD.clientName;
 import static lol.tgformat.ui.clickgui.Utils.*;
 
 /**
@@ -86,7 +83,7 @@ public class Watermark extends Module {
             case "Text": {
                 float xVal = 6f;
                 float yVal = 6f;
-                float versionWidth = tenacityFont16.getStringWidth(Client.instance.getVersion() + "(" + GuiLogin.uid + ")");
+                float versionWidth = tenacityFont16.getStringWidth(Client.instance.getVersion() + "(" + "GuiLogin.uid" + ")");
                 float versionX = xVal + tenacityBoldFont40.getStringWidth(HUD.name());
                 float width = (versionX + versionWidth) - xVal;
 
@@ -95,7 +92,7 @@ public class Watermark extends Module {
                     RenderUtil.setAlphaLimit(0);
                     tenacityBoldFont40.drawString(HUD.name(), xVal, yVal, 0);
 
-                    tenacityFont16.drawString(Client.instance.getVersion() + "(" + GuiLogin.uid + ")", versionX, yVal, 0);
+                    tenacityFont16.drawString(Client.instance.getVersion() + "(" + "GuiLogin.uid" + ")", versionX, yVal, 0);
 
                 });
                 break;
@@ -125,7 +122,7 @@ public class Watermark extends Module {
                 String clientName = HUD.name();
                 String ip = ServerUtil.getIp().toLowerCase().contains("nyaproxy") ? "NyaProxy" : ServerUtil.getIp();
                 String formattedClientName = clientName + ChatFormatting.WHITE;
-                String watermark = formattedClientName + " | " + GuiLogin.uid + " | " + Time + " | " + ip;
+                String watermark = formattedClientName + " | " + "GuiLogin.uid" + " | " + Time + " | " + ip;
                 double watermarkWidth = FontManager.edit20.getStringWidth(watermark);
                 float x = 5;
                 float y = 5;
@@ -134,7 +131,7 @@ public class Watermark extends Module {
                 break;
             }
             case "Xylitol": {
-                String username = GuiLogin.uid;
+                String username = "GuiLogin.uid";
                 String n = HUD.name();
                 StringBuilder nm = new StringBuilder(n);
                 nm.delete(i, 4);
@@ -164,7 +161,7 @@ public class Watermark extends Module {
                 Long dNow = new Date( ).getTime();
                 SimpleDateFormat ft = new SimpleDateFormat("hh:mm:ss");
                 String Time = ft.format(dNow);
-                String user = username.isEnabled() ? " | " + GuiLogin.uid : "";
+                String user = username.isEnabled() ? " | " + "GuiLogin.uid" : "";
                 String ver = version.isEnabled() ? " | "+ CLIENTVERSION: "";
                 String time = times.isEnabled() ? " | " + Time : "";
                 String fps = fpss.isEnabled() ? " | " + Minecraft.getDebugFPS() + " FPS" : "";

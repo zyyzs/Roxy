@@ -78,7 +78,7 @@ public class TextField extends Gui {
     private int selectionEnd;
     private final Animation textColor = new DecelerateAnimation(250, 1);
     private final Animation cursorBlinkAnimation = new DecelerateAnimation(750, 1);
-    private final TimerUtil timerUtil = new TimerUtil();
+    private final TenaTimerUtil timerUtil = new TenaTimerUtil();
 
     /**
      * True if this textbox is visible

@@ -3,6 +3,7 @@ package lol.tgformat.module.impl.player;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.component.MovementComponent;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.movement.MoveEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
@@ -37,7 +38,7 @@ public class Stuck extends Module {
     public BooleanSetting antiSB;
     private Vector2f rotation;
     private final LinkedList<Packet<INetHandler>> inBus = new LinkedList<>();
-
+    private int ticksDelayCancel = 0;
     public Stuck() {
         super("Stuck", ModuleType.Player);
         this.antiSB = new BooleanSetting("Anti SB", false);
@@ -47,6 +48,7 @@ public class Stuck extends Module {
         if (mc.thePlayer == null) {
             return;
         }
+        ticksDelayCancel = 5;
         this.rotation = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
         float f = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
         float gcd = f * f * f * 1.2f;
@@ -57,6 +59,7 @@ public class Stuck extends Module {
     }
 
     public void onDisable() {
+        ticksDelayCancel = 0;
         inBus.forEach(packet -> packet.processPacket(mc.getNetHandler()));
         inBus.clear();
         PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1337, mc.thePlayer.posZ, mc.thePlayer.onGround));
@@ -65,7 +68,12 @@ public class Stuck extends Module {
         }
     }
     @Listener
+    public void onWorld(WorldEvent event) {
+        setState(false);
+    }
+    @Listener
     public void onSend(PacketSendEvent event) {
+        if (ticksDelayCancel > 0) return;
         if (event.getPacket() instanceof C08PacketPlayerBlockPlacement c08) {
             final Vector2f current = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
             final float f = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
@@ -93,6 +101,9 @@ public class Stuck extends Module {
     }
     @Listener
     public void onMove(MoveEvent event) {
+        if (ticksDelayCancel > 0) {
+            ticksDelayCancel--;
+        }
         event.setCancelled();
     }
 }

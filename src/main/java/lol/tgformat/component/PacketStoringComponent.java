@@ -282,7 +282,8 @@ public class PacketStoringComponent implements IMinecraft  {
         if(mc.getNetHandler() == null) {
             stopBlink();
         }
-        if (blinking)
+        if (blinking) {
             packets.add(new S00PacketKeepAlive());
+        }
     }
 }

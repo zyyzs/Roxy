@@ -43,6 +43,7 @@ import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.utils.network.GetC03StatusUtil;
 import lol.tgformat.component.PacketStoringComponent;
+import lol.tgformat.utils.player.BlinkUtils;
 import lol.tgformat.utils.player.CurrentRotationUtil;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
@@ -69,13 +70,13 @@ import org.apache.logging.log4j.MarkerManager;
 
 import static lol.tgformat.accessable.IMinecraft.mc;
 
-public class NetworkManager extends SimpleChannelInboundHandler<Packet>
+public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>>
 {
     private static final Logger logger = LogManager.getLogger();
     public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
     public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
     public static final AttributeKey<EnumConnectionState> attrKeyConnectionState = AttributeKey.<EnumConnectionState>valueOf("protocol");
-    public static final LazyLoadBase<NioEventLoopGroup> CLIENT_NIO_EVENTLOOP = new LazyLoadBase<NioEventLoopGroup>()
+    public static final LazyLoadBase<NioEventLoopGroup> CLIENT_NIO_EVENTLOOP = new LazyLoadBase<>()
     {
         protected NioEventLoopGroup load()
         {
@@ -97,7 +98,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         }
     };
     private final EnumPacketDirection direction;
-    private final Queue<NetworkManager.InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues.<NetworkManager.InboundHandlerTuplePacketListener>newConcurrentLinkedQueue();
+    private final Queue<NetworkManager.InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues.newConcurrentLinkedQueue();
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     /** The active channel */
@@ -131,7 +132,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         }
         catch (Throwable throwable)
         {
-            logger.fatal((Object)throwable);
+            logger.fatal(throwable);
         }
     }
 
@@ -205,6 +206,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         Validate.notNull(handler, "packetListener", new Object[0]);
         logger.debug("Set listener of {} to {}", new Object[] {this, handler});
         this.packetListener = handler;
+        Disabler.packetListener = this.packetListener;
     }
 
     public void sendPacketWithoutEvent(Packet packetIn) {
@@ -230,6 +232,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         EventManager.call(event);
         if (event.isCancelled()) return;
         GetC03StatusUtil.packetEvent(packetIn);
+        if (BlinkUtils.isPacketShouldDelay(packetIn)) {
+            return;
+        }
         if (!PacketStoringComponent.onPacket(packetIn)) {
             return;
         }
@@ -258,7 +263,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         if (this.isChannelOpen())
         {
             this.flushOutboundQueue();
-            this.dispatchPacket(packetIn, (GenericFutureListener[])ArrayUtils.add(listeners, 0, listener));
+            this.dispatchPacket(packetIn, ArrayUtils.add(listeners, 0, listener));
         }
         else
         {
@@ -266,7 +271,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
             try
             {
-                this.outboundPacketsQueue.add(new NetworkManager.InboundHandlerTuplePacketListener(packetIn, (GenericFutureListener[])ArrayUtils.add(listeners, 0, listener)));
+                this.outboundPacketsQueue.add(new NetworkManager.InboundHandlerTuplePacketListener(packetIn, ArrayUtils.add(listeners, 0, listener)));
             }
             finally
             {
@@ -424,9 +429,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
             lazyloadbase = CLIENT_NIO_EVENTLOOP;
         }
 
-        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group((EventLoopGroup)lazyloadbase.getValue())).handler(new ChannelInitializer<Channel>()
+        ((((new Bootstrap()).group(lazyloadbase.getValue())).handler(new ChannelInitializer<>()
         {
-            protected void initChannel(Channel p_initChannel_1_) throws Exception
+            protected void initChannel(Channel p_initChannel_1_)
             {
                 try
                 {
@@ -437,7 +442,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
                     ;
                 }
 
-                p_initChannel_1_.pipeline().addLast((String)"timeout", (ChannelHandler)(new ReadTimeoutHandler(30))).addLast((String)"splitter", (ChannelHandler)(new MessageDeserializer2())).addLast((String)"decoder", (ChannelHandler)(new MessageDeserializer(EnumPacketDirection.CLIENTBOUND))).addLast((String)"prepender", (ChannelHandler)(new MessageSerializer2())).addLast((String)"encoder", (ChannelHandler)(new MessageSerializer(EnumPacketDirection.SERVERBOUND))).addLast((String)"packet_handler", (ChannelHandler)networkmanager);
+                p_initChannel_1_.pipeline().addLast("timeout", (new ReadTimeoutHandler(30))).addLast("splitter", (new MessageDeserializer2())).addLast((String)"decoder", (ChannelHandler)(new MessageDeserializer(EnumPacketDirection.CLIENTBOUND))).addLast((String)"prepender", (ChannelHandler)(new MessageSerializer2())).addLast((String)"encoder", (ChannelHandler)(new MessageSerializer(EnumPacketDirection.SERVERBOUND))).addLast((String)"packet_handler", (ChannelHandler)networkmanager);
                 if (p_initChannel_1_ instanceof SocketChannel && ViaLoadingBase.getInstance().getTargetVersion().getVersion() != ViaMCP.NATIVE_VERSION) {
                     final UserConnection user = new UserConnectionImpl(p_initChannel_1_, true);
                     new ProtocolPipelineImpl(user);
@@ -456,11 +461,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     public static NetworkManager provideLocalClient(SocketAddress address)
     {
         final NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.CLIENTBOUND);
-        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group((EventLoopGroup)CLIENT_LOCAL_EVENTLOOP.getValue())).handler(new ChannelInitializer<Channel>()
+        ((((new Bootstrap()).group(CLIENT_LOCAL_EVENTLOOP.getValue())).handler(new ChannelInitializer<>()
         {
-            protected void initChannel(Channel p_initChannel_1_) throws Exception
+            protected void initChannel(Channel p_initChannel_1_)
             {
-                p_initChannel_1_.pipeline().addLast((String)"packet_handler", (ChannelHandler)networkmanager);
+                p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
             }
         })).channel(LocalChannel.class)).connect(address).syncUninterruptibly();
         return networkmanager;
@@ -622,6 +627,10 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
                 channelfuture1.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
             });
         }
+    }
+
+    public EnumPacketDirection getDirection() {
+        return direction;
     }
 
     static class InboundHandlerTuplePacketListener

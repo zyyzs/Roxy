@@ -1,21 +1,16 @@
 package lol.tgformat.ui.notifications;
 
-import lol.tgformat.Client;
 import lol.tgformat.ui.clickgui.Utils;
 import lol.tgformat.ui.font.CustomFont;
 import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.*;
 import lombok.Getter;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.netease.font.FontManager;
 import net.netease.utils.ColorUtil;
 import net.netease.utils.RoundedUtils;
 
 import java.awt.*;
-
-import static net.netease.font.FontManager.Tahoma14;
-import static net.netease.font.FontManager.Tahoma20;
 
 
 @Getter
@@ -24,7 +19,7 @@ public class Notification implements Utils {
     private final NotificationType notificationType;
     private final String title, description;
     private final float time;
-    private final TimerUtil timerUtil;
+    private final TenaTimerUtil timerUtil;
     private final Animation animation;
 
     public Notification(NotificationType type, String title, String description) {
@@ -36,7 +31,7 @@ public class Notification implements Utils {
         this.description = description;
 
         this.time = (long) (time * 1000);
-        timerUtil = new TimerUtil();
+        timerUtil = new TenaTimerUtil();
         this.notificationType = type;
         animation = new EaseOutSine(250, 1);
     }

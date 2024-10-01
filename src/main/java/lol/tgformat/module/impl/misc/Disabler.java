@@ -13,15 +13,13 @@ import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
-import lol.tgformat.module.impl.combat.Gapple;
-import lol.tgformat.module.impl.player.Blink;
-import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.component.PacketStoringComponent;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.BlinkUtils;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
@@ -38,6 +36,7 @@ import net.viamcp.vialoadingbase.ViaLoadingBase;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -50,6 +49,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @StringEncryption
 public class Disabler extends Module {
     private static final ModeSetting mode = new ModeSetting("Mode", "GrimAC","WatchDog","GrimAC");
+    public static INetHandler packetListener;
     private final BooleanSetting badPacketsF = new BooleanSetting("BadPacketF", false);
     private final BooleanSetting test = new BooleanSetting("Test", false);
     private final BooleanSetting higherVersion = new BooleanSetting("Move 1.17+", false);
@@ -87,20 +87,6 @@ public class Disabler extends Module {
     public void onSend(PacketSendEvent event){
         Packet<?> packet = event.getPacket();
         if (mode.is("GrimAC")) {
-            if (badPacketsF.isEnabled() && packet instanceof C0BPacketEntityAction c0b) {
-                if (c0b.getAction() == C0BPacketEntityAction.Action.START_SPRINTING) {
-                    if (this.lastSprinting) {
-                        event.setCancelled(true);
-                    }
-                    this.lastSprinting = true;
-                }
-                if (c0b.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
-                    if (!this.lastSprinting) {
-                        event.setCancelled(true);
-                    }
-                    this.lastSprinting = false;
-                }
-            }
             if (test.isEnabled() && event.getPacket() instanceof C0EPacketClickWindow pkt) {
                 if (pkt.getWindowId() <= 0 || pkt.getSlotId() >= 100 || pkt.getUsedButton() < 0) {
                     event.setCancelled(true);
@@ -143,13 +129,6 @@ public class Disabler extends Module {
                     ((C08PacketPlayerBlockPlacement) event.getPacket()).facingZ = 0.5f;
                 }
             }
-            if (packet instanceof C09PacketHeldItemChange c09) {
-                int slot = c09.getSlotId();
-                if (slot == this.lastSlot && slot != -1) {
-                    event.setCancelled(true);
-                }
-                this.lastSlot = c09.getSlotId();
-            }
             if (packet instanceof C02PacketUseEntity c02) {
                 if (c02.getAction() == C02PacketUseEntity.Action.INTERACT) {
                     if (c02.getEntityFromWorld(mc.theWorld) instanceof EntityPlayer) {
@@ -184,15 +163,36 @@ public class Disabler extends Module {
         if (event.getPacket() instanceof C03PacketPlayer) {
             c03Check = false;
             if (shouldFix) {
-                PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+                mc.thePlayer.setSprinting(true);
+                mc.thePlayer.serverSprintState = true;
+                LogUtil.addChatMessage("Patched BadC0B");
                 shouldFix = false;
             }
         }
         if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
-            LogUtil.addChatMessage("VL++");
-            lastSprinting = true;
             event.setCancelled();
             shouldFix = true;
+        }
+        if (badPacketsF.isEnabled() && event.getPacket() instanceof C0BPacketEntityAction c0b && !event.isCancelled()) {
+            if (c0b.getAction() == C0BPacketEntityAction.Action.START_SPRINTING) {
+                if (this.lastSprinting) {
+                    event.setCancelled(true);
+                }
+                this.lastSprinting = true;
+            }
+            if (c0b.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
+                if (!this.lastSprinting) {
+                    event.setCancelled(true);
+                }
+                this.lastSprinting = false;
+            }
+        }
+        if (event.getPacket() instanceof C09PacketHeldItemChange c09) {
+            int slot = c09.getSlotId();
+            if (slot == this.lastSlot && slot != -1) {
+                event.setCancelled(true);
+            }
+            this.lastSlot = c09.getSlotId();
         }
     }
     public static float getRandomYaw(float requestedYaw){
@@ -283,20 +283,18 @@ public class Disabler extends Module {
     public static void processPackets() {
         if (!storedPackets.isEmpty()) {
             for (Packet<INetHandler> packet : storedPackets) {
-                PacketReceiveEvent event = new PacketReceiveEvent(packet, mc.getNetHandler());
+                PacketReceiveEvent event = new PacketReceiveEvent(packet, packetListener);
                 EventManager.call(event);
                 if (event.isCancelled()) {
                     continue;
                 }
-                if (mc.getNetHandler() != null) {
-                    packet.processPacket(mc.getNetHandler());
-                }
+                packet.processPacket(packetListener);
             }
             storedPackets.clear();
         }
     }
     public static boolean noPost() {
-        return ModuleManager.getModule(Blink.class).isState() || PacketStoringComponent.blinking;
+        return PacketStoringComponent.blinking || BlinkUtils.isBlinking();
     }
     
     public static void fixC0F(C0FPacketConfirmTransaction packet) {

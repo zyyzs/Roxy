@@ -3,7 +3,9 @@ package lol.tgformat.module.impl.combat;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.PreUpdateEvent;
+import lol.tgformat.events.VelocityEvent;
 import lol.tgformat.events.WorldEvent;
+import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
@@ -20,6 +22,7 @@ import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -115,7 +118,7 @@ public class Velocity extends Module {
     }
 
     @Listener
-    public void onUpdate(PreUpdateEvent event){
+    public void onVelocity(VelocityEvent event){
         if(isNull())return;
         if (mode.is("GrimAC")) {
             if (shouldVelo) {
@@ -127,23 +130,23 @@ public class Velocity extends Module {
                     reset();
                     return;
                 }
-                if (ModuleManager.getModule(Gapple.class).isState() && ModuleManager.getModule(Gapple.class).noC02 && Gapple.eating) {
+                if (ModuleManager.getModule(Gapple.class).isState() && Gapple.eating) {
                     return;
                 }
-                for (int i = 0; i < 5; i++) {
-                    if (!mc.thePlayer.serverSprintState) {
-                        PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-                        mc.thePlayer.setSprinting(true);
-                        mc.thePlayer.serverSprintState = true;
-                    }
-                    if (ModuleManager.getModule(Gapple.class).isState() && ModuleManager.getModule(Gapple.class).noC02 && Gapple.eating) {
-                        return;
-                    }else {
-                    PacketUtil.sendPacket(new C0APacketAnimation());
-                    PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));}
-                    mc.thePlayer.motionX *= 0.6F;
-                    mc.thePlayer.motionZ *= 0.6F;
+                if (!mc.thePlayer.serverSprintState) {
+                    PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                 }
+                for (int i = 0; i < 5; i++) {
+                    if (ModuleManager.getModule(Gapple.class).isState() && Gapple.eating) {
+                        return;
+                    }
+                    PacketUtil.sendPacket(new C0APacketAnimation());
+                    PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+                }
+                event.setReduceAmount(0.0776D);
+                mc.thePlayer.setSprinting(true);
+                mc.thePlayer.serverSprintState = true;
+
                 shouldVelo = false;
             }
         }

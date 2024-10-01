@@ -1865,7 +1865,6 @@ public abstract class World implements IBlockAccess
 
                 if (skiptick > 0 && entityIn == Minecraft.getMinecraft().thePlayer) {
                     skiptick--;
-                    EventManager.call(new PreUpdateEvent());
                     mc.thePlayer.onUpdateWalkingPlayer();
                 } else {
                     if (entityIn.ridingEntity != null) {

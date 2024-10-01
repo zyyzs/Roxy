@@ -3,6 +3,7 @@ package lol.tgformat.module.impl.combat;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.CriticalsEvent;
 import lol.tgformat.events.WorldEvent;
+import lol.tgformat.events.movement.MoveEvent;
 import lol.tgformat.events.movement.MoveInputEvent;
 import lol.tgformat.events.movement.StrafeEvent;
 import lol.tgformat.module.Module;
@@ -29,7 +30,7 @@ public class Criticals extends Module {
         mc.theWorld.skiptick = 0;
     }
     @Listener
-    public void onMoveInput(MoveInputEvent event) {
+    public void onMove(MoveEvent event) {
         if (Disabler.noPost()) {
             reset();
             return;
@@ -46,7 +47,7 @@ public class Criticals extends Module {
         } else {
             KillAura aura = ModuleManager.getModule(KillAura.class);
             if (KillAura.target != null) {
-                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState() && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 2.0f) {
+                if (!isNull() && mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround && aura.isState() && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 2.0f && mc.theWorld.skiptick <= 0) {
                     mc.theWorld.skiptick++;
                 } else {
                     if (!isNull() && (!aura.isState())) {
@@ -59,7 +60,7 @@ public class Criticals extends Module {
     @Listener
     public void onStrafe(StrafeEvent event) {
         if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.pressed) {
-            if (KillAura.target != null && mc.thePlayer.getClosestDistanceToEntity(KillAura.target) <= 2.0f) {
+            if (KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= 3.0f) {
                 mc.thePlayer.jump();
             }
         }

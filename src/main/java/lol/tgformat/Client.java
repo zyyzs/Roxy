@@ -1,7 +1,6 @@
 package lol.tgformat;
 
 import lol.tgformat.component.*;
-import lol.tgformat.irc.network.SocketManager;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import lol.tgformat.api.event.EventManager;
 import lol.tgformat.config.ConfigManager;
@@ -45,9 +44,9 @@ import java.util.concurrent.Executors;
 @NativeObfuscation
 public enum Client {
     instance,;
-    private final String name = "BloodLine_Recode";
-    private final String date = "0826";
-    private final String version = "1.1";
+    private final String name = "Roxy";
+    private final String date = "1001";
+    private final String version = "1.2";
     private ModuleManager moduleManager;
     private ConfigManager configManager;
     private VideoComponent videoComponent;
@@ -55,12 +54,11 @@ public enum Client {
     private SlotSpoofComponent slotSpoofComponent;
     private BadPacketsComponent badPacketsComponent;
     private SideGUI sideGui;
-    private SocketManager ircServer;
     private final HashMap<Object, Module> moduleMap = new HashMap<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
-    public String XuJingLiangSiMa = "Update Logs";
+    public String XuJingLiangSiMa = "许锦良死妈";
 
-    @NativeObfuscation.Inline
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void onStart() {
         FontManager.init();
         FontUtil.setupFonts();
@@ -85,8 +83,6 @@ public enum Client {
         EventManager.register(new CommandComponent());
         EventManager.register(new BlinkHandler());
 
-        ircServer = new SocketManager();
-        ircServer.initialize();
         this.badPacketsComponent = new BadPacketsComponent();
         this.slotSpoofComponent = new SlotSpoofComponent();
         this.videoComponent = new VideoComponent();
@@ -104,7 +100,7 @@ public enum Client {
         ViaLoadingBase.getInstance().reload(ProtocolVersion.v1_12_2);
     }
 
-    @NativeObfuscation.Inline
+    @NativeObfuscation(verificationLock = "User")
     public void onStop() {
         this.configManager.saveDefaultConfig();
         VideoPlayer.stop();

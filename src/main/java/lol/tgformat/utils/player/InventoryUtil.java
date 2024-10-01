@@ -2,6 +2,8 @@ package lol.tgformat.utils.player;
 
 import com.google.common.collect.Multimap;
 import lol.tgformat.accessable.IMinecraft;
+import lol.tgformat.module.ModuleManager;
+import lol.tgformat.module.impl.player.InvManager;
 import lol.tgformat.utils.network.PacketUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -140,6 +142,12 @@ public class InventoryUtil implements IMinecraft {
     public static boolean isBestSword(final EntityPlayerSP player, final ItemStack itemStack) {
         double damage = 0.0;
         ItemStack bestStack = null;
+        InvManager invManager = ModuleManager.getModule(InvManager.class);
+        if (invManager.noWoodAndGold.isEnabled()) {
+            if (itemStack.getItem() instanceof ItemSword sword && (sword.getMaterial().equals(Item.ToolMaterial.GOLD) || sword.getMaterial().equals(Item.ToolMaterial.WOOD))) {
+                return false;
+            }
+        }
         for (int i = 9; i < 45; ++i) {
             final ItemStack stack = player.inventoryContainer.getSlot(i).getStack();
             if (stack != null && stack.getItem() instanceof ItemSword) {

@@ -10,17 +10,10 @@ import lol.tgformat.ui.notifications.Notification;
 import lol.tgformat.ui.notifications.NotificationManager;
 import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.Direction;
-import lol.tgformat.ui.utils.RoundedUtil;
-import lol.tgformat.ui.utils.TimerUtil;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.netease.font.FontManager;
 
-import java.awt.*;
-
-import static lol.tgformat.ui.clickgui.Utils.tahomaFont;
 import static net.netease.font.FontManager.*;
-import static org.lwjgl.Sys.getTime;
 
 /**
  * @author TG_format

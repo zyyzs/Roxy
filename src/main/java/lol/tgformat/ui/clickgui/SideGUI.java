@@ -6,7 +6,6 @@ import lombok.Setter;
 import net.minecraft.client.gui.ScaledResolution;
 import net.netease.utils.ColorUtil;
 import org.lwjgl.input.Keyboard;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -42,7 +41,7 @@ public class SideGUI implements Screen {
     private final Animation formFadeAnimation = new DecelerateAnimation(250, 1).setDirection(Direction.BACKWARDS);
 
     private Drag drag;
-    private TimerUtil timerUtil;
+    private TenaTimerUtil timerUtil;
 
     @Override
     public void onDrag(int mouseX, int mouseY) {
@@ -64,7 +63,7 @@ public class SideGUI implements Screen {
         panels.values().forEach(lol.tgformat.ui.panel.Panel::initGui);
         focused = false;
         currentForm = null;
-        timerUtil = new TimerUtil();
+        timerUtil = new TenaTimerUtil();
         rectWidth = 550;
         rectHeight = 350;
         ScaledResolution sr = new ScaledResolution(mc);

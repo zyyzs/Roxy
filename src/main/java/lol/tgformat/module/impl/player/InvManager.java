@@ -39,6 +39,7 @@ public class InvManager extends Module {
     private final NumberSetting delay = new NumberSetting("Delay", 0.0, 300.0, 0.0, 10.0);
     public final BooleanSetting instant = new BooleanSetting("Instant",false);
     public final BooleanSetting openinv = new BooleanSetting("OpenInv",false);
+    public final BooleanSetting noWoodAndGold = new BooleanSetting("NoWoodAndGold",true);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
     public String[] serverItems;
     private final int[] bestArmorPieces;
@@ -81,7 +82,7 @@ public class InvManager extends Module {
     @Listener
     private void onPacket(PacketReceiveEvent event) {
         if (isGapple()) return;
-        Packet<?> packet = (Packet<?>)event.getPacket();
+        Packet<?> packet = event.getPacket();
         if (packet instanceof S2DPacketOpenWindow) {
             this.clientOpen = false;
             this.serverOpen = false;
@@ -91,7 +92,7 @@ public class InvManager extends Module {
     @Listener
     private void onPacketSend(PacketSendEvent event) {
         if (isGapple()) return;
-        Packet<?> packet = (Packet<?>)event.getPacket();
+        Packet<?> packet = event.getPacket();
         if (packet instanceof C16PacketClientStatus clientStatus) {
             if (clientStatus.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                 this.clientOpen = true;
@@ -119,7 +120,6 @@ public class InvManager extends Module {
     }
 
     @Listener
-    
     private void onMotion(PostMotionEvent event) {
         if (isGapple()) return;
         if (!mc.thePlayer.isUsingItem() && (mc.currentScreen == null || mc.currentScreen instanceof GuiChat || mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiIngameMenu)) {

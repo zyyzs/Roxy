@@ -6,7 +6,7 @@ package lol.tgformat.ui.utils;
  */
 public abstract class Animation {
 
-    public TimerUtil timerUtil = new TimerUtil();
+    public TenaTimerUtil timerUtil = new TenaTimerUtil();
     protected int duration;
     protected double endPoint;
     protected Direction direction;

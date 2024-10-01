@@ -110,7 +110,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     /** The amount of time an entity has been in a Portal the previous tick */
     public float prevTimeInPortal;
-
+    public int skipC03 = 0;
     public EntityPlayerSP(Minecraft mcIn, World worldIn, NetHandlerPlayClient netHandler, StatFileWriter statFile)
     {
         super(worldIn, netHandler.getGameProfile());
@@ -182,6 +182,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
         } else {
             offGroundTicks++;
         }
+        if (skipC03 > 0 && this == Minecraft.getMinecraft().thePlayer) {
+            skipC03--;
+            return;
+        }
         boolean flag1;
         PreMotionEvent preEvent = new PreMotionEvent(this.rotationYaw, this.rotationPitch, this.onGround);
         EventManager.call(preEvent);
@@ -243,7 +247,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
         PostMotionEvent postEvent = new PostMotionEvent();
         EventManager.call(postEvent);
     }
-
+    public void balanceC03() {
+        onUpdateWalkingPlayer();
+        skipC03++;
+    }
     /**
      * Called when player presses the drop item key
      */

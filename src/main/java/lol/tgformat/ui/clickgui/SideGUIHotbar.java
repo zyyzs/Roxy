@@ -47,7 +47,7 @@ public class SideGUIHotbar implements Screen {
         }
     }
 
-    private final TimerUtil refreshTimer = new TimerUtil();
+    private final TenaTimerUtil refreshTimer = new TenaTimerUtil();
     private final Animation refreshText = new DecelerateAnimation(250, 1);
 
     @Override

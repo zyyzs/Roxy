@@ -1,14 +1,8 @@
 package lol.tgformat.module.impl.movement;
 
-import com.viaversion.viarewind.protocol.protocol1_8to1_9.Protocol1_8To1_9;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.Unpooled;
 import lol.tgformat.api.event.Listener;
-import lol.tgformat.events.PreUpdateEvent;
-import lol.tgformat.events.WorldEvent;
+import lol.tgformat.component.PacketStoringComponent;
 import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.movement.SlowEvent;
@@ -17,18 +11,10 @@ import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
-import lol.tgformat.module.impl.combat.Gapple;
 import lol.tgformat.module.impl.combat.KillAura;
-import lol.tgformat.module.impl.player.Stuck;
-import lol.tgformat.module.impl.world.Scaffold;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
-import lol.tgformat.module.values.impl.NumberSetting;
-import lol.tgformat.utils.block.BlockUtil;
-import lol.tgformat.utils.move.MoveUtil;
 import lol.tgformat.utils.network.PacketUtil;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -36,14 +22,9 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -62,28 +43,20 @@ public class NoSlow extends Module {
     public NoSlow(){
         super("NoSlowDown",ModuleType.Movement);
     }
-    private boolean isHoldingPotionAndSword(ItemStack stack, boolean checkPotionFood) {
+    private boolean isHoldingPotionAndSword(ItemStack stack) {
         if (stack == null) {
             return false;
-        } else if (stack.getItem() instanceof ItemAppleGold && checkPotionFood) {
-            return true;
-        } else if (stack.getItem() instanceof ItemPotion && checkPotionFood) {
-            return !ItemPotion.isSplash(stack.getMetadata());
-        } else if (stack.getItem() instanceof ItemFood && checkPotionFood) {
-            return true;
         } else if (stack.getItem() instanceof ItemSword) {
             return true;
         } else if (stack.getItem() instanceof ItemBow) {
-            return checkPotionFood;
-        } else {
-            return stack.getItem() instanceof ItemBucketMilk && checkPotionFood;
-        }
+            return false;
+        } else return ModuleManager.getModule(KillAura.class).isBlocking();
     }
     @Listener
     public void onSlowDown(SlowEvent event) {
         if (isGapple()) return;
         ItemStack itemStack = mc.thePlayer.getHeldItem();
-        event.setCancelled(itemStack.getItem() instanceof ItemAppleGold && !itemStack.getItem().hasEffect(itemStack) && !this.slow || this.isHoldingPotionAndSword(mc.thePlayer.getHeldItem(), false));
+        event.setCancelled(itemStack.getItem() instanceof ItemAppleGold && !itemStack.getItem().hasEffect(itemStack) && !this.slow || this.isHoldingPotionAndSword(mc.thePlayer.getHeldItem()));
         if (mc.thePlayer.isUsingItem() && mc.thePlayer.moveForward > 0.0F) {
             mc.thePlayer.setSprinting(true);
         }
@@ -102,14 +75,14 @@ public class NoSlow extends Module {
         if (Objects.requireNonNull(mode.getMode()).equals("Grim") && !isFood()) {
             if (isSlow() && !isFood()) {
                 PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                PacketUtil.send1_12Block();
+                PacketUtil.sendPacketNoEvent(new C17PacketCustomPayload("NoSlowPatcher", new PacketBuffer(Unpooled.buffer())));
                 PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
             }
         }
     }
     @Listener
     public void onPost(PostMotionEvent event) {
-        if (isGapple()) {
+        if (PacketStoringComponent.blinking) {
             PacketUtil.send1_12Block();
             return;
         }

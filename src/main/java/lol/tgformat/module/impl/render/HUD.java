@@ -23,8 +23,6 @@ import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.ServerUtil;
 import lol.tgformat.utils.player.RomanNumeralUtil;
 import lol.tgformat.utils.render.*;
-
-import lol.tgformat.verify.GuiLogin;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -210,7 +208,7 @@ public class HUD extends Module {
         ScaledResolution sr = new ScaledResolution(mc);
         float x2 = sr.getScaledWidth() - 3;
         float y2 = sr.getScaledHeight() - 10;
-        String uname = GuiLogin.uid;
+        String uname = "GuiLogin.uid";
         String date = Client.instance.getDate();
         String version = Client.instance.getVersion();
 

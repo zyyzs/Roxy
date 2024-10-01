@@ -49,6 +49,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/via/ViaRewind-3.0.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/via/ViaVersion-4.9.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/via/ViaBackwards-4.9.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/client/client-1.0-SNAPSHOT.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

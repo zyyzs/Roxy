@@ -21,6 +21,7 @@ import static lol.tgformat.module.impl.render.HUD.clientName;
 public class LogUtil implements IMinecraft {
 
     private static final String prefix = "[" + ChatFormatting.DARK_AQUA + name() + ChatFormatting.RESET + "]";
+    private static final String IRCprefix = "[" + ChatFormatting.AQUA + "IRC" + ChatFormatting.RESET + "]";
 
     public static void print(Object message) {
         System.out.println(message);
@@ -32,7 +33,7 @@ public class LogUtil implements IMinecraft {
     }
     public static void addIRCMessage(String message) {
         if(mc.thePlayer == null)return;
-        mc.thePlayer.addChatMessage(new ChatComponentText(message));
+        mc.thePlayer.addChatMessage(new ChatComponentText(IRCprefix + message));
     }
     private static String name() {
         String name = "Riec";

@@ -1,5 +1,6 @@
 package lol.tgformat.firend;
 
+import lol.tgformat.module.impl.misc.IRC;
 import net.minecraft.entity.Entity;
 
 /**
@@ -14,7 +15,7 @@ public class FriendsCollection {
                 return true;
             }
         }
-        return false;
+        return IRC.transport != null && IRC.transport.isUser(String.valueOf(entity.getEntityId()));
     }
     public static boolean isFriend(String name) {
         for (String friend : friends) {

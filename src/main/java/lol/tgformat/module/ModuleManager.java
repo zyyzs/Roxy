@@ -84,6 +84,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new PacketDebug());
         addModule(new IRC());
         addModule(new Spammer());
+        addModule(new GhostBlocksMaker());
         //Misc
 
 

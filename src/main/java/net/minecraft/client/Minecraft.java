@@ -33,15 +33,11 @@ import lol.tgformat.api.event.EventManager;
 import lol.tgformat.events.*;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.ModuleManager;
-import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.ui.menu.MainMenu;
 import lol.tgformat.ui.splash.SplashScreen;
-import lol.tgformat.utils.client.SoundUtil;
 import lol.tgformat.utils.move.GappleUtil;
 import lol.tgformat.utils.network.PacketUtil;
-import lol.tgformat.verify.GuiLogin;
-import net.minecraft.client.main.RatHome;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.netease.font.FontManager;
@@ -395,8 +391,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /** Profiler currently displayed in the debug screen pie chart */
     private String debugProfilerName = "root";
 
-    public GuiLogin guiLogin;
-
     public Minecraft(GameConfiguration gameConfig)
     {
         theMinecraft = this;
@@ -606,9 +600,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         Client.instance.onStart();
         SplashScreen.drawScreen();
-
-        this.guiLogin = new GuiLogin();
-        this.displayGuiScreen(this.guiLogin);
+        this.displayGuiScreen(new MainMenu());
 
         this.renderEngine.deleteTexture(this.mojangLogo);
         this.mojangLogo = null;
@@ -2510,24 +2502,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         return this.thePlayer != null ? this.thePlayer.sendQueue : null;
     }
 
-    public void addToSendQueue(Packet packet) {
-        if (packet instanceof C02PacketUseEntity && ((C02PacketUseEntity) packet).getEntityId() < 0) return;
-        PacketSendEvent eventSendPacket = new PacketSendEvent(packet);
-        EventManager.call(eventSendPacket);
-
-        if (eventSendPacket.isCancelled()) return;
-
-        GappleUtil.packetEvent(packet);
-        if (!ModuleManager.getModule(Blink.class).isState()) {
-            return;
-        }
-        sendPacket(eventSendPacket.getPacket());
-    }
-
-    public void addToSendQueueDirect(Packet packet) {
-        if (packet instanceof C02PacketUseEntity && ((C02PacketUseEntity) packet).getEntityId() < 0) return;
-        PacketUtil.sendPacketNoEvent(packet);
-    }
 
     public static boolean isGuiEnabled()
     {

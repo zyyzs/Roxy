@@ -31,13 +31,9 @@ public class Main {
 //        jvmoptions = p_main_0_;
 //        Progress.start();
 //    }
-
-    @NativeObfuscation.Inline
     public static void onStop() {
         System.exit(0);
     }
-
-    @NativeObfuscation.Inline
     private static void onCheck() {
         JavaCheck.run();
         PingCheck.run();
@@ -110,10 +106,10 @@ public class Main {
         PropertyMap propertymap = (PropertyMap)gson.fromJson((String)optionset.valueOf(optionspec15), PropertyMap.class);
         PropertyMap propertymap1 = (PropertyMap)gson.fromJson((String)optionset.valueOf(optionspec16), PropertyMap.class);
         File file1 = optionset.valueOf(optionspec2);
-        File file2 = optionset.has(optionspec3) ? (File)optionset.valueOf(optionspec3) : new File(file1, "assets/");
+        File file2 = optionset.has(optionspec3) ? optionset.valueOf(optionspec3) : new File(file1, "assets/");
         File file3 = optionset.has(optionspec4) ? (File)optionset.valueOf(optionspec4) : new File(file1, "resourcepacks/");
-        String s4 = optionset.has(optionspec10) ? (String)optionspec10.value(optionset) : (String)optionspec9.value(optionset);
-        String s5 = optionset.has(optionspec17) ? (String)optionspec17.value(optionset) : null;
+        String s4 = optionset.has(optionspec10) ? optionspec10.value(optionset) : optionspec9.value(optionset);
+        String s5 = optionset.has(optionspec17) ? optionspec17.value(optionset) : null;
         String s6 = (String)optionset.valueOf(optionspec);
         Integer integer = (Integer)optionset.valueOf(optionspec1);
         Session session = new Session((String)optionspec9.value(optionset), s4, (String)optionspec11.value(optionset), (String)optionspec18.value(optionset));

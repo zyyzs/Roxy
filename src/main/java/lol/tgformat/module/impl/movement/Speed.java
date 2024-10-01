@@ -132,7 +132,6 @@ public class Speed extends Module {
                         MoveUtil.setSpeed(MoveUtil.getBaseMoveSpeed() * 1.16);
                     }
                 }
-//                LogUtil.addChatMessage("Speed: " + inAirTicks);
             }
         } else if (mode.is("AutoJump")) {
             if (MoveUtil.isMoving() && mc.thePlayer.onGround && mc.thePlayer.isCollidedVertically) {
@@ -157,7 +156,7 @@ public class Speed extends Module {
             while(true) {
                 Entity entity;
                 do {
-                    if (!entitys.hasNext() && !ModuleManager.getModule(Criticals.class).isState()) {
+                    if (!entitys.hasNext()) {
                         if (c > 0 && MoveUtil.isMoving()) {
                             double strafeOffset = (double)Math.min(c, 3) * 0.08D;
                             float yaw = this.getMoveYaw();

@@ -24,6 +24,7 @@ import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.DecelerateAnimation;
 import lol.tgformat.ui.utils.Direction;
 import lol.tgformat.ui.utils.RenderUtil;
+import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.enums.MovementFix;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.PacketUtil;
@@ -107,40 +108,32 @@ public class KillAura extends Module {
             if (notAttack(entity)) continue;
             target = (EntityLivingBase) entity;
         }
-        if (isPlayerNear()) {
+        if (isPlayerNear() && isSword()) {
             switch (autoblockmods.getMode()) {
                 case "Packet": {
-                    if (isSword()) {
-                        PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                        mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-                        PacketUtil.send1_12Block();
-                        PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
-                    }
+                    PacketUtil.send1_12Block();
                     break;
                 }
                 case "Off": {
                     break;
                 }
                 case "GrimAC":{
-                    if (isSword()) {
-                        mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-                    }
+                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
                 }
             }
         }
         if (target == null) return;
         if (notAttack(target)) {
             target = null;
-            PacketUtil.releaseUseItem(true);
-            mc.thePlayer.stopUsingItem();
             return;
         }
         if (mc.thePlayer.getClosestDistanceToEntity(target) <= range.getValue() + 0.02F) {
             Vector2f rotation = RotationUtil.getRotations(target);
             RotationComponent.setRotations(rotation, rotationspeed.getValue(), getMovementFixType());
         }
-        if (attackmode.is("Pre")) return;
-        attack();
+        if (attackmode.is("Pre")) {
+            attack();
+        }
     }
     @Listener
     public void onPost(PostMotionEvent event) {
@@ -172,8 +165,9 @@ public class KillAura extends Module {
                 }
             }
         }
-        if (attackmode.is("Post")) return;
-        attack();
+        if (attackmode.is("Post")) {
+            attack();
+        }
     }
     public boolean isPlayerNear() {
         for (Entity entity : mc.theWorld.loadedEntityList) {
@@ -202,9 +196,9 @@ public class KillAura extends Module {
             }
         }
     }
-//    public boolean isGrimBlocking() {
-//        return target != null && autoblockmods.is("GrimAC") && isSword() && isState();
-//    }
+    public boolean isBlocking() {
+        return target != null && !autoblockmods.is("Off") && isSword() && isState();
+    }
     private boolean notAttack(Entity entity) {
         Scaffold sca = ModuleManager.getModule(Scaffold.class);
         Blink blink = ModuleManager.getModule(Blink.class);
@@ -279,7 +273,7 @@ public class KillAura extends Module {
         int color2 = KillAura.target.hurtTime > 3 ? new Color(235, 40, 40, 75).getRGB() : (KillAura.target.hurtTime < 3 ? new Color(150, 255, 40, 35).getRGB() : new Color(255, 255, 255, 75).getRGB());
         if (polygon.isEnabled()){
             if (target == null) return;
-            Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
+            Anim.setDirection(Direction.FORWARDS);
             if (target != null) {
                 ESPTarget = target;
             }
@@ -315,6 +309,7 @@ public class KillAura extends Module {
                 float dst = mc.thePlayer.getDistanceToEntity(target);
                 javax.vecmath.Vector2f vector2f = RenderUtil.targetESPSPos(target);
                 if (vector2f != null) RenderUtil.drawTargetESP2D(vector2f.x, vector2f.y, Color.RED, Color.BLUE, Color.GREEN, Color.PINK, (1.0F - MathHelper.clamp_float(Math.abs(dst - 6.0F) / 60.0F, 0.0F, 0.75F)), 1);
+                break;
             }
             case "Exhi": {
                 Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -364,7 +359,7 @@ public class KillAura extends Module {
     private void drawCircle(float lineWidth, int color) {
         if (target == null) return;
         glPushMatrix();
-        RenderUtil.color(color, (float) ((Anim.getOutput().floatValue() / 1) / 2F));
+        RenderUtil.color(color,  ((Anim.getOutput().floatValue()) / 2F));
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
         glDepthMask(false);
