@@ -38,7 +38,7 @@ public class Main {
         JavaCheck.run();
         PingCheck.run();
     }
-    @NativeObfuscation(verificationLock = "User")
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public static void main(String[] p_main_0_) {
         onCheck();
         new Progress();
@@ -77,7 +77,7 @@ public class Main {
             System.out.println("Completely ignored arguments: " + list);
         }
 
-        String s = (String)optionset.valueOf(optionspec5);
+        String s = optionset.valueOf(optionspec5);
         Proxy proxy = Proxy.NO_PROXY;
 
         if (s != null)
@@ -92,8 +92,8 @@ public class Main {
             }
         }
 
-        final String s1 = (String)optionset.valueOf(optionspec7);
-        final String s2 = (String)optionset.valueOf(optionspec8);
+        final String s1 = optionset.valueOf(optionspec7);
+        final String s2 = optionset.valueOf(optionspec8);
 
 
         int i = ((Integer)optionset.valueOf(optionspec13)).intValue();

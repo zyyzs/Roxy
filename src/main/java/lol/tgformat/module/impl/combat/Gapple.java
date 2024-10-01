@@ -3,7 +3,6 @@ package lol.tgformat.module.impl.combat;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
-import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.events.render.Render2DEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
@@ -40,8 +39,7 @@ public class Gapple extends Module {
     public BooleanSetting auto = new BooleanSetting("Auto", false);
     private final boolean stopMove = true;
     private int slot = -1;
-    public static int c03s = 0;
-    private boolean canStart = false;
+    public static int storedC03 = 0;
     public static boolean eating = false;
     public static boolean pulsing = false;
 
@@ -54,7 +52,7 @@ public class Gapple extends Module {
     @Override
     @NativeObfuscation(verificationLock = "User")
     public void onEnable() {
-        c03s = 0;
+        storedC03 = 0;
         this.slot = InventoryUtil.findItem(36, 45, Items.golden_apple);
         if (this.slot != -1) {
             this.slot -= 36;
@@ -93,12 +91,11 @@ public class Gapple extends Module {
             }
             if (!BlinkUtils.isBlinking()) {
                 BlinkUtils.startBlink();
-                this.canStart = true;
             }
         } else {
             eating = true;
         }
-        if (c03s >= 32) {
+        if (storedC03 >= 32) {
             eating = false;
             pulsing = true;
             PacketUtil.sendPacketNoEvent(new C09PacketHeldItemChange(this.slot));
@@ -136,7 +133,7 @@ public class Gapple extends Module {
     @NativeObfuscation(verificationLock = "User")
     public void onRender2D(Render2DEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
-        float target = (float)(120.0f * (c03s / 32.0)) * ((float) 100 / 120);
+        float target = (float)(120.0f * (storedC03 / 32.0)) * ((float) 100 / 120);
         int startX = sr.getScaledWidth() / 2 - 68;
         int startY = sr.getScaledHeight() / 2 - 20;
         String text = "Gapple...";

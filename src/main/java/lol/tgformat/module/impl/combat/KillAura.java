@@ -171,7 +171,7 @@ public class KillAura extends Module {
     }
     public boolean isPlayerNear() {
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entityCant(entity) || !(entity instanceof EntityPlayer)) continue;
+            if (entityCant(entity) || !(entity instanceof EntityPlayer) || !mc.thePlayer.canEntityBeSeen(entity)) continue;
             return true;
         }
         return false;

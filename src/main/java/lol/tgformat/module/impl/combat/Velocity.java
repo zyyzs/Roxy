@@ -130,16 +130,10 @@ public class Velocity extends Module {
                     reset();
                     return;
                 }
-                if (ModuleManager.getModule(Gapple.class).isState() && Gapple.eating) {
-                    return;
-                }
                 if (!mc.thePlayer.serverSprintState) {
                     PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                 }
                 for (int i = 0; i < 5; i++) {
-                    if (ModuleManager.getModule(Gapple.class).isState() && Gapple.eating) {
-                        return;
-                    }
                     PacketUtil.sendPacket(new C0APacketAnimation());
                     PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
                 }

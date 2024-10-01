@@ -32,56 +32,5 @@ public class Progress extends JFrame {
 
             }
             this.setVisible(false);
-
-//            this.progressBar = new JProgressBar(0, 100);
-//            this.progressBar.setSize(10000,40);
-//            this.progressBar.setStringPainted(true);
-//            add(progressBar, BorderLayout.SOUTH);
-//            simulateProgress();
       }
-
-//      public static void start() {
-//            done = false;
-//            Progress shield = new Progress();
-//            shield.setVisible(true);
-////            Main.remain(Main.jvmoptions);
-//      }
-
-//      
-//      private void simulateProgress() {
-//            new Thread(() -> {
-//                  try {
-//                        for (int i = 0; i <= 100; i++) {
-//                              Thread.sleep(30); // 模拟耗时操作
-//                              final int progress = i;
-//                              SwingUtilities.invokeLater(() -> {
-//                                    progressBar.setValue(progress);
-//                                    progressBar.setString("Client Loading: " + progress + "%"); // 自定义文本
-//
-//                                    if (progress == 100) {
-//
-//                                          progressBar.setString("Done");
-//                                          new Thread(() -> {
-//                                                try {
-//                                                      Thread.sleep(500); // 等待0.5秒
-//                                                      while (progressBar.getValue() > 0) {
-//                                                            progressBar.setValue(progressBar.getValue() - 1);
-//                                                            Thread.sleep(20);
-//                                                      }
-//                                                      done = true;
-//                                                      dispose(); // 关闭窗口
-////                                                      Main.remain(Main.jvmoptions);
-//                                                } catch (InterruptedException ex) {
-//                                                      ex.printStackTrace();
-//                                                }
-//                                          }).start();
-//
-//                                    }
-//                              });
-//                        }
-//                  } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                  }
-//            }).start();
-//      }
 }

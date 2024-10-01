@@ -10,7 +10,6 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @UtilityClass
@@ -45,7 +44,7 @@ public class BlinkUtils implements IMinecraft {
         if (isBlinkPacket(packet)) {
             packets.add(packet);
             if (packet instanceof C03PacketPlayer) {
-                Gapple.c03s++;
+                Gapple.storedC03++;
             }
             return true;
         }
@@ -59,7 +58,7 @@ public class BlinkUtils implements IMinecraft {
             Packet<?> packet = packets.poll();
             PacketUtil.sendPacketNoEvent(packet);
             if (packet instanceof C03PacketPlayer c03) {
-                Gapple.c03s--;
+                Gapple.storedC03--;
                 if (Blink.getFakePlayer() != null) {
                     Blink.getFakePlayer().serverPosX = (int) c03.getX();
                     Blink.getFakePlayer().serverPosY = (int) c03.getY();
@@ -84,7 +83,7 @@ public class BlinkUtils implements IMinecraft {
             Packet<?> packet = packets.poll();
             PacketUtil.sendPacketNoEvent(packet);
             if (packet instanceof C03PacketPlayer) {
-                Gapple.c03s--;
+                Gapple.storedC03--;
                 i++;
             }
             if (i >= amount) {
