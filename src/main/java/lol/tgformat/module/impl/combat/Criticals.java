@@ -31,8 +31,7 @@ public class Criticals extends Module {
     }
     @Listener
     public void onMove(MoveEvent event) {
-        if (Disabler.noPost()) {
-            reset();
+        if (isGapple()) {
             return;
         }
         if (KillAura.target == null) return;
@@ -59,6 +58,9 @@ public class Criticals extends Module {
     }
     @Listener
     public void onStrafe(StrafeEvent event) {
+        if (isGapple()) {
+            return;
+        }
         if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.pressed) {
             if (KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= 3.0f) {
                 mc.thePlayer.jump();

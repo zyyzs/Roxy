@@ -74,7 +74,7 @@ public enum Client {
         ViaLoading.load();
 
         EventManager.register(this.moduleManager);
-        EventManager.register(new FuckLagComponent());
+        EventManager.register(new BadPacketUComponent());
         EventManager.register(new PacketStoringComponent());
         EventManager.register(MovementComponent.INSTANCE);
         EventManager.register(new RotationComponent());

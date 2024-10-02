@@ -49,8 +49,8 @@ public class Gapple extends Module {
         super("Gapple", ModuleType.Misc);
     }
 
-    @Override
     @NativeObfuscation(verificationLock = "User")
+    @Override
     public void onEnable() {
         storedC03 = 0;
         this.slot = InventoryUtil.findItem(36, 45, Items.golden_apple);
@@ -59,8 +59,9 @@ public class Gapple extends Module {
         }
     }
 
-    @Override
+
     @NativeObfuscation(verificationLock = "User")
+    @Override
     public void onDisable() {
         eating = false;
 
@@ -72,8 +73,9 @@ public class Gapple extends Module {
         }
     }
 
-    @Listener
+
     @NativeObfuscation(verificationLock = "User")
+    @Listener
     public void onTick(TickEvent event) {
         if (mc.thePlayer == null || mc.thePlayer.isDead) {
             BlinkUtils.stopBlink();
@@ -122,15 +124,18 @@ public class Gapple extends Module {
             BlinkUtils.releaseC03(duringSendTicks.getValue().intValue());
         }
     }
+
+    @NativeObfuscation(verificationLock = "User")
     @Listener
     public void onPacketSend(PacketSendEvent event) {
-        if (event.getPacket() instanceof C07PacketPlayerDigging c07 && c07.getStatus().equals(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM) || event.getPacket() instanceof C09PacketHeldItemChange) {
+        if (event.getPacket() instanceof C07PacketPlayerDigging c07 && c07.getStatus().equals(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM)) {
             event.setCancelled();
         }
     }
 
-    @Listener
+
     @NativeObfuscation(verificationLock = "User")
+    @Listener
     public void onRender2D(Render2DEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
         float target = (float)(120.0f * (storedC03 / 32.0)) * ((float) 100 / 120);

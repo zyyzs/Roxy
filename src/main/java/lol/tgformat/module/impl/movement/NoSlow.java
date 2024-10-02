@@ -15,6 +15,7 @@ import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.BlinkUtils;
 import net.minecraft.item.*;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -82,8 +83,7 @@ public class NoSlow extends Module {
     }
     @Listener
     public void onPost(PostMotionEvent event) {
-        if (PacketStoringComponent.blinking) {
-            PacketUtil.send1_12Block();
+        if (isGapple()) {
             return;
         }
         if (!isFood()) {

@@ -122,10 +122,6 @@ public class Velocity extends Module {
         if(isNull())return;
         if (mode.is("GrimAC")) {
             if (shouldVelo) {
-                if (mc.thePlayer.hurtTime == 0) {
-                    reset();
-                    return;
-                }
                 if (mc.thePlayer.getDistanceToEntity(target) > 3.0) {
                     reset();
                     return;
@@ -136,11 +132,10 @@ public class Velocity extends Module {
                 for (int i = 0; i < 5; i++) {
                     PacketUtil.sendPacket(new C0APacketAnimation());
                     PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+                    event.setReduceAmount(0.07776D);
                 }
-                event.setReduceAmount(0.0776D);
                 mc.thePlayer.setSprinting(true);
                 mc.thePlayer.serverSprintState = true;
-
                 shouldVelo = false;
             }
         }

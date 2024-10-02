@@ -1862,10 +1862,9 @@ public abstract class World implements IBlockAccess
 
             if (forceUpdate && entityIn.addedToChunk) {
                 ++entityIn.ticksExisted;
-
-                if (skiptick > 0 && entityIn == Minecraft.getMinecraft().thePlayer) {
+                if (entityIn == mc.thePlayer && skiptick > 0) {
                     skiptick--;
-                    mc.thePlayer.onUpdateWalkingPlayer();
+                    mc.thePlayer.onSkipUpdate();
                 } else {
                     if (entityIn.ridingEntity != null) {
                         entityIn.updateRidden();
@@ -1873,6 +1872,7 @@ public abstract class World implements IBlockAccess
                         entityIn.onUpdate();
                     }
                 }
+
             }
 
             this.theProfiler.startSection("chunkCheck");

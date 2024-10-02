@@ -37,6 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
 import lol.tgformat.api.event.EventManager;
+import lol.tgformat.component.BadPacketUComponent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.events.packet.PacketSendHigherEvent;
@@ -286,6 +287,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>>
      */
     private void dispatchPacket(Packet<?> inPacket, final GenericFutureListener <? extends Future <? super Void >> [] futureListeners)
     {
+        if (BadPacketUComponent.onPacket(inPacket)) {
+            return;
+        }
         PacketSendHigherEvent higherEvent = new PacketSendHigherEvent(inPacket, false);
         EventManager.call(higherEvent);
         if (higherEvent.isCancelled()) return;
@@ -599,6 +603,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>>
     }
 
     private void dispatchUnregisteredPacket(final Packet inPacket) {
+        if (BadPacketUComponent.onPacket(inPacket)) {
+            return;
+        }
         PacketSendHigherEvent event = new PacketSendHigherEvent(inPacket, true);
         EventManager.call(event);
         if (event.isCancelled()) return;

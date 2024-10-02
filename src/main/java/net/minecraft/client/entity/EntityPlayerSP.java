@@ -173,6 +173,26 @@ public class EntityPlayerSP extends AbstractClientPlayer
         EventManager.call(new PostUpdateEvent());
     }
 
+    public void onSkipUpdate()
+    {
+        EventManager.call(new PreUpdateEvent());
+        if (this.worldObj.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
+        {
+            prevRenderPitchHead = renderPitchHead;
+            renderPitchHead = rotationPitch;
+            if (this.isRiding())
+            {
+                this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
+                this.sendQueue.addToSendQueue(new C0CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
+            }
+            else
+            {
+                this.onUpdateWalkingPlayer();
+            }
+        }
+        EventManager.call(new PostUpdateEvent());
+    }
+
     /**
      * called every tick when the player is on foot. Performs all the things that normally happen during movement.
      */

@@ -10,6 +10,7 @@ import lol.tgformat.utils.client.LogUtil;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+import tech.skidonion.obfuscator.inline.Wrapper;
 import us.cubk.irc.client.IRCHandler;
 import us.cubk.irc.client.IRCTransport;
 
@@ -27,10 +28,10 @@ public class IRC extends Module {
     }
     public static IRCTransport transport;
     @Override
-    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void onEnable() {
         try {
             IRCTransport transport = new IRCTransport("103.40.13.87", 14250, new IRCHandler() {
+            //IRCTransport transport = new IRCTransport("127.0.0.1", 8888, new IRCHandler() {
                 @Override
                 public void onMessage(String sender,String message) {
                     LogUtil.addIRCMessage(sender + ": " + message);
@@ -52,10 +53,10 @@ public class IRC extends Module {
                     if (mc.thePlayer == null) {
                         return "Unknown";
                     }
-                    return String.valueOf(mc.thePlayer.getEntityId());
+                    return mc.thePlayer.getName();
                 }
             });
-            transport.connect(mc.session.getUsername(),"none");
+            transport.connect(Wrapper.getUsername().get(),"none");
             if (IRC.transport == null) {
                 IRC.transport = transport;
             }
@@ -74,7 +75,6 @@ public class IRC extends Module {
         }
     }
     @Listener
-    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void onWorld(WorldEvent event) {
         if (transport != null) {
             transport.sendInGameUsername();

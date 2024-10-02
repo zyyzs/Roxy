@@ -51,6 +51,7 @@ public class Disabler extends Module {
     private static final ModeSetting mode = new ModeSetting("Mode", "GrimAC","WatchDog","GrimAC");
     public static INetHandler packetListener;
     private final BooleanSetting badPacketsF = new BooleanSetting("BadPacketF", false);
+    public static final BooleanSetting badPacketsU = new BooleanSetting("BadPacketU", false);
     private final BooleanSetting test = new BooleanSetting("Test", false);
     private final BooleanSetting higherVersion = new BooleanSetting("Move 1.17+", false);
     private final BooleanSetting fastBreak = new BooleanSetting("Fast Break", false);
@@ -157,22 +158,6 @@ public class Disabler extends Module {
     }
     @Listener
     public void onHigher(PacketSendHigherEvent event) {
-        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.START_SPRINTING)) {
-            c03Check = true;
-        }
-        if (event.getPacket() instanceof C03PacketPlayer) {
-            c03Check = false;
-            if (shouldFix) {
-                mc.thePlayer.setSprinting(true);
-                mc.thePlayer.serverSprintState = true;
-                LogUtil.addChatMessage("Patched BadC0B");
-                shouldFix = false;
-            }
-        }
-        if (event.getPacket() instanceof C0BPacketEntityAction c0b && c0b.getAction().equals(C0BPacketEntityAction.Action.STOP_SPRINTING) && c03Check) {
-            event.setCancelled();
-            shouldFix = true;
-        }
         if (badPacketsF.isEnabled() && event.getPacket() instanceof C0BPacketEntityAction c0b && !event.isCancelled()) {
             if (c0b.getAction() == C0BPacketEntityAction.Action.START_SPRINTING) {
                 if (this.lastSprinting) {
@@ -203,7 +188,7 @@ public class Disabler extends Module {
     
     public static boolean getGrimPost() {
         Disabler dis = ModuleManager.getModule(Disabler.class);
-        boolean result = mode.is("GrimAC") && dis.isState() && mc.thePlayer != null && !(mc.currentScreen instanceof GuiDownloadTerrain) && !noPost();
+        boolean result = mode.is("GrimAC") && dis.isState() && mc.thePlayer != null && !(mc.currentScreen instanceof GuiDownloadTerrain);//&& !noPost();
         if (lastResult && !result) {
             lastResult = false;
             mc.addScheduledTask(Disabler::processPackets);
@@ -219,64 +204,10 @@ public class Disabler extends Module {
         if (mc.currentScreen instanceof GuiDownloadTerrain) {
             return false;
         }
-        if (packet instanceof S00PacketServerInfo) {
-            return false;
-        }
-        if (packet instanceof S01PacketEncryptionRequest) {
-            return false;
-        }
-        if (packet instanceof S38PacketPlayerListItem) {
-            return false;
-        }
-        if (packet instanceof S00PacketDisconnect) {
-            return false;
-        }
-        if (packet instanceof S40PacketDisconnect) {
-            return false;
-        }
-        if (packet instanceof S21PacketChunkData) {
-            return false;
-        }
-        if (packet instanceof S01PacketPong) {
-            return false;
-        }
-        if (packet instanceof S44PacketWorldBorder) {
-            return false;
-        }
-        if (packet instanceof S01PacketJoinGame) {
-            return false;
-        }
-        if (packet instanceof S19PacketEntityHeadLook) {
-            return false;
-        }
-        if (packet instanceof S3EPacketTeams) {
-            return false;
-        }
-        if (packet instanceof S02PacketChat) {
-            return false;
-        }
-        if (packet instanceof S2FPacketSetSlot) {
-            return false;
-        }
-        if (packet instanceof S1CPacketEntityMetadata) {
-            return false;
-        }
-        if (packet instanceof S20PacketEntityProperties) {
-            return false;
-        }
-        if (packet instanceof S35PacketUpdateTileEntity) {
-            return false;
-        }
-        if (packet instanceof S03PacketTimeUpdate) {
-            return false;
-        }
-        if (packet instanceof S47PacketPlayerListHeaderFooter) {
-            return false;
-        }
         if (packet instanceof S12PacketEntityVelocity sPacketEntityVelocity) {
             return sPacketEntityVelocity.getEntityID() == mc.thePlayer.getEntityId();
         }
-        return packet instanceof S27PacketExplosion || packet instanceof S32PacketConfirmTransaction || packet instanceof S08PacketPlayerPosLook || packet instanceof S18PacketEntityTeleport || packet instanceof S19PacketEntityStatus || packet instanceof S04PacketEntityEquipment || packet instanceof S23PacketBlockChange || packet instanceof S22PacketMultiBlockChange || packet instanceof S13PacketDestroyEntities || packet instanceof S00PacketKeepAlive || packet instanceof S06PacketUpdateHealth || packet instanceof S14PacketEntity || packet instanceof S0FPacketSpawnMob || packet instanceof S2DPacketOpenWindow || packet instanceof S30PacketWindowItems || packet instanceof S3FPacketCustomPayload || packet instanceof S2EPacketCloseWindow;
+        return packet instanceof S27PacketExplosion || packet instanceof S32PacketConfirmTransaction || packet instanceof S08PacketPlayerPosLook || packet instanceof S18PacketEntityTeleport;
     }
 
     
@@ -293,19 +224,19 @@ public class Disabler extends Module {
             storedPackets.clear();
         }
     }
-    public static boolean noPost() {
-        return PacketStoringComponent.blinking || BlinkUtils.isBlinking();
-    }
+//    public static boolean noPost() {
+//        return PacketStoringComponent.blinking || BlinkUtils.isBlinking();
+//    }
     
     public static void fixC0F(C0FPacketConfirmTransaction packet) {
         int id = packet.getUid();
         if (id >= 0 || pingPackets.isEmpty()) {
-            PacketUtil.sendPacketNoEvent(packet);
+            PacketUtil.sendPacket(packet);
         }
         else {
             do {
                 int current = pingPackets.getFirst();
-                PacketUtil.sendPacketNoEvent(new C0FPacketConfirmTransaction(packet.getWindowId(), (short)current, true));
+                PacketUtil.sendPacket(new C0FPacketConfirmTransaction(packet.getWindowId(), (short)current, true));
                 pingPackets.pollFirst();
                 if (current == id) {
                     break;

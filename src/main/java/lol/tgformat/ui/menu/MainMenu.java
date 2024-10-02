@@ -17,6 +17,7 @@ import org.lwjgl.opengl.Display;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+import tech.skidonion.obfuscator.inline.Wrapper;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -118,7 +119,7 @@ public class MainMenu extends GuiScreen implements GuiYesNoCallback {
             count += (int) (buttonHeight + 5);
         }
 
-        Display.setTitle("Minecraft 1.8.9 " + " User: " + mc.session.getUsername() + "[" + ("地球入") + "]");
+        Display.setTitle("Minecraft 1.8.9 " + " User: " + Wrapper.getUsername().get() + "[" + ("地球入") + "]");
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

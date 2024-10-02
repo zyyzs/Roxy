@@ -15,7 +15,7 @@ public class FriendsCollection {
                 return true;
             }
         }
-        return IRC.transport != null && IRC.transport.isUser(String.valueOf(entity.getEntityId()));
+        return IRC.transport != null && IRC.transport.isUser(entity.getName());
     }
     public static boolean isFriend(String name) {
         for (String friend : friends) {

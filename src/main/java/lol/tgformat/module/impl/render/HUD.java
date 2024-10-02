@@ -47,6 +47,7 @@ import org.lwjgl.opengl.GL11;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+import tech.skidonion.obfuscator.inline.Wrapper;
 
 import javax.vecmath.Vector2d;
 import java.awt.*;
@@ -208,7 +209,7 @@ public class HUD extends Module {
         ScaledResolution sr = new ScaledResolution(mc);
         float x2 = sr.getScaledWidth() - 3;
         float y2 = sr.getScaledHeight() - 10;
-        String uname = "GuiLogin.uid";
+        String uname = Wrapper.getUsername().get();
         String date = Client.instance.getDate();
         String version = Client.instance.getVersion();
 

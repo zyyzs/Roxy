@@ -31,6 +31,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 import net.netease.utils.RoundedUtils;
 import net.netease.utils.TimeUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -156,13 +157,21 @@ public class Stealer extends Module {
                 }
             }
         }
-        if (mc.thePlayer.openContainer instanceof ContainerBrewingStand brewingStand) {
-            for (int i = 0; i < 3; ++i) {
-                InventoryUtil.windowClick(mc, brewingStand.windowId ,i , 0, InventoryUtil.ClickType.SHIFT_CLICK);
-            }
-            if (openChestTimer.delay(100.0f)) {
+        if (mc.thePlayer.openContainer instanceof ContainerBrewingStand container) {
+
+            if (isBrewingStandEmpty(container) && openChestTimer.delay(100) && timer.delay(100)) {
                 mc.thePlayer.closeScreen();
                 return;
+            }
+
+            for (int i = 0; i < container.tileBrewingStand.getSizeInventory(); ++i) {
+                if (container.tileBrewingStand.getStackInSlot(i) != null) {
+                    if (timer.delay(nextDelay)) {
+                        mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+                        this.nextDelay = (int)(this.delay.getValue() * MathUtil.getRandomInRange(0.75,1.25));
+                        timer.reset();
+                    }
+                }
             }
         }
         if (mc.thePlayer.openContainer instanceof ContainerChest chest) {
@@ -184,6 +193,15 @@ public class Stealer extends Module {
             }
         }
 
+    }
+    private boolean isBrewingStandEmpty(ContainerBrewingStand c) {
+        for (int i = 0; i < c.tileBrewingStand.getSizeInventory(); ++i) {
+            if (c.tileBrewingStand.getStackInSlot(i) != null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private boolean isChestEmpty(ContainerChest c) {
