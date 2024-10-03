@@ -26,7 +26,7 @@ public class Spammer extends Module {
     @Listener
     public void onUpdate(PreUpdateEvent event) {
         if (timer.hasReached(delay.getValue() * 1.5)) {
-            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage("[Roxy-Private]" + AutoL.getRandomText(getTextMode())));
+            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage("[Roxy -> skidonion.tech]" + AutoL.getRandomText(getTextMode())));
             timer.reset();
         }
     }
