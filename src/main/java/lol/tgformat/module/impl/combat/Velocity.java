@@ -118,7 +118,7 @@ public class Velocity extends Module {
     }
 
     @Listener
-    public void onVelocity(VelocityEvent event){
+    public void onUpdate(PreUpdateEvent event){
         if(isNull())return;
         if (mode.is("GrimAC")) {
             if (shouldVelo) {
@@ -132,7 +132,8 @@ public class Velocity extends Module {
                 for (int i = 0; i < 5; i++) {
                     PacketUtil.sendPacket(new C0APacketAnimation());
                     PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-                    event.setReduceAmount(0.07776D);
+                    mc.thePlayer.motionX *= 0.6F;
+                    mc.thePlayer.motionZ *= 0.6F;
                 }
                 mc.thePlayer.setSprinting(true);
                 mc.thePlayer.serverSprintState = true;

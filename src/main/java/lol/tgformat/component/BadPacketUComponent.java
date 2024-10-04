@@ -37,7 +37,6 @@ public class BadPacketUComponent implements IMinecraft {
             if (shouldFix && !c03Check) {
                 shouldFix = false;
                 mc.thePlayer.serverSprintState = true;
-                LogUtil.addChatMessage("Fix C0B Test");
             }
             c03Check = false;
         }

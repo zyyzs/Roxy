@@ -207,7 +207,7 @@ public class Disabler extends Module {
         if (packet instanceof S12PacketEntityVelocity sPacketEntityVelocity) {
             return sPacketEntityVelocity.getEntityID() == mc.thePlayer.getEntityId();
         }
-        return packet instanceof S27PacketExplosion || packet instanceof S32PacketConfirmTransaction || packet instanceof S08PacketPlayerPosLook || packet instanceof S18PacketEntityTeleport;
+        return packet instanceof S27PacketExplosion || packet instanceof S32PacketConfirmTransaction || packet instanceof S08PacketPlayerPosLook || packet instanceof S18PacketEntityTeleport || packet instanceof S19PacketEntityStatus || packet instanceof S04PacketEntityEquipment || packet instanceof S23PacketBlockChange || packet instanceof S22PacketMultiBlockChange || packet instanceof S13PacketDestroyEntities || packet instanceof S00PacketKeepAlive || packet instanceof S06PacketUpdateHealth || packet instanceof S14PacketEntity || packet instanceof S0FPacketSpawnMob|| packet instanceof S3FPacketCustomPayload;
     }
 
     

@@ -56,7 +56,6 @@ public class AutoL extends Module {
             "Get best JNIObfuscator >> jnic.xinxin.cfd || 喜欢许锦良的来支持一下我的JNIC哦 绝对秒杀幻影盾",
             "你现在有没有入权了?",
             "SilenceFix is God in QuickMacro",
-            "SilenceFix花雨庭第一 获取去xinxin.fan",
             "是漏防哥吗?",
             "咋了兄弟,要来偷刀?",
             "你是冯冯死了吗？",
@@ -70,21 +69,10 @@ public class AutoL extends Module {
             "老弟敢不敢跟我的最强欣欣配置对刀一下呢?",
             "许锦良特殊冒泡",
             "最强客户端S\uFFF1ile\uFFF1nc\uFFF1eFix-Bet\uFFF1a",
-            "我徐锦良紧急通知，请大家相互转告，不要在下载WNF脱离盒子了，如果你不害怕电脑一系列的后果，那悉听尊便。",
             "我们的许锦良正在使用漏电黑解绕ID不可升级美版128GB金色后盖全碎屏幕蜘蛛网裂纹只能插1卡电池鼓包45电池健康并且主板断桥大修相机不可用面容损坏充电口进水屏幕漏液出线按键堵塞喇叭炸麦无麦克风听筒损坏的iPhone14ProMax。",
             "经过花雨庭欣欣最强检测,曾经靠自己把naven打退网,把xylitol打退网检测出WNF存在后门",
             "windows能骗你吗?360的那个大家都知道是假的。windows不会骗你的。"
 
-    };
-
-
-    public static String[] Nightsensetext={
-            "[NightSense] 不收徒",
-            "[NightSense] 转人工",
-            "[NightSense] 下课",
-            "[NightSense] 低。",
-            "[NightSense] Ez",
-            "[NightSense] 菜就多练。",
     };
 
     public static String getRandomText(String[] textGroup) {

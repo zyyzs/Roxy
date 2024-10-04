@@ -32,8 +32,8 @@ public class BlinkUtils implements IMinecraft {
                 packet instanceof C0BPacketEntityAction;
     }
     public void startBlink() {
-        blinking = true;
         packets.clear();
+        blinking = true;
     }
     public void stopBlink() {
         blinking = false;

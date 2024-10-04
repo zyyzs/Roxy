@@ -36,7 +36,6 @@ import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.ui.menu.MainMenu;
 import lol.tgformat.ui.splash.SplashScreen;
-import lol.tgformat.utils.move.GappleUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
