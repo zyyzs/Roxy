@@ -15,10 +15,14 @@ import lol.tgformat.utils.block.BlockUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.player.BlinkUtils;
+import lol.tgformat.utils.player.InventoryUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.block.BlockGlass;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -42,6 +46,7 @@ public class AutoSkyWars extends Module {
     private final ModeSetting mode = new ModeSetting("Mode","Solo insane","Solo normal","Solo insane");
     private final NumberSetting delays = new NumberSetting("HypDelay", 1500, 4000, 0, 50);
     private final NumberSetting delay = new NumberSetting("HytDelay",25.0,30.0,20.0,1.0);
+    private final BooleanSetting autoKit = new BooleanSetting("AutoKit", true);
 
     public AutoSkyWars() {
         super("AutoSkyWars", ModuleType.Player);
@@ -118,6 +123,13 @@ public class AutoSkyWars extends Module {
                 waiting = false;
             }
         }
+        if(modes.is("HYT")&&autoKit.isEnabled()){
+            if(mc.currentScreen!=null){
+                if(mc.currentScreen instanceof GuiChest chest){
+                    mc.playerController.windowClick(chest.inventorySlots.windowId, 6, 0, 0, mc.thePlayer);
+                }
+            }
+        }
     }
 
 
@@ -136,6 +148,13 @@ public class AutoSkyWars extends Module {
             if (text.contains("开始倒计时: 3 秒")) {
                 BlinkUtils.setCantSlowRelease(true);
                 ModuleManager.getModule(Blink.class).setState(true);
+            }
+            if(text.contains("开始倒计时: 2 秒") && autoKit.isEnabled()){
+                int slot = InventoryUtil.findItem(0, 9, Items.ender_eye);
+                int nslot = mc.thePlayer.inventory.currentItem;
+                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(slot));
+                mc.rightClickMouse();
+                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(nslot));
             }
             if (text.contains("开始倒计时: 1 秒")) {
                 game = true;
