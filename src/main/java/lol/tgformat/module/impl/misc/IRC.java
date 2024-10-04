@@ -1,5 +1,6 @@
 package lol.tgformat.module.impl.misc;
 
+import lol.tgformat.Client;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.ChatInputEvent;
 import lol.tgformat.events.WorldEvent;
@@ -14,6 +15,9 @@ import tech.skidonion.obfuscator.inline.Wrapper;
 import us.cubk.irc.client.IRCHandler;
 import us.cubk.irc.client.IRCTransport;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 /**
@@ -56,7 +60,13 @@ public class IRC extends Module {
                     return mc.thePlayer.getName();
                 }
             });
-            transport.connect(Wrapper.getUsername().get(),"none");
+            if(Wrapper.getUsername().get().equals("development")){
+                File ircname = new File(mc.mcDataDir+"/ircname");
+                BufferedReader br = new BufferedReader(new FileReader(ircname));
+                transport.connect(br.readLine(), "none");
+            }else{
+                transport.connect(Wrapper.getUsername().get(),"none");
+            }
             if (IRC.transport == null) {
                 IRC.transport = transport;
             }
