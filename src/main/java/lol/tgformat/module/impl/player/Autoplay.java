@@ -10,12 +10,15 @@ import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.impl.movement.Speed;
 import lol.tgformat.ui.notifications.NotificationManager;
 import lol.tgformat.ui.notifications.NotificationType;
+import lol.tgformat.utils.client.LogUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static lol.tgformat.module.impl.misc.IRC.transport;
 
 public class Autoplay extends Module {
     public Autoplay() {
@@ -35,6 +38,9 @@ public class Autoplay extends Module {
             String text = s02PacketChat.getChatComponent().getUnformattedText();
             Matcher matcher4 = Pattern.compile("玩家(.*?)在本局游戏中行为异常").matcher(text);
             if (matcher4.find()) {
+                if (transport.isUser(matcher4.group(1))){
+                    LogUtil.addIRCMessage("我们伟大的"+transport.getIgn(matcher4.group(1))+"牺牲了他的账号"+matcher4.group(1));
+                }
                 NotificationManager.post(NotificationType.WARNING, "Ban Checker", "A Player Was Banned.", 5f);
             }
 

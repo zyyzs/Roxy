@@ -189,6 +189,7 @@ public class Scaffold extends Module {
                 case "Simple":{
                     int X = sr.getScaledWidth() / 2 - 68;
                     mc.fontRendererObj.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, (int) (X + 10 + 60 - tahomaFont.boldSize(18).getStringWidth("Blocks " + mc.thePlayer.getHeldItem().stackSize)/2), (y + 6), new Color(255, 255, 255).getRGB());
+                    break;
                 }
                 case "Island":{
                     anim.setDirection(this.isState() ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -218,6 +219,7 @@ public class Scaffold extends Module {
                         RenderHelper.disableStandardItemLighting();
                     }
                     glDisable(GL_SCISSOR_TEST);
+                    break;
 
                 }
 
