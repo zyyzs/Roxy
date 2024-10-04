@@ -126,7 +126,8 @@ public class AutoSkyWars extends Module {
         if(modes.is("HYT")&&autoKit.isEnabled()){
             if(mc.currentScreen!=null){
                 if(mc.currentScreen instanceof GuiChest chest){
-                    mc.playerController.windowClick(chest.inventorySlots.windowId, 6, 0, 0, mc.thePlayer);
+                    if(chest.lowerChestInventory.getDisplayName().toString().contains("职业"))
+                        mc.playerController.windowClick(chest.inventorySlots.windowId, 6, 0, 0, mc.thePlayer);
                 }
             }
         }
@@ -149,12 +150,14 @@ public class AutoSkyWars extends Module {
                 BlinkUtils.setCantSlowRelease(true);
                 ModuleManager.getModule(Blink.class).setState(true);
             }
-            if(text.contains("开始倒计时: 2 秒") && autoKit.isEnabled()){
-                int slot = InventoryUtil.findItem(0, 9, Items.ender_eye);
+            if(text.contains("开始倒计时: 5 秒") && autoKit.isEnabled()){
+                int slot = 0;
                 int nslot = mc.thePlayer.inventory.currentItem;
                 mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(slot));
                 mc.rightClickMouse();
                 mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(nslot));
+                System.out.println(slot);
+                System.out.println(nslot);
             }
             if (text.contains("开始倒计时: 1 秒")) {
                 game = true;
