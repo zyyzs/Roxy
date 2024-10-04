@@ -29,6 +29,7 @@ import lol.tgformat.utils.enums.MovementFix;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.player.CurrentRotationUtil;
+import lol.tgformat.utils.render.ESPColor;
 import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import lol.tgformat.utils.vector.Vector2f;
@@ -45,6 +46,8 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.util.*;
+import net.netease.utils.ColorUtil;
+import org.lwjgl.opengl.GL11;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
@@ -71,7 +74,7 @@ public class KillAura extends Module {
     private final NumberSetting rotationspeed = new NumberSetting("RotationSpeed",10f,10f,0f,1f);
     private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet", "Off");
     private final ModeSetting moveFix = new ModeSetting("MovementFix", "Silent", "Silent", "Strict", "None", "BackSprint");
-    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","Exhi");
+    private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","Exhi","Ring");
     private final BooleanSetting polygon = new BooleanSetting("Polygon",false);
     private final BooleanSetting keepsprint = new BooleanSetting("KeepSprint", true);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
@@ -85,6 +88,7 @@ public class KillAura extends Module {
     @Getter
     public static EntityLivingBase target;
     private EntityLivingBase ESPTarget;
+
 
     @Override
     public void onDisable() {
@@ -328,6 +332,75 @@ public class KillAura extends Module {
                 GlStateManager.popMatrix();
                 break;
             }
+            case "Ring":{
+                Anim.setDirection(target != null ? Direction.FORWARDS : Direction.BACKWARDS);
+                if (target != null) {
+                    ESPTarget = target;
+                }
+                if (Anim.finished(Direction.BACKWARDS)) {
+                    ESPTarget = null;
+                }
+                if (ESPTarget != null) {
+
+                    EntityLivingBase player = (EntityLivingBase) this.target;
+
+                    final Color color = this.getColor(player);
+
+                    if (mc.getRenderManager() == null || player == null) return;
+
+                    final double x = player.prevPosX + (player.posX - player.prevPosX) * partialTicks - (mc.getRenderManager()).renderPosX;
+                    final double y = player.prevPosY + (player.posY - player.prevPosY) * partialTicks + Math.sin(System.currentTimeMillis() / 2E+2) + 1 - (mc.getRenderManager()).renderPosY;
+                    final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks - (mc.getRenderManager()).renderPosZ;
+
+                    GL11.glPushMatrix();
+                    GL11.glDisable(3553);
+                    GL11.glEnable(2848);
+                    GL11.glEnable(2832);
+                    GL11.glEnable(3042);
+                    GL11.glBlendFunc(770, 771);
+                    GL11.glHint(3154, 4354);
+                    GL11.glHint(3155, 4354);
+                    GL11.glHint(3153, 4354);
+                    GL11.glDepthMask(false);
+                    GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
+                    GL11.glShadeModel(GL11.GL_SMOOTH);
+                    GlStateManager.disableCull();
+                    GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+
+                    for (float i = 0; i <= Math.PI * 2 + ((Math.PI * 2) / 32.F); i += (Math.PI * 2) / 32.F) {
+                        double vecX = x + 0.67 * Math.cos(i);
+                        double vecZ = z + 0.67 * Math.sin(i);
+
+                        RenderUtil.color(ColorUtil.withAlpha(color, (int) (255 * 0.25)).getRGB());
+                        GL11.glVertex3d(vecX, y, vecZ);
+                    }
+
+                    for (float i = 0; i <= Math.PI * 2 + (Math.PI * 2) / 32.F; i += (Math.PI * 2) / 32.F) {
+                        double vecX = x + 0.67 * Math.cos(i);
+                        double vecZ = z + 0.67 * Math.sin(i);
+
+                        RenderUtil.color(ColorUtil.withAlpha(color, (int) (255 * 0.25)).getRGB());
+                        GL11.glVertex3d(vecX, y, vecZ);
+
+                        RenderUtil.color(ColorUtil.withAlpha(color, 0).getRGB());
+                        GL11.glVertex3d(vecX, y - Math.cos(System.currentTimeMillis() / 2E+2) / 2.0F, vecZ);
+                    }
+
+                    GL11.glEnd();
+                    GL11.glShadeModel(GL11.GL_FLAT);
+                    GL11.glDepthMask(true);
+                    GL11.glEnable(2929);
+                    GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+                    GlStateManager.enableCull();
+                    GL11.glDisable(2848);
+                    GL11.glDisable(2848);
+                    GL11.glEnable(2832);
+                    GL11.glEnable(3553);
+                    GL11.glPopMatrix();
+                    RenderUtil.color(Color.WHITE.getRGB());
+                }
+                break;
+            }
         }
     }
 
@@ -394,6 +467,20 @@ public class KillAura extends Module {
         glEnable(GL_TEXTURE_2D);
         glColor4f(1, 1, 1, 1);
         glPopMatrix();
+    }
+
+    public Color getColor(EntityLivingBase entity) {
+        Color color = new Color(0,200,200);
+
+        if (entity == null) return new Color(255,255,255,0);
+
+        if (entity.hurtTime > 0) {
+            color = new Color(0,200,200,150);
+        } else if (target == entity) {
+            color = new Color(0,200,200,150);
+        }
+
+        return color;
     }
 
 }

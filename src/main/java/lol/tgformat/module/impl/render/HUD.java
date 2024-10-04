@@ -207,16 +207,16 @@ public class HUD extends Module {
 
     public static void oninfo() {
         ScaledResolution sr = new ScaledResolution(mc);
-        float x2 = sr.getScaledWidth() - 3;
-        float y2 = sr.getScaledHeight() - 10;
+        float x = sr.getScaledWidth() - 3;
+        float y = sr.getScaledHeight() - 10;
         String uname = Wrapper.getUsername().get();
         String date = Client.instance.getDate();
         String version = Client.instance.getVersion();
 
 
         mc.fontRendererObj.drawStringWithShadow(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - "  + uname,
-                x2 - mc.fontRendererObj.getStringWidth(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - " + uname),
-                y2,
+                x - mc.fontRendererObj.getStringWidth(ChatFormatting.GRAY + version + " - " + ChatFormatting.WHITE + date + ChatFormatting.GRAY + " - " + uname),
+                y,
                 -1
         );
     }
@@ -525,7 +525,6 @@ public class HUD extends Module {
                         float seperation = healthBarWidth / 5;
                         GLUtil.startBlend();
                         RenderUtil.color(textColor.getRGB());
-                        //绘制装备或者手持物品
                         GuiInventory.drawEntityOnScreen((int) (x + 3 + size / 2f), (int) (y + size + 1), 18, entity.rotationYaw, -entity.rotationPitch, entity);
 
                         RenderHelper.enableGUIStandardItemLighting();
@@ -548,9 +547,11 @@ public class HUD extends Module {
                         RenderHelper.disableStandardItemLighting();
                         break;
                     }
+
                 }
 
             }, x, y, x, y);
+
         }
 
     }

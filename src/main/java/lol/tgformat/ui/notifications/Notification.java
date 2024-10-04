@@ -63,5 +63,21 @@ public class Notification implements Utils {
         tenacityBoldFont14.drawString(getDescription(), x + 7 + FontUtil.iconFont40.getStringWidth(getNotificationType().getIcon()), y + 8.5f + tenacity18.getHeight(), Color.WHITE.getRGB());
     }
 
+    public void drawLettuce1(float x, float y, float width, float height) {
+        Color color = ColorUtil.applyOpacity(ColorUtil.interpolateColorC(Color.BLACK, getNotificationType().getColor(), .65f), .7f * 100);
+
+
+        float percentage = Math.min((timerUtil.getTime() / getTime()), 1);
+        Gui.drawRect(x, y, x + width, y + height, new Color(0, 0, 0, 70).getRGB());
+        Gui.drawRect(x, y, x + (width * percentage), y + height, color.getRGB());
+        Color notificationColor = ColorUtil.applyOpacity(getNotificationType().getColor(), 70);
+        Color textColor = ColorUtil.applyOpacity(Color.WHITE, 80);
+
+        //Icon
+        FontManager.icontestFont35.drawString(getNotificationType().getIcon(), x + 3, (y + FontManager.icontestFont35.getMiddleOfBox(height)), notificationColor.getRGB());
+
+        FontManager.arial20.drawString(getDescription(), x + 2.8f + FontManager.icontestFont35.getStringWidth(getNotificationType().getIcon()) + 2f, y + 8f, textColor.getRGB());
+    }
+
 
 }

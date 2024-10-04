@@ -17,21 +17,23 @@ import lol.tgformat.events.render.Render3DEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.render.HUD;
 import lol.tgformat.module.values.impl.BooleanSetting;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.ui.font.FontUtil;
-import lol.tgformat.ui.utils.RoundedUtil;
+import lol.tgformat.ui.utils.Animation;
+import lol.tgformat.ui.utils.DecelerateAnimation;
+import lol.tgformat.ui.utils.Direction;
 import lol.tgformat.utils.block.*;
 import lol.tgformat.utils.enums.MovementFix;
 import lol.tgformat.utils.math.MathUtil;
 import lol.tgformat.utils.move.MoveUtil;
 import lol.tgformat.utils.player.InventoryUtil;
-import lol.tgformat.utils.render.GlowUtils;
+import lol.tgformat.utils.render.DrawUtil;
 import lol.tgformat.utils.render.RenderUtils;
 import lol.tgformat.utils.rotation.RayCastUtil;
 import lol.tgformat.utils.rotation.RotationUtil;
 import lol.tgformat.utils.vector.Vector2f;
-import lombok.Builder;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -48,6 +50,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
+import net.netease.font.FontManager;
 import net.netease.utils.AnimationUtil;
 import net.netease.utils.RenderUtil;
 import org.lwjgl.opengl.GL11;
@@ -56,6 +59,8 @@ import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import static lol.tgformat.ui.clickgui.Utils.tahomaFont;
 import static lol.tgformat.ui.clickgui.Utils.tenacityBoldFont18;
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glDisable;
 
 /**
  * @author TG_format
@@ -77,7 +82,7 @@ public class Scaffold extends Module {
     public final BooleanSetting sameY = new BooleanSetting("SameY", false);
     public final BooleanSetting esp = new BooleanSetting("ESP", true);
     public final BooleanSetting count = new BooleanSetting("Count", true);
-    public final ModeSetting countmode = new ModeSetting("Count Mode","Default","Default","Simple");
+    public final ModeSetting countmode = new ModeSetting("Count Mode","Default","Default","Simple","Island");
     public boolean tip = false;
     protected Random rand = new Random();
     private final List<BlockPos> placedBlocks = new ArrayList<>();
@@ -92,6 +97,7 @@ public class Scaffold extends Module {
     private boolean canTellyPlace;
     private int prevItem = 0;
     private EnumFacing facing;
+    private final Animation anim = new DecelerateAnimation(250, 1);
 
     public Scaffold() {
         super("Scaffold", ModuleType.World);
@@ -183,6 +189,36 @@ public class Scaffold extends Module {
                 case "Simple":{
                     int X = sr.getScaledWidth() / 2 - 68;
                     mc.fontRendererObj.drawString("Blocks " + mc.thePlayer.getHeldItem().stackSize, (int) (X + 10 + 60 - tahomaFont.boldSize(18).getStringWidth("Blocks " + mc.thePlayer.getHeldItem().stackSize)/2), (y + 6), new Color(255, 255, 255).getRGB());
+                }
+                case "Island":{
+                    anim.setDirection(this.isState() ? Direction.FORWARDS : Direction.BACKWARDS);
+                    if (!this.isState() && anim.isDone()) return;
+                    double output = anim.getOutput();
+                    int slot = getBlockSlot();
+                    ItemStack heldItem = slot == -1 ? null : mc.thePlayer.inventory.mainInventory[slot];
+                    int count = slot == -1 ? 0 : getBlockCount();
+                    String countStr = String.valueOf(count);
+                    float blockWH = heldItem != null ? 15 : -2;
+                    int spacing = 3;
+                    float x1, y1;
+                    String text = "§l" + countStr + "§r Block" + (count != 1 ? "s" : "");
+                    float textWidth = FontUtil.tenacityFont18.getStringWidth(text);
+                    float totalWidth = (float) (((textWidth + blockWH + spacing) + 6 + 2) * output);
+                    x1 = sr.getScaledWidth() / 2f - (totalWidth / 2f);
+                    y1= sr.getScaledHeight() - (sr.getScaledHeight() / 2f + 30);
+                    float height1 = 20;
+                    RenderUtil.scissorStart(x1 - 1.5, y1 - 1.5, totalWidth + 3, height + 3);
+
+                    RenderUtil.drawRectWH(x, y, totalWidth, height, RenderUtil.tripleColor(20, .55f).getRGB());
+                    FontUtil.tenacityFont18.drawString(text, x1 + 2 + blockWH + spacing + 2, y1 + FontUtil.tenacityFont18.getMiddleOfBox(height1) + 3f, -1);
+
+                    if (heldItem != null) {
+                        RenderHelper.enableGUIStandardItemLighting();
+                        mc.getRenderItem().renderItemAndEffectIntoGUI(heldItem, (int) x1 + 3 + 1, (int) (y1 + 10 - (blockWH / 2)));
+                        RenderHelper.disableStandardItemLighting();
+                    }
+                    glDisable(GL_SCISSOR_TEST);
+
                 }
 
             }

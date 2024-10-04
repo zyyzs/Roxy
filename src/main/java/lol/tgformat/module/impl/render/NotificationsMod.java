@@ -21,7 +21,7 @@ import static net.netease.font.FontManager.*;
  */
 public class NotificationsMod extends Module {
     private final NumberSetting time = new NumberSetting("Time on Screen", 2, 10, 1, .5);
-    private final ModeSetting modes = new ModeSetting("Mode", "Default", "Default", "New", "Exhibition");
+    private final ModeSetting modes = new ModeSetting("Mode", "Default", "Default", "New", "Exhibition","Island");
     public static final BooleanSetting toggleNotifications = new BooleanSetting("Show Toggle", true);
     public int offsetValue = 0;
 
@@ -111,6 +111,7 @@ public class NotificationsMod extends Module {
                 }
                 break;
             }
+
         }
     }
 }

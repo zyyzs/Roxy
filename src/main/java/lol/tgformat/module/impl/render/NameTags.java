@@ -31,6 +31,7 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
+import us.cubk.irc.client.IRCTransport;
 
 import java.awt.*;
 import java.nio.FloatBuffer;
@@ -39,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
+import static lol.tgformat.module.impl.misc.IRC.transport;
 import static net.netease.font.FontManager.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_VIEWPORT;
@@ -98,7 +100,11 @@ public class NameTags extends Module {
             } else if (PlayerUtil.hyt.hasEatenGoldenApple((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
                 WarnRank = "§4[GApple] ";
             } else if (FriendsCollection.isFriend(renderingEntity)) {
-                WarnRank = "§a[Friend] ";
+                if (transport.isUser(renderingEntity.getName())){
+                    WarnRank = "§a["+transport.getName(renderingEntity.getName())+"]";
+                }else {
+                    WarnRank = "§a[Friend] ";
+                }
             }
 
             if (mc.gameSettings.thirdPersonView == 0 && entity == mc.thePlayer) {

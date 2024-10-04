@@ -91,6 +91,41 @@ public class RenderUtil implements IMinecraft {
         glEnable(GL_DEPTH_TEST);
     }
 
+    public static void scissorStart(double x, double y, double width, double height) {
+        glEnable(GL_SCISSOR_TEST);
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        final double scale = sr.getScaleFactor();
+        double finalHeight = height * scale;
+        double finalY = (sr.getScaledHeight() - y) * scale;
+        double finalX = x * scale;
+        double finalWidth = width * scale;
+        glScissor((int) finalX, (int) (finalY - finalHeight), (int) finalWidth, (int) finalHeight);
+    }
+
+    public static Color tripleColor(int rgbValue, float alpha) {
+        alpha = Math.min(1, Math.max(0, alpha));
+        return new Color(rgbValue, rgbValue, rgbValue, (int) (255 * alpha));
+    }
+
+    public static void drawRectWH(double x, double y, double width, double height, int color) {
+        RenderUtil.resetColor();
+        RenderUtil.setAlphaLimit(0);
+        GLUtil.setup2DRendering(true);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+
+        worldrenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(x, y, 0.0D).color(color).endVertex();
+        worldrenderer.pos(x, y + height, 0.0D).color(color).endVertex();
+        worldrenderer.pos(x + width, y + height, 0.0D).color(color).endVertex();
+        worldrenderer.pos(x + width, y, 0.0D).color(color).endVertex();
+        tessellator.draw();
+
+        GLUtil.end2DRendering();
+    }
+
+
     public static void drawBox(EntityLivingBase player, Color color, float partialTicks) {
         double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks - RenderUtil.mc.getRenderManager().viewerPosX;
         double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks - RenderUtil.mc.getRenderManager().viewerPosY;
