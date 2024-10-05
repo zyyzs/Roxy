@@ -7,6 +7,7 @@ import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.misc.IRC;
 import lol.tgformat.module.impl.misc.Teams;
 import lol.tgformat.module.impl.player.Blink;
 import lol.tgformat.module.impl.world.Scaffold;
@@ -65,7 +66,15 @@ public class TrowableAura extends Module {
 
         targets.sort(Comparator.comparingDouble(mc.thePlayer::getDistanceToEntity));
         if (!targets.isEmpty()) {
-            target = targets.getFirst();
+            if (IRC.transport.isUser(targets.getFirst().getName())){
+                if (targets.get(2)!=null){
+                    target = targets.get(2);
+                }else {
+                    target = null;
+                }
+            }else {
+                target = targets.getFirst();
+            }
         } else {
             target = null;
         }

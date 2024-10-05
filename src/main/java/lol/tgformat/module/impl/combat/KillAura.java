@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -239,6 +240,7 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
+                || !(entity instanceof EntityAnimal)
                 || FriendsCollection.isFriend(entity);
     }
 

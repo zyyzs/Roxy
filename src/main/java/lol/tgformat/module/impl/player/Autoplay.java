@@ -36,13 +36,7 @@ public class Autoplay extends Module {
         if (packet instanceof S02PacketChat) {
             S02PacketChat s02PacketChat = (S02PacketChat) packet;
             String text = s02PacketChat.getChatComponent().getUnformattedText();
-            Matcher matcher4 = Pattern.compile("玩家(.*?)在本局游戏中行为异常").matcher(text);
-            if (matcher4.find()) {
-                if (transport.isUser(matcher4.group(1))){
-                    LogUtil.addIRCMessage("我们伟大的"+transport.getIgn(matcher4.group(1))+"牺牲了他的账号"+matcher4.group(1));
-                }
-                NotificationManager.post(NotificationType.WARNING, "Ban Checker", "A Player Was Banned.", 5f);
-            }
+
 
             if (text.contains("开始倒计时: 1 秒")) {
                 NotificationManager.post(NotificationType.INFO, "Game Started", "Good Game!");

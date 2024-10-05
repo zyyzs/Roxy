@@ -101,7 +101,7 @@ public class NameTags extends Module {
                 WarnRank = "§4[GApple] ";
             } else if (FriendsCollection.isFriend(renderingEntity)) {
                 if (transport.isUser(renderingEntity.getName())){
-                    WarnRank = "§a["+transport.getName(renderingEntity.getName())+"]";
+                    WarnRank = "§a["+transport.getName(renderingEntity.getName())+"§a]";
                 }else {
                     WarnRank = "§a[Friend] ";
                 }
