@@ -1,5 +1,9 @@
 package lol.tgformat.module.impl.combat;
 
+import com.viaversion.viarewind.protocol.protocol1_8to1_9.Protocol1_8To1_9;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Type;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.component.RotationComponent;
 import lol.tgformat.events.PreUpdateEvent;
@@ -73,7 +77,7 @@ public class KillAura extends Module {
     private final NumberSetting startrange = new NumberSetting("StartRange",3.3f,6.0f,1.0f,0.1f);
     private final NumberSetting range = new NumberSetting("Range",3.0f,6.0f,1.0f,0.1f);
     private final NumberSetting rotationspeed = new NumberSetting("RotationSpeed",10f,10f,0f,1f);
-    private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet", "Off");
+    private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet","Test", "Off");
     private final ModeSetting moveFix = new ModeSetting("MovementFix", "Silent", "Silent", "Strict", "None", "BackSprint");
     private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","Exhi","Ring");
     private final BooleanSetting polygon = new BooleanSetting("Polygon",false);
@@ -125,6 +129,10 @@ public class KillAura extends Module {
                 case "GrimAC":{
                     mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
                 }
+                case "Test":{
+                    mc.getNetHandler().getNetworkManager().sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+                    mc.gameSettings.keyBindUseItem.pressed = true;
+                }
             }
         }
         if (target == null) return;
@@ -138,6 +146,9 @@ public class KillAura extends Module {
         }
         if (attackmode.is("Pre")) {
             attack();
+        }
+        if (target == null || !isSword()) {
+            mc.gameSettings.keyBindUseItem.pressed = false;
         }
     }
     @Listener
@@ -199,6 +210,10 @@ public class KillAura extends Module {
                 mc.playerController.attackEntity(mc.thePlayer, target);
                 this.attackTimer.reset();
             }
+        }
+        if (ModuleManager.getModule(Gapple.class).isState()){
+            mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+            mc.gameSettings.keyBindUseItem.pressed = true;
         }
     }
     public boolean isBlocking() {

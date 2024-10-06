@@ -29,6 +29,8 @@ import net.optifine.util.FontUtils;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
 
+import static lol.tgformat.accessable.IMinecraft.mc;
+
 public class FontRenderer implements IResourceManagerReloadListener
 {
     private static final ResourceLocation[] unicodePageLocations = new ResourceLocation[256];
@@ -651,6 +653,13 @@ public class FontRenderer implements IResourceManagerReloadListener
         if (index2 != -1) {
             text = text.substring(0, index2) + "吉吉岛" + text.substring(index2 + "布吉岛".length());
         }
+        if (mc.thePlayer != null){
+            index =text.indexOf(mc.thePlayer.getName());
+            if (index != -1) {
+                text = text.substring(0, index) + "徐锦良" + text.substring(index + mc.thePlayer.getName().length());
+            }
+        }
+
         if (text == null)
         {
             return 0;
