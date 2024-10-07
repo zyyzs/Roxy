@@ -4,9 +4,12 @@ import lol.tgformat.accessable.IMinecraft;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
+import lol.tgformat.module.ModuleManager;
+import lol.tgformat.module.impl.combat.Gapple;
 import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.BlinkUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
@@ -21,7 +24,7 @@ public class BadPacketUComponent implements IMinecraft {
     private static boolean c03Check = false;
     private static boolean shouldFix = false;
     public static boolean onPacket(Packet<?> packet) {
-        if (!Disabler.badPacketsU.isEnabled()) {
+        if (!Disabler.badPacketsU.isEnabled()) {//跳过检查 && BlinkUtils.isBlinking()
             return false;
         }
         if (packet instanceof C0BPacketEntityAction c0b) {
@@ -36,7 +39,7 @@ public class BadPacketUComponent implements IMinecraft {
         if (packet instanceof C03PacketPlayer) {
             if (shouldFix && !c03Check) {
                 shouldFix = false;
-                mc.thePlayer.serverSprintState = true;
+                PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
             }
             c03Check = false;
         }

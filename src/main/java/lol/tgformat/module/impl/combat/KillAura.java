@@ -1,9 +1,5 @@
 package lol.tgformat.module.impl.combat;
 
-import com.viaversion.viarewind.protocol.protocol1_8to1_9.Protocol1_8To1_9;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.component.RotationComponent;
 import lol.tgformat.events.PreUpdateEvent;
@@ -42,7 +38,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,7 +72,7 @@ public class KillAura extends Module {
     private final NumberSetting startrange = new NumberSetting("StartRange",3.3f,6.0f,1.0f,0.1f);
     private final NumberSetting range = new NumberSetting("Range",3.0f,6.0f,1.0f,0.1f);
     private final NumberSetting rotationspeed = new NumberSetting("RotationSpeed",10f,10f,0f,1f);
-    private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Packet","Test", "Off");
+    private final ModeSetting autoblockmods = new ModeSetting("AutoBlockMods", "Off", "GrimAC", "Off");
     private final ModeSetting moveFix = new ModeSetting("MovementFix", "Silent", "Silent", "Strict", "None", "BackSprint");
     private final ModeSetting espmode = new ModeSetting("ESPMode", "None", "Jello", "Box", "None", "Nursultan","Exhi","Ring");
     private final BooleanSetting polygon = new BooleanSetting("Polygon",false);
@@ -119,19 +114,13 @@ public class KillAura extends Module {
         }
         if (isPlayerNear() && isSword()) {
             switch (autoblockmods.getMode()) {
-                case "Packet": {
+                case "GrimAC": {
                     PacketUtil.send1_12Block();
+                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
                     break;
                 }
                 case "Off": {
                     break;
-                }
-                case "GrimAC":{
-                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-                }
-                case "Test":{
-                    mc.getNetHandler().getNetworkManager().sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-                    mc.gameSettings.keyBindUseItem.pressed = true;
                 }
             }
         }
@@ -146,9 +135,6 @@ public class KillAura extends Module {
         }
         if (attackmode.is("Pre")) {
             attack();
-        }
-        if (target == null || !isSword()) {
-            mc.gameSettings.keyBindUseItem.pressed = false;
         }
     }
     @Listener
@@ -170,7 +156,7 @@ public class KillAura extends Module {
             target = null;
             return;
         }
-        if (autoblockmods.is("Packet")) {
+        if (autoblockmods.is("GrimAC")) {
             if (isSword()) {
                 mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
                 if (mc.thePlayer.isUsingItem() && isSword()) {
@@ -195,10 +181,8 @@ public class KillAura extends Module {
     @Listener
     public void onReceive(PacketReceiveEvent event) {
         if (isNull()) return;
-        if (event.getPacket() instanceof S2FPacketSetSlot s2f && target != null && autoblockmods.is("GrimAC") && s2f.getItem().getItem() instanceof ItemSword) {
-            if (isSword() && mc.thePlayer.isUsingItem()) {
-                event.setCancelled();
-            }
+        if (event.getPacket() instanceof S2FPacketSetSlot s2f && target != null && s2f.getItem().getItem() instanceof ItemSword) {
+            event.setCancelled(true);
         }
     }
     public void attack() {
@@ -210,10 +194,6 @@ public class KillAura extends Module {
                 mc.playerController.attackEntity(mc.thePlayer, target);
                 this.attackTimer.reset();
             }
-        }
-        if (ModuleManager.getModule(Gapple.class).isState()){
-            mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-            mc.gameSettings.keyBindUseItem.pressed = true;
         }
     }
     public boolean isBlocking() {
@@ -255,7 +235,6 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
-                || !(entity instanceof EntityAnimal)
                 || FriendsCollection.isFriend(entity);
     }
 

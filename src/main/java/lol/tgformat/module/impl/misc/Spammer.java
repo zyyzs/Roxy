@@ -6,6 +6,7 @@ import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
+import lol.tgformat.utils.chat.SpammerUtils;
 import lol.tgformat.utils.network.PacketUtil;
 import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.network.play.client.C01PacketChatMessage;
@@ -26,11 +27,11 @@ public class Spammer extends Module {
     @Listener
     public void onUpdate(PreUpdateEvent event) {
         if (timer.hasReached(delay.getValue() * 1.5)) {
-            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage("[Roxy -> skidonion.tech]" + AutoL.getRandomText(getTextMode())));
+            PacketUtil.sendPacketNoEvent(new C01PacketChatMessage("[RoxyClient -> skidonion.tech 0VLGapple 40r永久仅限国庆节]" + AutoL.getRandomText(getTextMode())));
             timer.reset();
         }
     }
     public String[] getTextMode() {
-        return AutoL.hytText;
+        return SpammerUtils.HHAF;
     }
 }

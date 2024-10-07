@@ -126,17 +126,17 @@ public class Velocity extends Module {
                     reset();
                     return;
                 }
-                if (!mc.thePlayer.serverSprintState) {
-                    PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-                }
                 for (int i = 0; i < 5; i++) {
+                    if (!mc.thePlayer.serverSprintState) {
+                        PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
+                        mc.thePlayer.setSprinting(true);
+                        mc.thePlayer.serverSprintState = true;
+                    }
                     PacketUtil.sendPacket(new C0APacketAnimation());
                     PacketUtil.sendPacket(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
                     mc.thePlayer.motionX *= 0.6F;
                     mc.thePlayer.motionZ *= 0.6F;
                 }
-                mc.thePlayer.setSprinting(true);
-                mc.thePlayer.serverSprintState = true;
                 shouldVelo = false;
             }
         }

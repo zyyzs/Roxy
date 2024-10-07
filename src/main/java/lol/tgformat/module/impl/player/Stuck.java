@@ -17,6 +17,7 @@ import lol.tgformat.utils.vector.Vector2f;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.network.play.server.*;
@@ -74,7 +75,7 @@ public class Stuck extends Module {
     @Listener
     public void onSend(PacketSendEvent event) {
         if (ticksDelayCancel > 0) return;
-        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement c08) {
+        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement c08 && !isBow()) {
             final Vector2f current = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
             final float f = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
             final float gcd = f * f * f * 1.2f;
@@ -86,16 +87,23 @@ public class Stuck extends Module {
             PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(current.x, current.y, mc.thePlayer.onGround));
             if (isBlock()) {
                 PacketUtil.sendPacketNoEvent(c08);
-            }
-            else {
+            } else {
                 PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
             }
         }
+        if (isBow() && event.getPacket() instanceof C07PacketPlayerDigging c07 && c07.getStatus().equals(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM)) {
+            final Vector2f current = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            final float f = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
+            final float gcd = f * f * f * 1.2f;
+            current.x -= current.x % gcd;
+            current.y -= current.y % gcd;
+            if (this.rotation.x == current.x && this.rotation.y == current.y) return;
+            this.rotation = current;
+            event.setCancelled(true);
+            PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(current.x, current.y, mc.thePlayer.onGround));
+            PacketUtil.sendPacketNoEvent(c07);
+        }
         if (event.getPacket() instanceof C03PacketPlayer) {
-            Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
-            if(scaffold.isState()){
-                scaffold.setState(false);
-            }
             event.setCancelled(true);
         }
     }

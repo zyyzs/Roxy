@@ -18,18 +18,14 @@ import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.move.MoveUtil;
 import lol.tgformat.utils.network.PacketUtil;
-import lol.tgformat.utils.render.GlowUtils;
 import lol.tgformat.utils.timer.StopWatch;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.network.play.server.*;
-import net.netease.font.FontManager;
 import net.netease.utils.RoundedUtils;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -43,7 +39,6 @@ import java.util.LinkedList;
  */
 
 @Renamer
-
 @StringEncryption
 public class Timer extends Module {
 
@@ -51,6 +46,7 @@ public class Timer extends Module {
     private final NumberSetting speed = new NumberSetting("TimerSpeed", 3.0, 6.0, 1.0,0.1);
     private final BooleanSetting dis = new BooleanSetting("AutoDisable", true);
     private final BooleanSetting dissca = new BooleanSetting("AutoDisSca", true);
+    private final BooleanSetting scaOnly = new BooleanSetting("ScaffoldOnly", true);
     private final BooleanSetting poslook = new BooleanSetting("PosLook", true);
     private final BooleanSetting debug = new BooleanSetting("DeBug", true);
     private final BooleanSetting render = new BooleanSetting("Render", true);
@@ -90,7 +86,7 @@ public class Timer extends Module {
             Packet<?> packet = event.getPacket();
             if (packet instanceof S32PacketConfirmTransaction) {
                 event.setCancelled();
-                mc.getNetHandler().addToSendQueue(new C0FPacketConfirmTransaction(0, (short) 0, true));
+                PacketUtil.sendC0F();
             }
             if (packet instanceof S12PacketEntityVelocity) {
                 inBus.add((Packet<INetHandler>) packet);
@@ -145,7 +141,7 @@ public class Timer extends Module {
                     }
                 }
             } else {
-                mc.timer.timerSpeed = (float) speed.getValue().doubleValue();
+                mc.timer.timerSpeed = ModuleManager.getModule(Scaffold.class).isState() && scaOnly.isEnabled() ? speed.getValue().floatValue() : 1F;
                 if (dis.isEnabled()) {
                     disable = true;
                 }

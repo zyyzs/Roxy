@@ -1,5 +1,6 @@
 package lol.tgformat.module.impl.combat;
 
+import io.netty.buffer.Unpooled;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.TickEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
@@ -16,6 +17,7 @@ import lol.tgformat.utils.player.BlinkUtils;
 import lol.tgformat.utils.player.InventoryUtil;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.init.Items;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.*;
 import net.netease.utils.RoundedUtils;
 import tech.skidonion.obfuscator.annotations.ControlFlowObfuscation;
@@ -37,11 +39,10 @@ public class Gapple extends Module {
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
     public BooleanSetting auto = new BooleanSetting("Auto", false);
-    private final boolean stopMove = true;
-    private int slot = -1;
+    private int gappleSlot = -1;
     public static int storedC03 = 0;
     public static boolean eating = false;
-    public static boolean pulsing = false;
+    public static boolean sending = false;
 
     public static boolean restart = false;
 
@@ -53,9 +54,9 @@ public class Gapple extends Module {
     @Override
     public void onEnable() {
         storedC03 = 0;
-        this.slot = InventoryUtil.findItem(36, 45, Items.golden_apple);
-        if (this.slot != -1) {
-            this.slot -= 36;
+        this.gappleSlot = InventoryUtil.findItem(36, 45, Items.golden_apple);
+        if (this.gappleSlot != -1) {
+            this.gappleSlot -= 36;
         }
     }
 
@@ -65,12 +66,14 @@ public class Gapple extends Module {
     public void onDisable() {
         eating = false;
 
-        pulsing = false;
+        sending = false;
         BlinkUtils.stopBlink();
 
-        if (this.stopMove) {
-            MovementComponent.resetMove();
-        }
+        MovementComponent.resetMove();
+
+        PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+        PacketUtil.sendPacketNoEvent(new C17PacketCustomPayload("NoSlowPatcher", new PacketBuffer(Unpooled.buffer())));
+        PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
     }
 
 
@@ -82,15 +85,13 @@ public class Gapple extends Module {
             this.setState(false);
             return;
         }
-        if (this.slot == -1) {
+        if (this.gappleSlot == -1) {
             LogUtil.addChatMessage("没苹果");
             this.setState(false);
             return;
         }
         if (eating) {
-            if (this.stopMove) {
-                MovementComponent.cancelMove();
-            }
+            MovementComponent.cancelMove();
             if (!BlinkUtils.isBlinking()) {
                 BlinkUtils.startBlink();
             }
@@ -99,24 +100,20 @@ public class Gapple extends Module {
         }
         if (storedC03 >= 32) {
             eating = false;
-            pulsing = true;
-            PacketUtil.sendPacketNoEvent(new C09PacketHeldItemChange(this.slot));
-            PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.slot + 36).getStack()));
+            sending = true;
+            PacketUtil.sendPacketNoEvent(new C09PacketHeldItemChange(this.gappleSlot));
+            PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(this.gappleSlot + 36).getStack()));
             BlinkUtils.stopBlink();
             PacketUtil.sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-            pulsing = false;
+            sending = false;
             this.setState(false);
             LogUtil.addChatMessage("Eat");
             if (auto.isEnabled()){
                 if (target.getName()!=null){
                     LogUtil.addChatMessage("Stop");
-                    restart = true;
                     setState(true);
-                    restart = false;
                     LogUtil.addChatMessage("Restart");
                 }
-            }else {
-                restart = false;
             }
             return;
         }

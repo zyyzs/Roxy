@@ -45,8 +45,8 @@ import java.util.concurrent.Executors;
 public enum Client {
     instance,;
     private final String name = "Roxy";
-    private final String date = "1001";
-    private final String version = "1.2";
+    private final String date = "1003";
+    private final String version = "1.3";
     private ModuleManager moduleManager;
     private ConfigManager configManager;
     private VideoComponent videoComponent;

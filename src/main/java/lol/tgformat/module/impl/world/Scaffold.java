@@ -220,7 +220,6 @@ public class Scaffold extends Module {
                     }
                     glDisable(GL_SCISSOR_TEST);
                     break;
-
                 }
 
             }

@@ -1,17 +1,12 @@
 package lol.tgformat.module.impl.misc;
 
-import lol.tgformat.Client;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.ChatInputEvent;
 import lol.tgformat.events.WorldEvent;
-import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
 
-import lol.tgformat.ui.notifications.NotificationManager;
-import lol.tgformat.ui.notifications.NotificationType;
 import lol.tgformat.utils.client.LogUtil;
-import net.minecraft.network.play.server.S02PacketChat;
 import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
@@ -19,12 +14,7 @@ import tech.skidonion.obfuscator.inline.Wrapper;
 import us.cubk.irc.client.IRCHandler;
 import us.cubk.irc.client.IRCTransport;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author TG_format
@@ -37,7 +27,6 @@ public class IRC extends Module {
         super("IRC", ModuleType.Misc);
     }
     public static IRCTransport transport;
-    public boolean banned = false;
     @Override
     public void onEnable() {
         try {
@@ -45,7 +34,7 @@ public class IRC extends Module {
             //IRCTransport transport = new IRCTransport("127.0.0.1", 8888, new IRCHandler() {
                 @Override
                 public void onMessage(String sender,String message) {
-                    LogUtil.addIRCMessage(sender + "("+getName()+"): " + message);
+                    LogUtil.addIRCMessage(sender + ": " + message);
                 }
 
                 @Override
@@ -67,18 +56,12 @@ public class IRC extends Module {
                     return mc.thePlayer.getName();
                 }
             });
-            if(Wrapper.getUsername().get().equals("development")){
-                File ircname = new File(mc.mcDataDir+"/ircname");
-                BufferedReader br = new BufferedReader(new FileReader(ircname));
-                transport.connect(br.readLine(), "none");
-            }else{
-                transport.connect(Wrapper.getUsername().get(),"none");
-            }
+            transport.connect(getIRCName(),"none");
             if (IRC.transport == null) {
                 IRC.transport = transport;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.print(e.getMessage());
         }
     }
     @Listener
@@ -87,29 +70,20 @@ public class IRC extends Module {
             String message = event.getMessage().substring(".irc".length() + 1);
             event.setCancelled();
             if (transport != null) {
-                transport.sendChat("§f"+"(§b"+mc.thePlayer.getName()+"§f) :"+message);
+                transport.sendChat(message);
             }
         }
     }
     @Listener
     public void onWorld(WorldEvent event) {
-        banned = false;
         if (transport != null) {
             transport.sendInGameUsername();
         }
     }
-    @Listener
-    public void onPacketReceive(PacketReceiveEvent event) {
-        Object packet = event.getPacket();
-        if (packet instanceof S02PacketChat) {
-            S02PacketChat s02PacketChat = (S02PacketChat) packet;
-            String text = s02PacketChat.getChatComponent().getUnformattedText();
-            Matcher matcher4 = Pattern.compile("玩家(.*?)在本局游戏中行为异常").matcher(text);
-            if (matcher4.find()) {
-                if (transport.isUser(matcher4.group(1))) {
-                    LogUtil.addChatMessage("User"+transport.getName(matcher4.group(1))+"Was Banned.");
-                }
-            }
+    private String getIRCName() {
+        if (Wrapper.getUsername().get().equals("development")) {
+            return "tgformat_dev";
         }
+        return Wrapper.getUsername().get();
     }
 }
