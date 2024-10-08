@@ -75,6 +75,7 @@ public class Scaffold extends Module {
     public final BooleanSetting sprintValue = new BooleanSetting("Sprint", false);
     public final BooleanSetting eagle = new BooleanSetting("Eagle", false);
     public final BooleanSetting telly = new BooleanSetting("Telly", true);
+    public final ModeSetting tellymode = new ModeSetting("Telly Mode","SkyWras","SkyWras","BedWars");
     public final BooleanSetting autojump = new BooleanSetting("AutoJump", false);
     public final BooleanSetting fakeslot = new BooleanSetting("FakeSlot", false);
     public final BooleanSetting raycast = new BooleanSetting("RayCast", false);
@@ -101,6 +102,7 @@ public class Scaffold extends Module {
 
     public Scaffold() {
         super("Scaffold", ModuleType.World);
+        tellymode.addParent(telly, BooleanSetting::getConfigValue);
     }
 
     @Override
@@ -368,8 +370,24 @@ public class Scaffold extends Module {
             if (this.canTellyPlace && !mc.thePlayer.onGround && MoveUtil.isMoving()) {
                 mc.thePlayer.setSprinting(false);
             }
-            this.canTellyPlace = mc.thePlayer.offGroundTicks >= 1;
+
+            float tellyTicks;
+            switch (tellymode.getMode()) {
+                case "SkyWars" : {
+                    tellyTicks = 1F;
+                    break;
+                }
+                case "BedWars" : {
+                    tellyTicks = 3.8F;
+                    break;
+                }
+                default: {
+                    tellyTicks = 0.5F;
+                }
+            }
+            this.canTellyPlace = mc.thePlayer.offGroundTicks >= tellyTicks;
         }
+
         if (!this.canTellyPlace) {
             return;
         }
