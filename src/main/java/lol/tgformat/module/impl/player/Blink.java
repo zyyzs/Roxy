@@ -57,7 +57,7 @@ public class Blink extends Module {
     @Listener
     private void onTick(TickEvent event) {
         if (slowRelease.isEnabled() && BlinkUtils.isBlinking() && timer.hasReached(releaseDelay.getValue().longValue())) {
-            BlinkUtils.releaseC03(1);
+            BlinkUtils.releaseC03render(1);
         }
     }
 }

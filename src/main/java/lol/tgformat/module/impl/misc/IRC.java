@@ -28,6 +28,7 @@ public class IRC extends Module {
     }
     public static IRCTransport transport;
     @Override
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void onEnable() {
         try {
             IRCTransport transport = new IRCTransport("103.40.13.87", 14250, new IRCHandler() {
@@ -65,6 +66,7 @@ public class IRC extends Module {
         }
     }
     @Listener
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public void onChat(ChatInputEvent event) {
         if (event.getMessage().startsWith(".irc")) {
             String message = event.getMessage().substring(".irc".length() + 1);
@@ -80,6 +82,7 @@ public class IRC extends Module {
             transport.sendInGameUsername();
         }
     }
+    @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     private String getIRCName() {
         if (Wrapper.getUsername().get().equals("development")) {
             return "tgformat_dev";

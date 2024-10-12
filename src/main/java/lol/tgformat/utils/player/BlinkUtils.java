@@ -91,6 +91,36 @@ public class BlinkUtils implements IMinecraft {
             }
         }
     }
+    public void releaseC03render(int amount) {
+        if (cantSlowRelease) {
+            return;
+        }
+        int i = 0;
+        for (int j = 0; j < packets.size(); j++) {
+            Packet<?> packet = packets.poll();
+            PacketUtil.sendPacketNoEvent(packet);
+            if (packet instanceof C03PacketPlayer c03) {
+                Gapple.storedC03--;
+                i++;
+                Gapple.storedC03--;
+                if (Blink.getFakePlayer() != null) {
+                    Blink.getFakePlayer().serverPosX = (int) c03.getX();
+                    Blink.getFakePlayer().serverPosY = (int) c03.getY();
+                    Blink.getFakePlayer().serverPosZ = (int) c03.getZ();
+                    double d0 = Blink.getFakePlayer().serverPosX;
+                    double d1 = Blink.getFakePlayer().serverPosY;
+                    double d2 = Blink.getFakePlayer().serverPosZ;
+                    float f = c03.rotating ? c03.getYaw() : Blink.getFakePlayer().rotationYaw;
+                    float f1 = c03.rotating ? c03.getPitch() : Blink.getFakePlayer().rotationPitch;
+                    Blink.getFakePlayer().setPositionAndRotation2(d0, d1, d2, f, f1, 3, false);
+                    Blink.getFakePlayer().onGround = c03.isOnGround();
+                }
+            }
+            if (i >= amount) {
+                break;
+            }
+        }
+    }
     private void releaseAll() {
         for (Packet<?> packet : packets) {
             PacketUtil.sendPacketNoEvent(packet);
