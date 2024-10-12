@@ -83,6 +83,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new IRC());
         addModule(new Spammer());
         addModule(new GhostBlocksMaker());
+        addModule(new AntiSpammer());
         //Misc
 
 
@@ -98,6 +99,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new Stuck());
         addModule(new AutoHub());
         addModule(new Autoplay());
+        addModule(new AllowEdit());
         //Player
 
 
