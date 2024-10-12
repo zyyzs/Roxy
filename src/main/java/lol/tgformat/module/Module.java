@@ -59,16 +59,19 @@ public class Module implements IMinecraft {
         this.category = category;
         this.suffix = "";
     }
+
     public Module(String name, ModuleType category, int key) {
         this.name = name;
         this.category = category;
         this.key = key;
     }
+
     public Module(String name, ModuleType category, String description) {
         this.name = name;
         this.category = category;
         this.description = description;
     }
+
     public void state() {
         state = !state;
         if (mc.theWorld != null) {
@@ -88,6 +91,7 @@ public class Module implements IMinecraft {
             }
         }
     }
+
     public void setSuffix(Object suffix) {
         this.suffix = String.valueOf(suffix);
     }
@@ -105,6 +109,7 @@ public class Module implements IMinecraft {
 
         return name + formatting + " " + tag;
     }
+
     public void setKey(int key) {
         this.key = key;
         for (Setting s : settingsList) {
@@ -113,6 +118,7 @@ public class Module implements IMinecraft {
             }
         }
     }
+
     public void add(Setting... settings) {
         settingsList.addAll(Arrays.asList(settings));
     }
@@ -124,12 +130,15 @@ public class Module implements IMinecraft {
     public boolean isFood() {
         return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemFood;
     }
+
     public boolean isBow() {
         return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBow;
     }
+
     public boolean isBlock() {
         return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
     }
+
     public void setState(boolean state) {
         if (this.state == state) return;
         this.state = state;
@@ -147,15 +156,19 @@ public class Module implements IMinecraft {
             }
         }
     }
+
     public boolean isGapple() {
         return ModuleManager.getModule(Gapple.class).isState();
     }
+
     public boolean isNull(){
         return mc.thePlayer == null || mc.theWorld == null;
     }
+
     public void onEnable() {
 
     }
+
     public void onDisable() {
 
     }

@@ -14,7 +14,6 @@ import tech.skidonion.obfuscator.annotations.StringEncryption;
 @Renamer
 @StringEncryption
 public class SlotSpoofComponent implements IMinecraft {
-
     private int spoofedSlot;
 
     @Getter
@@ -36,5 +35,4 @@ public class SlotSpoofComponent implements IMinecraft {
     public ItemStack getSpoofedStack() {
         return spoofing ? mc.thePlayer.inventory.getStackInSlot(spoofedSlot) : mc.thePlayer.inventory.getCurrentItem();
     }
-
 }

@@ -28,5 +28,4 @@ public class NotificationManager {
             notifications.add(notification);
         }
     }
-
 }

@@ -134,12 +134,14 @@ public class ModuleManager implements IMinecraft {
             }
         }
     }
+
     @Listener
     public void onTick(TickEvent event) {
         if (!getModule(IRC.class).isState()) {
             getModule(IRC.class).state();
         }
     }
+
     public static <T>T getModule(Class<T> clazz) {
         for (Module m : modules) {
             if (m.getClass() == clazz) {
@@ -148,6 +150,7 @@ public class ModuleManager implements IMinecraft {
         }
         return (T) new Module("Null", ModuleType.Combat);
     }
+
     private void addModule(Module module) {
         for (Field field : module.getClass().getDeclaredFields()) {
             try {
@@ -163,6 +166,7 @@ public class ModuleManager implements IMinecraft {
         module.add(new KeybindSetting(module.getKey()));
         modules.add(module);
     }
+
     public static Module getModuleByName(String name) {
         for (Module m : modules) {
             if (m.getName().equalsIgnoreCase(name)) return m;

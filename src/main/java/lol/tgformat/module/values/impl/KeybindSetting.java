@@ -6,7 +6,6 @@ import org.lwjgl.input.Keyboard;
 
 @Setter
 public class KeybindSetting extends Setting {
-
     private int code;
 
     public KeybindSetting(int code) {
@@ -22,5 +21,4 @@ public class KeybindSetting extends Setting {
     public Integer getConfigValue() {
         return this.getCode();
     }
-
 }

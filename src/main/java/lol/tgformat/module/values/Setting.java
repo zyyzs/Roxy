@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public abstract class Setting {
-
     @Expose
     @SerializedName("name")
     public String name;
@@ -44,7 +43,6 @@ public abstract class Setting {
         return name;
     }
 
-
     public <T extends Setting> void addJSParent(T parent, JSObject scriptFunction) {
         Predicate<T> predicate;
         try {
@@ -56,8 +54,5 @@ public abstract class Setting {
         addParent(new ParentAttribute<>(parent, predicate));
     }
 
-
     public abstract <T> T getConfigValue();
-
-
 }

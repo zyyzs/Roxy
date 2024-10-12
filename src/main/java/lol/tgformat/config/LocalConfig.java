@@ -8,7 +8,6 @@ import java.io.File;
 
 @Getter
 public class LocalConfig {
-
     private final String name;
     private final File file;
 

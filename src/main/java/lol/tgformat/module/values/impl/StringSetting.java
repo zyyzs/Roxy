@@ -4,7 +4,6 @@ package lol.tgformat.module.values.impl;
 import lol.tgformat.module.values.Setting;
 
 public class StringSetting extends Setting {
-
     private String string = "";
 
     public StringSetting(String name) {
@@ -28,5 +27,4 @@ public class StringSetting extends Setting {
     public String getConfigValue() {
         return string;
     }
-
 }

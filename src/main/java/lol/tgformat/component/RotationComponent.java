@@ -33,6 +33,7 @@ public final class RotationComponent implements IMinecraft {
     private static double rotationSpeed;
     private static MovementFix correctMovement;
     private static boolean forceSilent;
+
     /*
      * This method must be called on Pre Update Event to work correctly
      */
@@ -44,6 +45,7 @@ public final class RotationComponent implements IMinecraft {
         forceSilent = false;
         smooth();
     }
+
     public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, boolean silent) {
         RotationComponent.targetRotations = rotations;
         RotationComponent.rotationSpeed = rotationSpeed * 18;
@@ -52,23 +54,29 @@ public final class RotationComponent implements IMinecraft {
         forceSilent = silent;
         smooth();
     }
+
     public static void setFollow(boolean follow) {
         if (targetRotations != null) {
             RotationComponent.forceSilent = follow;
         }
     }
+
     public static double getRotationDifference(Vector2f rotation) {
         return lastServerRotations == null ? 0.0D : getRotationDifference(rotation, lastServerRotations);
     }
+
     public static double getRotationDifference(Vector2f a, Vector2f b) {
         return Math.hypot((double)getAngleDifference(a.x, b.x), (double)(a.y - b.y));
     }
+
     public static double getRotationDifference(Rotation rotation) {
         return lastServerRotations == null ? 0.0D : getRotationDifference(rotation, lastServerRotations);
     }
+
     public static double getRotationDifference(Rotation a, Vector2f b) {
         return Math.hypot((double)getAngleDifference(a.getYaw(), b.getX()), (double)(a.getPitch() - b.getY()));
     }
+
     public static float getAngleDifference(float a, float b) {
         return ((a - b) % 360.0F + 540.0F) % 360.0F - 180.0F;
     }
@@ -90,8 +98,7 @@ public final class RotationComponent implements IMinecraft {
                 mc.thePlayer.setSprinting(false);
             }
         }
-    };
-
+    }
 
     @Listener(0)
     public void onMove(MoveInputEvent event) {
@@ -105,28 +112,28 @@ public final class RotationComponent implements IMinecraft {
             final float yaw = rotations.x;
             MoveUtil.fixMovement(event, yaw);
         }
-    };
+    }
 
     @Listener(0)
     public void onLook(LookEvent event) {
         if (active && rotations != null) {
             event.setRotation(rotations);
         }
-    };
+    }
 
     @Listener(0)
     public void onStrafe(StrafeEvent event) {
         if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL) && rotations != null) {
             event.setYaw(rotations.x);
         }
-    };
+    }
 
     @Listener(0)
     public void onJump(JumpEvent event) {
         if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL || correctMovement == MovementFix.BACKWARDS_SPRINT) && rotations != null) {
             event.setYaw(rotations.x);
         }
-    };
+    }
 
     @Listener(0)
     public void onPreMotionEvent(PreMotionEvent event) {
@@ -155,6 +162,7 @@ public final class RotationComponent implements IMinecraft {
         targetRotations = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
         smoothed = false;
     }
+
 //    @Listener
 //    public void onPacketSendHigher(PacketSendHigherEvent event) {
 //        if (active && rotations != null && GappleUtils.blinking) {

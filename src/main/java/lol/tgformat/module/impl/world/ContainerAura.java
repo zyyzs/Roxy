@@ -56,10 +56,12 @@ public class ContainerAura extends Module {
     public ContainerAura() {
         super("ContainerAura", ModuleType.World);
     }
+
     @Override
     public void onDisable() {
         list.clear();
     }
+
     @Listener
     public void onPre(PreMotionEvent e) {
         if (isGapple() || !ModuleManager.getModule(Stealer.class).isState()) return;
@@ -102,6 +104,7 @@ public class ContainerAura extends Module {
             }
         }
     }
+    
     @Listener
     public void onPlace(PlaceEvent event) {
         if (isGapple() || !ModuleManager.getModule(Stealer.class).isState()) return;

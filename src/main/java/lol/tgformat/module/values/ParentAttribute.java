@@ -6,7 +6,6 @@ import lombok.Getter;
 import java.util.function.Predicate;
 
 public class ParentAttribute<T extends Setting> {
-
     public final static Predicate<BooleanSetting> BOOLEAN_CONDITION = BooleanSetting::isEnabled;
 
     @Getter
@@ -21,5 +20,4 @@ public class ParentAttribute<T extends Setting> {
     public boolean isValid() {
         return condition.test(parent) && parent.getParents().stream().allMatch(ParentAttribute::isValid);
     }
-
 }

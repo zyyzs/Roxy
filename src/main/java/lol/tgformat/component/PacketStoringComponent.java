@@ -37,6 +37,7 @@ public class PacketStoringComponent implements IMinecraft  {
     private static final List<Class<?>> whitList = new ArrayList<>();
     public static LinkedBlockingQueue<Packet<?>> packets = new LinkedBlockingQueue<>();
     public static boolean passEvent = false;
+
     public static boolean blink(Class<?>... fliterPackets){
 
         if(blinking)
@@ -131,6 +132,7 @@ public class PacketStoringComponent implements IMinecraft  {
             releaseReturnPredicateMap.put(clazz, predicate);
         }
     }
+
     public static void setCancelAction(Class<?> clazz, Consumer<Packet<?>> packetConsumer){
         boolean isIN = false;
 
@@ -146,6 +148,7 @@ public class PacketStoringComponent implements IMinecraft  {
             cancelActionMap.put(clazz, packetConsumer);
         }
     }
+
     public static void setReleaseAction(Class<?> clazz, Consumer<Packet<?>> packetConsumer){
         boolean isIN = false;
 
@@ -277,6 +280,7 @@ public class PacketStoringComponent implements IMinecraft  {
         }
         return true;
     }
+
     @Listener
     public void onTick(TickEvent event) {
         if(mc.getNetHandler() == null) {

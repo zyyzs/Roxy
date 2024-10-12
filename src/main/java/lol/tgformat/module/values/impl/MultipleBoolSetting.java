@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MultipleBoolSetting extends Setting {
-
     private final Map<String, BooleanSetting> boolSettings;
 
     public MultipleBoolSetting(String name, String... booleanSettingNames) {
@@ -16,7 +15,6 @@ public class MultipleBoolSetting extends Setting {
         boolSettings = new HashMap<>();
         Arrays.stream(booleanSettingNames).forEach(boolName -> boolSettings.put(boolName.toLowerCase(), new BooleanSetting(boolName, false)));
     }
-
 
     public MultipleBoolSetting(String name, BooleanSetting... booleanSettings) {
         this.name = name;
@@ -28,7 +26,6 @@ public class MultipleBoolSetting extends Setting {
     public BooleanSetting getSetting(String settingName) {
         return boolSettings.computeIfAbsent(settingName.toLowerCase(), k -> null);
     }
-
     
     public boolean isEnabled(String settingName) {
         return boolSettings.get(settingName.toLowerCase()).isEnabled();
@@ -46,5 +43,4 @@ public class MultipleBoolSetting extends Setting {
         }
         return booleans;
     }
-
 }

@@ -44,6 +44,7 @@ public class ColorSetting extends Setting {
         this.saturation = saturation;
         this.brightness = brightness;
     }
+
     public double getHue() {
         return hue;
     }
@@ -60,6 +61,7 @@ public class ColorSetting extends Setting {
         Color color = getColor();
         return String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
+
     public void setRainbow(boolean rainbow) {
         if (rainbow) {
             this.rainbow = new Rainbow();
@@ -112,5 +114,4 @@ public class ColorSetting extends Setting {
             this.speed = speed;
         }
     }
-
 }

@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Setter
 public class BooleanSetting extends Setting {
-
     @Expose
     @SerializedName("name")
     private boolean state;
@@ -29,5 +28,4 @@ public class BooleanSetting extends Setting {
     public Boolean getConfigValue() {
         return isEnabled();
     }
-
 }
