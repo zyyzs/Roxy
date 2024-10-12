@@ -115,8 +115,9 @@ public class KillAura extends Module {
         if (isPlayerNear() && isSword()) {
             switch (autoblockmods.getMode()) {
                 case "GrimAC": {
-                    PacketUtil.send1_12Block();
-                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+//                    PacketUtil.send1_12Block();
+//                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+                    mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
                     break;
                 }
                 case "Off": {
@@ -158,13 +159,13 @@ public class KillAura extends Module {
         }
         if (autoblockmods.is("GrimAC")) {
             if (isSword()) {
-                mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
-                if (mc.thePlayer.isUsingItem() && isSword()) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-                    for (int i = 1; i < 5; i++) {
-                        PacketUtil.send1_12Block();
-                    }
-                }
+//                mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
+//                if (mc.thePlayer.isUsingItem() && isSword()) {
+//                    mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+//                    for (int i = 1; i < 5; i++) {
+//                        PacketUtil.send1_12Block();
+//                    }
+//                }
             }
         }
         if (attackmode.is("Post")) {
@@ -204,7 +205,7 @@ public class KillAura extends Module {
         Blink blink = ModuleManager.getModule(Blink.class);
         Timer timer = ModuleManager.getModule(Timer.class);
         AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
-        return !(entity instanceof EntityLivingBase)
+        return !(entity instanceof EntityPlayer)
                 || entity == mc.thePlayer
                 || !entity.isEntityAlive()
                 || !(mc.thePlayer.getClosestDistanceToEntity(entity) < startrange.getValue())
@@ -215,9 +216,7 @@ public class KillAura extends Module {
                 || antiBot.isServerBot(entity)
                 || Teams.isSameTeam(entity)
                 || timer.isState()
-                || FriendsCollection.isFriend(entity)
-                || entity instanceof EntityVillager
-                || entity instanceof EntitySquid;
+                || FriendsCollection.isFriend(entity);
     }
     private boolean entityCant(Entity entity) {
         Scaffold sca = ModuleManager.getModule(Scaffold.class);
@@ -338,15 +337,15 @@ public class KillAura extends Module {
                 }
                 if (ESPTarget != null) {
 
-                    EntityLivingBase player = (EntityLivingBase) this.target;
+                    EntityLivingBase player = target;
 
                     final Color color = this.getColor(player);
 
                     if (mc.getRenderManager() == null || player == null) return;
 
-                    final double x = player.prevPosX + (player.posX - player.prevPosX) * partialTicks - (mc.getRenderManager()).renderPosX;
-                    final double y = player.prevPosY + (player.posY - player.prevPosY) * partialTicks + Math.sin(System.currentTimeMillis() / 2E+2) + 1 - (mc.getRenderManager()).renderPosY;
-                    final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks - (mc.getRenderManager()).renderPosZ;
+                    final double x = player.prevPosX + (player.posX - player.prevPosX) * partialTicks - RenderManager.renderPosX;
+                    final double y = player.prevPosY + (player.posY - player.prevPosY) * partialTicks + Math.sin(System.currentTimeMillis() / 2E+2) + 1 - RenderManager.renderPosY;
+                    final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks - RenderManager.renderPosZ;
 
                     GL11.glPushMatrix();
                     GL11.glDisable(3553);
@@ -363,7 +362,7 @@ public class KillAura extends Module {
                     GlStateManager.disableCull();
                     GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
 
-                    for (float i = 0; i <= Math.PI * 2 + ((Math.PI * 2) / 32.F); i += (Math.PI * 2) / 32.F) {
+                    for (float i = 0; i <= Math.PI * 2 + ((Math.PI * 2) / 32.F); i += (float) ((Math.PI * 2) / 32.F)) {
                         double vecX = x + 0.67 * Math.cos(i);
                         double vecZ = z + 0.67 * Math.sin(i);
 
@@ -371,7 +370,7 @@ public class KillAura extends Module {
                         GL11.glVertex3d(vecX, y, vecZ);
                     }
 
-                    for (float i = 0; i <= Math.PI * 2 + (Math.PI * 2) / 32.F; i += (Math.PI * 2) / 32.F) {
+                    for (float i = 0; i <= Math.PI * 2 + (Math.PI * 2) / 32.F; i += (float) ((Math.PI * 2) / 32.F)) {
                         double vecX = x + 0.67 * Math.cos(i);
                         double vecZ = z + 0.67 * Math.sin(i);
 
@@ -443,7 +442,7 @@ public class KillAura extends Module {
 
         double posX = target.posX, posY = target.posY, posZ = target.posZ;
         double lastTickX = target.lastTickPosX, lastTickY = target.lastTickPosY, lastTickZ = target.lastTickPosZ;
-        double renderPosX = mc.getRenderManager().renderPosX, renderPosY = mc.getRenderManager().renderPosY, renderPosZ = mc.getRenderManager().renderPosZ;
+        double renderPosX = RenderManager.renderPosX, renderPosY = RenderManager.renderPosY, renderPosZ = RenderManager.renderPosZ;
 
         double y = lastTickY + (posY - lastTickY) * partialTicks - renderPosY;
         for (double i = 0; i < Math.PI * 2.0; i += d) {

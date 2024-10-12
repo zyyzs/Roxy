@@ -1876,7 +1876,7 @@ public abstract class EntityLivingBase extends Entity
         if (f > 0.0025000002F)
         {
             f3 = 1.0F;
-            f2 = (float)Math.sqrt((double)f) * 3.0F;
+            f2 = (float)Math.sqrt(f) * 3.0F;
             f1 = (float)MathHelper.atan2(d1, d0) * 180.0F / (float)Math.PI - 90.0F;
         }
 

@@ -645,18 +645,18 @@ public class FontRenderer implements IResourceManagerReloadListener
      * Render single line string by setting GL color, current (posX,posY), and calling renderStringAtPos()
      */
     private int renderString(String text, float x, float y, int color, boolean dropShadow) {
-        int index =text.indexOf("花雨庭");
+        int index = text.indexOf("花雨庭");
         if (index != -1) {
-            text = text.substring(0, index) + "锦良庭" + text.substring(index + "花雨庭".length());
+            text = text.replace("花雨庭", "锦良庭");
         }
-        int index2 =text.indexOf("布吉岛");
+        int index2 = text.indexOf("布吉岛");
         if (index2 != -1) {
-            text = text.substring(0, index2) + "吉吉岛" + text.substring(index2 + "布吉岛".length());
+            text = text.replace("布吉岛", "锦良导");
         }
         if (mc.thePlayer != null){
-            index =text.indexOf(mc.thePlayer.getName());
+            index = text.indexOf(mc.thePlayer.getName());
             if (index != -1) {
-                text = text.substring(0, index) + "徐锦良" + text.substring(index + mc.thePlayer.getName().length());
+                text = text.substring(0, index) + "许锦良" + text.substring(index + mc.thePlayer.getName().length());
             }
         }
 

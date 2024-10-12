@@ -36,13 +36,11 @@ import java.util.LinkedList;
 @Renamer
 @StringEncryption
 public class Stuck extends Module {
-    public BooleanSetting antiSB;
     private Vector2f rotation;
     private final LinkedList<Packet<INetHandler>> inBus = new LinkedList<>();
     private int ticksDelayCancel = 0;
     public Stuck() {
         super("Stuck", ModuleType.Player);
-        this.antiSB = new BooleanSetting("Anti SB", false);
     }
 
     public void onEnable() {
@@ -64,9 +62,6 @@ public class Stuck extends Module {
         inBus.forEach(packet -> packet.processPacket(mc.getNetHandler()));
         inBus.clear();
         PacketUtil.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1337, mc.thePlayer.posZ, mc.thePlayer.onGround));
-        if (this.antiSB.isEnabled() && !mc.thePlayer.onGround) {
-            this.setState(true);
-        }
     }
     @Listener
     public void onWorld(WorldEvent event) {

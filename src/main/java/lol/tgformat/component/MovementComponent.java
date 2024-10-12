@@ -55,15 +55,15 @@ public final class MovementComponent implements IMinecraft {
             mc.theWorld.skiptick = 20;
         }
     }
-    @Listener
-    @NativeObfuscation(verificationLock = "User")
-    public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacket() instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && cancelMove && !forceStuck) {
-            if (mc.theWorld.skiptick <= 0) {
-                mc.theWorld.skiptick--;
-                return;
-            }
-            mc.theWorld.skiptick = 0;
-        }
-    }
+//    @Listener
+//    @NativeObfuscation(verificationLock = "User")
+//    public void onPacketReceive(PacketReceiveEvent event) {
+//        if (event.getPacket() instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && cancelMove && !forceStuck) {
+//            if (mc.theWorld.skiptick <= 0) {
+//                mc.theWorld.skiptick--;
+//                return;
+//            }
+//            mc.theWorld.skiptick = 0;
+//        }
+//    }
 }

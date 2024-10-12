@@ -85,25 +85,31 @@ public class NameTags extends Module {
             final EntityLivingBase renderingEntity = (EntityLivingBase) entity;
             String WarnRank = "";
             if (renderingEntity == NameTags.mc.thePlayer) {
-                WarnRank = "§a[You] ";
+                WarnRank += "§a[You] ";
             }
             if (ModuleManager.getModule(Teams.class).isState() && Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§a[Team] ";
-            } else if (PlayerUtil.hyt.isStrength((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§4[Strength] ";
-            } else if (PlayerUtil.hyt.isRegen((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§4[Regen] ";
-            } else if (PlayerUtil.hyt.isHoldingGodAxe((EntityPlayer) renderingEntity) && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§4[GodAxe] ";
-            } else if (PlayerUtil.hyt.isKBBall(renderingEntity.getHeldItem()) && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§4[KBBall] ";
-            } else if (PlayerUtil.hyt.hasEatenGoldenApple((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
-                WarnRank = "§4[GApple] ";
-            } else if (FriendsCollection.isFriend(renderingEntity)) {
-                if (transport.isUser(renderingEntity.getName())){
-                    WarnRank = "§a["+transport.getName(renderingEntity.getName())+"§a]";
-                }else {
-                    WarnRank = "§a[Friend] ";
+                WarnRank += "§a[Team] ";
+            }
+            if (PlayerUtil.hyt.isStrength((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
+                WarnRank += "§4[Strength] ";
+            }
+            if (PlayerUtil.hyt.isRegen((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
+                WarnRank += "§4[Regen] ";
+            }
+            if (PlayerUtil.hyt.isHoldingGodAxe((EntityPlayer) renderingEntity) && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
+                WarnRank += "§4[GodAxe] ";
+            }
+            if (PlayerUtil.hyt.isKBBall(renderingEntity.getHeldItem()) && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
+                WarnRank += "§4[KBBall] ";
+            }
+            if (PlayerUtil.hyt.hasEatenGoldenApple((EntityPlayer) renderingEntity) > 0 && renderingEntity != mc.thePlayer && !Teams.isSameTeam(renderingEntity)) {
+                WarnRank += "§4[GApple] ";
+            }
+            if (FriendsCollection.isFriend(renderingEntity)) {
+                if (transport != null && transport.isUser(renderingEntity.getName())){
+                    WarnRank += "§a["+transport.getName(renderingEntity.getName())+"§a]";
+                } else {
+                    WarnRank += "§a[Friend] ";
                 }
             }
 
@@ -120,7 +126,6 @@ public class NameTags extends Module {
                 continue;
             }
             String playerName = player.getName();
-            int health = (int) player.getHealth();
             String prefix = playerNamePrefixCache.getOrDefault(playerName, "");
             float healthValue = player.getHealth() / player.getMaxHealth();
             Color healthColor = healthValue > .75 ? new Color(66, 246, 123) : healthValue > .5 ? new Color(228, 255, 105) : healthValue > .35 ? new Color(236, 100, 64) : new Color(255, 65, 68);

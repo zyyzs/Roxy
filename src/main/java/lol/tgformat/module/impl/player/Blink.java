@@ -28,7 +28,7 @@ public class Blink extends Module {
     @Getter
     private static EntityOtherPlayerMP fakePlayer;
     private final BooleanSetting slowRelease = new BooleanSetting("SlowRelease", false);
-    private final NumberSetting releaseC03s = new NumberSetting("ReleaseC03s",2, 35 ,1 ,1);
+    private final NumberSetting releaseDelay = new NumberSetting("ReleaseDelay",1000, 10000 ,300 ,10);
     private final TimerUtil timer = new TimerUtil();
     public Blink() {
         super("Blink", ModuleType.Player);
@@ -36,17 +36,18 @@ public class Blink extends Module {
 
     @Override
     public void onEnable() {
+        timer.reset();
         BlinkUtils.startBlink();
         fakePlayer = new EntityOtherPlayerMP(mc.theWorld, new GameProfile(new UUID(69L, 96L), "[Blink]" + mc.thePlayer.getName()));
         fakePlayer.copyLocationAndAnglesFrom(mc.thePlayer);
         fakePlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
         mc.theWorld.addEntityToWorld(-1337, fakePlayer);
-        timer.reset();
     }
 
     @Override
     public void onDisable() {
         BlinkUtils.stopBlink();
+        timer.reset();
         if (fakePlayer != null) {
             mc.theWorld.removeEntityFromWorld(fakePlayer.getEntityId());
             fakePlayer = null;
@@ -54,10 +55,9 @@ public class Blink extends Module {
     }
 
     @Listener
-    private void onPost(PostMotionEvent event) {
-        if (slowRelease.isEnabled() && BlinkUtils.isBlinking() && mc.thePlayer.ticksExisted % 10 == 0) {
-            BlinkUtils.releasePacketByAmount(releaseC03s.getValue().intValue());
-            timer.reset();
+    private void onTick(TickEvent event) {
+        if (slowRelease.isEnabled() && BlinkUtils.isBlinking() && timer.hasReached(releaseDelay.getValue().longValue())) {
+            BlinkUtils.releaseC03(1);
         }
     }
 }
