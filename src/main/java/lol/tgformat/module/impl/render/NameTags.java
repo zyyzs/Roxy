@@ -166,13 +166,13 @@ public class NameTags extends Module {
                     float textWidth = arial20.getStringWidth(text.toString());
                     middle = (float)((double)middle - (double)textWidth * fontScale / 2.0);
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate((double)middle, (double)y2 - (fontHeight + 2.0), 0.0);
+                    GlStateManager.translate(middle, (double)y2 - (fontHeight + 2.0), 0.0);
                     GlStateManager.scale(fontScale, fontScale, 1.0);
-                    GlStateManager.translate((double)(-middle), -((double)y2 - (fontHeight + 2.0)), 0.0);
+                    GlStateManager.translate(-middle, -((double)y2 - (fontHeight + 2.0)), 0.0);
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)) - 2.0f, textWidth + 6.0f + 6.0f, 1.0f, 1.0f, HUD.color(8));
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)), textWidth + 6.0f + 6.0f, (float)(fontHeight / fontScale), 1.0f, new Color(19, 19, 19, 200));
                     RenderUtils.resetColor();
-                    GL11.glPopMatrix();
+                    GlStateManager.popMatrix();
                     FontUtil.tenacityFont16.drawStringWithShadow(text.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
                     break;
                 }
@@ -206,7 +206,7 @@ public class NameTags extends Module {
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)), textWidth + 6.0f + 6.0f, (float)(fontHeight / fontScale), 1.0f, new Color(19, 19, 19, 50));
                     RoundedUtils.drawRound(middle - 3.0f - 2.0f, (float)((double)y2 - (fontHeight + 7.0)) - 2.0f + (float) fontHeight +4f, healthBarWidth, 1.0f, 1.0f, healthColor);
                     RenderUtils.resetColor();
-                    GL11.glPopMatrix();
+                    GlStateManager.popMatrix();
                     arial16.drawStringWithShadow(Exhitext.toString(), middle, (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, -1);
                     arial16.drawStringWithShadow(Health, middle+ arial16.getStringWidth(Exhitext), (float)((double)y2 - (fontHeight + 5.0)) + 1.0f, healthColor.getRGB());
                     break;

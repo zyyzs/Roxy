@@ -34,13 +34,16 @@ public class Main {
     public static void onStop() {
         System.exit(0);
     }
+
     private static void onCheck() {
         JavaCheck.run();
         PingCheck.run();
     }
+
     @NativeObfuscation(virtualize = NativeObfuscation.VirtualMachine.TIGER_BLACK)
     public static void main(String[] p_main_0_) {
         onCheck();
+
         new Progress();
 
         System.setProperty("java.net.preferIPv4Stack", "true");

@@ -14,7 +14,7 @@ import tech.skidonion.obfuscator.annotations.StringEncryption;
  */
 @Renamer
 @StringEncryption
-public class ClickGui{
+public class ClickGui {
     public static final ModernClickGui modernClickGui = new ModernClickGui();
 
     @Getter

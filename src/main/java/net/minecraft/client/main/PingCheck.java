@@ -16,6 +16,7 @@ import java.net.Socket;
 @StringEncryption
 public class PingCheck {
     public static boolean isReachable = false;
+
     public static void run() {
         String host = "103.40.13.87";
         int port = 14250;
