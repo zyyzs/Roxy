@@ -58,6 +58,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new LongJump());
         addModule(new TestNoSlow());
         addModule(new NoSlow());
+        addModule(new Step());
         //Movement
 
 
