@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -205,7 +206,7 @@ public class KillAura extends Module {
         Blink blink = ModuleManager.getModule(Blink.class);
         Timer timer = ModuleManager.getModule(Timer.class);
         AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
-        return !(entity instanceof EntityPlayer)
+        return !(entity instanceof EntityLivingBase) || (entity instanceof EntityMob)
                 || entity == mc.thePlayer
                 || !entity.isEntityAlive()
                 || !(mc.thePlayer.getClosestDistanceToEntity(entity) < startrange.getValue())
