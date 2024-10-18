@@ -124,6 +124,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new ToolTipsAnim());
         addModule(new MotionBlur());
         addModule(new Nohurtcam());
+        addModule(new TestArrayListMod());
         //Render
     }
     @Listener

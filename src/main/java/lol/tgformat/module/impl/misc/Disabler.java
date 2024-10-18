@@ -212,6 +212,7 @@ public class Disabler extends Module {
 
     
     public static void processPackets() {
+        if (mc.getCurrentServerData() == null) return;
         if (!storedPackets.isEmpty()) {
             for (Packet<INetHandler> packet : storedPackets) {
                 PacketReceiveEvent event = new PacketReceiveEvent(packet, packetListener);
