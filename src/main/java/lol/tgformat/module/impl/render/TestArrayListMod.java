@@ -27,10 +27,10 @@ import java.util.Comparator;
  */
 public class TestArrayListMod extends Module {
     public final BooleanSetting importantModules = new BooleanSetting("Important", false);
-    private final NumberSetting spacing = new NumberSetting("Spacing", 3, 1, 5, 1);
+    private final NumberSetting spacing = new NumberSetting("Spacing", 3, 5, 1, 1);
     private final BooleanSetting background = new BooleanSetting("BackHround",true);
-    private final NumberSetting opacity = new NumberSetting("BgAlpha", 0.25, 0.0, 1, .05);
-    private final NumberSetting radius = new NumberSetting("BgRadius", 3, 1, 17.5, .5);
+    private final NumberSetting opacity = new NumberSetting("BgAlpha", 0.25, 1, 0.0, .05);
+    private final NumberSetting radius = new NumberSetting("BgRadius", 3, 17.5, 1, .5);
     private final ColorSetting bgColor = new ColorSetting("BgColor",new Color(0,0,0,80));
     private final ColorSetting textColor = new ColorSetting("TextColor",new Color(0,0,0));
     private final NumberSetting textFadeSpeed = new NumberSetting("TextColorFadeSpeed", 15, 30, 1, 1);
