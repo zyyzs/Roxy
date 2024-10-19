@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
  */
 public class FriendsCollection {
     public static String[] friends = new String[] {};
+
     public static boolean isFriend(Entity entity) {
         for (String name : friends) {
             if (entity.getName().equals(name)) {
@@ -17,6 +18,7 @@ public class FriendsCollection {
         }
         return IRC.transport != null && IRC.transport.isUser(entity.getName());
     }
+
     public static boolean isFriend(String name) {
         for (String friend : friends) {
             if (name.equals(friend)) {
@@ -25,6 +27,7 @@ public class FriendsCollection {
         }
         return false;
     }
+
     public static void addFriend(String name) {
         if (isFriend(name)) return;
         StringBuilder friendsName = new StringBuilder();
@@ -34,6 +37,7 @@ public class FriendsCollection {
         friendsName.append(name).append(" ");
         friends = friendsName.toString().split(" ");
     }
+
     public static void removeFriend(String name) {
         StringBuilder friendsName = new StringBuilder();
         for (String firend : friends) {

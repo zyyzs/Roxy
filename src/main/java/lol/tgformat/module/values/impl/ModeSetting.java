@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ModeSetting extends Setting {
-
     public final List<String> modes;
     private final HashMap<String, ArrayList<Setting>> childrenMap = new HashMap<>();
     private String defaultMode;
@@ -27,7 +26,6 @@ public class ModeSetting extends Setting {
         if (currentMode == null) currentMode = defaultMode;
     }
 
-    
     public String getMode() {
         return currentMode;
     }
@@ -52,7 +50,6 @@ public class ModeSetting extends Setting {
         currentMode = modes.get(modeIndex);
     }
 
-    
     public void setCurrentMode(String currentMode) {
         this.currentMode = currentMode;
     }
@@ -61,5 +58,4 @@ public class ModeSetting extends Setting {
     public String getConfigValue() {
         return currentMode;
     }
-
 }

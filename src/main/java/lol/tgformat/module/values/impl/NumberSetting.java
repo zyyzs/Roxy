@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import lol.tgformat.module.values.Setting;
 
 public class NumberSetting extends Setting {
-
     private final double maxValue, minValue, increment, defaultValue;
 
     @Expose
@@ -27,7 +26,6 @@ public class NumberSetting extends Setting {
         return value;
     }
 
-    
     public double getMaxValue() {
         return maxValue;
     }
@@ -47,7 +45,6 @@ public class NumberSetting extends Setting {
         return value;
     }
 
-    
     public void setValue(double value) {
         value = clamp(value, this.minValue, this.maxValue);
         value = Math.round(value * (1.0 / this.increment)) / (1.0 / this.increment);
@@ -62,5 +59,4 @@ public class NumberSetting extends Setting {
     public Double getConfigValue() {
         return getValue();
     }
-
 }

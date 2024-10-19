@@ -43,7 +43,8 @@ import java.util.concurrent.Executors;
 @StringEncryption
 @NativeObfuscation
 public enum Client {
-    instance,;
+    instance;
+
     private final String name = "Roxy";
     private final String date = "1019";
     private final String version = "1.5";
@@ -106,10 +107,12 @@ public enum Client {
         VideoPlayer.stop();
 
     }
+
     public Dragging createDrag(Module module, String name, float x, float y) {
         DragManager.draggables.put(name, new Dragging(module, name, x, y));
         return DragManager.draggables.get(name);
     }
+
     public GuiScreen getMainMenu() {
         return new MainMenu();
     }

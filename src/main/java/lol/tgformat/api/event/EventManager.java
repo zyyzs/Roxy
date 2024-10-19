@@ -148,6 +148,5 @@ public final class EventManager {
             this.target = target;
             this.priority = priority;
         }
-
     }
 }

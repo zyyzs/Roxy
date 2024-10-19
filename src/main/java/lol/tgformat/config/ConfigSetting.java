@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class ConfigSetting {
-
     @Expose
     @SerializedName("name")
     public String name;
@@ -17,5 +16,4 @@ public class ConfigSetting {
         this.name = name;
         this.value = value;
     }
-
 }

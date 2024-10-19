@@ -39,7 +39,6 @@ public class ConfigManager {
         Arrays.stream(Objects.requireNonNull(file.listFiles())).forEach(f -> localConfigs.add(new LocalConfig(f.getName().split("\\.")[0])));
     }
 
-
     /**
      * Saving config method
      *
@@ -60,7 +59,6 @@ public class ConfigManager {
     public boolean saveConfig(String name) {
         return saveConfig(name, serialize());
     }
-
 
     public boolean delete(String configName) {
         List<LocalConfig> configsMatch = localConfigs.stream().filter(localConfig -> localConfig.getName().equals(configName)).collect(Collectors.toList());

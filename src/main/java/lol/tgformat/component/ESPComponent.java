@@ -26,8 +26,6 @@ public class ESPComponent implements IMinecraft {
         esps.forEach(ESP::render2D);
     }
 
-    ;
-
     @Listener(Priority.HIGHEST)
     public void onRender(Render3DEvent event) {
 
@@ -37,8 +35,6 @@ public class ESPComponent implements IMinecraft {
 
         esps.forEach(ESP::render3D);
     }
-
-    ;
 
     @Listener(Priority.HIGHEST)
     public void onUpdate(PreUpdateEvent event) {
@@ -52,8 +48,6 @@ public class ESPComponent implements IMinecraft {
             }
         });
     }
-
-    ;
 
     public static void add(ESP esp) {
         threadPool.execute(() -> {

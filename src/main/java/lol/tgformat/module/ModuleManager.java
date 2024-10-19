@@ -58,6 +58,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new LongJump());
         addModule(new TestNoSlow());
         addModule(new NoSlow());
+        addModule(new Step());
         //Movement
 
 
@@ -83,6 +84,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new IRC());
         addModule(new Spammer());
         addModule(new GhostBlocksMaker());
+        addModule(new AntiSpammer());
         //Misc
 
 
@@ -98,6 +100,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new Stuck());
         addModule(new AutoHub());
         addModule(new Autoplay());
+        addModule(new AllowEdit());
         //Player
 
 
@@ -121,6 +124,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new ToolTipsAnim());
         addModule(new MotionBlur());
         addModule(new Nohurtcam());
+        addModule(new TestArrayListMod());
         //Render
     }
     @Listener
@@ -134,12 +138,14 @@ public class ModuleManager implements IMinecraft {
             }
         }
     }
+
     @Listener
     public void onTick(TickEvent event) {
         if (!getModule(IRC.class).isState()) {
             getModule(IRC.class).state();
         }
     }
+
     public static <T>T getModule(Class<T> clazz) {
         for (Module m : modules) {
             if (m.getClass() == clazz) {
@@ -148,6 +154,7 @@ public class ModuleManager implements IMinecraft {
         }
         return (T) new Module("Null", ModuleType.Combat);
     }
+
     private void addModule(Module module) {
         for (Field field : module.getClass().getDeclaredFields()) {
             try {
@@ -163,6 +170,7 @@ public class ModuleManager implements IMinecraft {
         module.add(new KeybindSetting(module.getKey()));
         modules.add(module);
     }
+
     public static Module getModuleByName(String name) {
         for (Module m : modules) {
             if (m.getName().equalsIgnoreCase(name)) return m;

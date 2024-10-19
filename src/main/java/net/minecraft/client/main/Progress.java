@@ -13,6 +13,7 @@ public class Progress extends JFrame {
 //      
 //      private final JProgressBar progressBar;
       public static boolean done = false;
+
       public Progress() {
             this.setSize(860, 576);
             this.setAlwaysOnTop(true);

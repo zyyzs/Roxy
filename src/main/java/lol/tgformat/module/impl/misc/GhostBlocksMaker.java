@@ -31,16 +31,19 @@ public class GhostBlocksMaker extends Module {
     public GhostBlocksMaker() {
         super("GhostBlocksMaker", ModuleType.Misc);
     }
+
     @Override
     public void onEnable() {
         packets.clear();
         timer.reset();
     }
+
     @Override
     public void onDisable() {
         process();
         timer.reset();
     }
+
     @Listener
     public void onReceive(PacketReceiveEvent event) {
         if (event.getPacket() instanceof S08PacketPlayerPosLook) {
@@ -50,14 +53,17 @@ public class GhostBlocksMaker extends Module {
         packets.add((Packet<INetHandler>) event.getPacket());
         event.setCancelled();
     }
+
     @Listener
     public void onTick(TickEvent event) {
         if (isNull()) setState(false);
     }
+
     @Listener
     public void onWorld(WorldEvent event) {
         setState(false);
     }
+
     @Listener
     public void onPost(PostMotionEvent event) {
         if (timer.hasReached(plushDelayTime.getValue().intValue()) && delayedPlush.isEnabled()) {
@@ -65,12 +71,14 @@ public class GhostBlocksMaker extends Module {
             timer.reset();
         }
     }
+
     public void process() {
         packets.forEach(packet -> {
             packet.processPacket(Disabler.packetListener);
         });
         packets.clear();
     }
+
     @Override
     public void setState(boolean state) {
         super.setState(state);

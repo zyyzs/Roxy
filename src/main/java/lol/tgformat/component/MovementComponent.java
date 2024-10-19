@@ -17,9 +17,11 @@ public final class MovementComponent implements IMinecraft {
     public static final MovementComponent INSTANCE = new MovementComponent();
     public static boolean cancelMove = false;
     public static boolean forceStuck = false;
+
     public static void cancelMove() {
         cancelMove(false);
     }
+
     public static void cancelMove(boolean force) {
         if (mc.thePlayer == null) {
             return;
@@ -35,6 +37,7 @@ public final class MovementComponent implements IMinecraft {
         cancelMove = false;
         mc.theWorld.skiptick = 0;
     }
+
     @Listener
     @NativeObfuscation(verificationLock = "User")
     public void onMove(MoveEvent event) {
@@ -48,6 +51,7 @@ public final class MovementComponent implements IMinecraft {
             mc.theWorld.skiptick = 20;
         }
     }
+
     @Listener
     @NativeObfuscation(verificationLock = "User")
     public void onTick(TickEvent event) {

@@ -202,6 +202,26 @@ public final class BlockUtil {
         mc = Minecraft.getMinecraft();
     }
 
+    public static boolean insideBlock(final AxisAlignedBB bb) {
+        final WorldClient world = mc.theWorld;
+        for (int x = MathHelper.floor_double(bb.minX); x < MathHelper.floor_double(bb.maxX) + 1; ++x) {
+            for (int y = MathHelper.floor_double(bb.minY); y < MathHelper.floor_double(bb.maxY) + 1; ++y) {
+                for (int z = MathHelper.floor_double(bb.minZ); z < MathHelper.floor_double(bb.maxZ) + 1; ++z) {
+                    final Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+                    final AxisAlignedBB boundingBox;
+                    if (block != null && !(block instanceof BlockAir) && (boundingBox = block.getCollisionBoundingBox(world, new BlockPos(x, y, z), world.getBlockState(new BlockPos(x, y, z)))) != null && bb.intersectsWith(boundingBox)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static Block blockRelativeToPlayer(final double offsetX, final double offsetY, final double offsetZ) {
+        return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(offsetX, offsetY, offsetZ)).getBlock();
+    }
+
     public interface ICollide {
         boolean collideBlock(Block var1);
     }
