@@ -37,6 +37,7 @@ import static lol.tgformat.module.impl.combat.KillAura.target;
 @ControlFlowObfuscation
 public class Gapple extends Module {
     public NumberSetting duringSendTicks = new NumberSetting("DuringSendTicks", 1, 10,0,1);
+    public NumberSetting c03s = new NumberSetting("C03Eat",32 ,40, 1, 1);
     public NumberSetting delay = new NumberSetting("Delay", 9, 10,0,1);
     public BooleanSetting auto = new BooleanSetting("Auto", false);
     private int gappleSlot = -1;
@@ -98,7 +99,7 @@ public class Gapple extends Module {
         } else {
             eating = true;
         }
-        if (storedC03 >= 32) {
+        if (storedC03 >= c03s.getValue().intValue()) {
             eating = false;
             sending = true;
             PacketUtil.sendPacketNoEvent(new C09PacketHeldItemChange(this.gappleSlot));
@@ -135,7 +136,7 @@ public class Gapple extends Module {
     @Listener
     public void onRender2D(Render2DEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
-        float target = (float)(120.0f * (storedC03 / 32.0)) * ((float) 100 / 120);
+        float target = (120.0f * ((float) storedC03 / c03s.getValue().intValue())) * ((float) 100 / 120);
         int startX = sr.getScaledWidth() / 2 - 68;
         int startY = sr.getScaledHeight() / 2 - 20;
         String text = "Gapple...";

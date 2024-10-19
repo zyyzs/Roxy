@@ -1,6 +1,7 @@
 package net.minecraft.client.gui;
 
 import lol.tgformat.module.impl.render.HUD;
+import lol.tgformat.ui.font.FontUtil;
 import lol.tgformat.ui.utils.Animation;
 import lol.tgformat.ui.utils.DecelerateAnimation;
 import lol.tgformat.ui.utils.Direction;
@@ -115,7 +116,7 @@ public class GuiButton extends Gui
                 rectColor = ColorUtils.interpolateColorC(rectColor, new Color(255, 255, 255, 130), hoverAnimation.getOutput().floatValue());
                 //GlowUtils.drawRoundGlow(this.xPosition - 2, this.yPosition - 2, this.width + 4, this.height + 4, 3, 3, glowColor);
                 RoundedUtils.drawRound(this.xPosition, this.yPosition, this.width, this.height, 3, rectColor);
-                FontManager.edit18.drawCenteredString(this.displayString, this.xPosition + this.width / 2f, (float) (this.yPosition + (this.height - 6) / 2.0), j);
+                FontManager.arial18.drawCenteredString(this.displayString, this.xPosition + this.width / 2f, (float) (this.yPosition + (this.height - 6) / 2.0), j);
                 this.mouseDragged(mc, mouseX, mouseY);
             }
         }

@@ -84,6 +84,7 @@ public class NoSlow extends Module {
     @Listener
     public void onPost(PostMotionEvent event) {
         if (isGapple()) {
+            PacketUtil.send1_12Block();
             return;
         }
         if (!isFood()) {

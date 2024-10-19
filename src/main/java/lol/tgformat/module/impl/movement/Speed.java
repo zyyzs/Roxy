@@ -145,6 +145,7 @@ public class Speed extends Module {
         if ((blinkCheck.isEnabled() && ModuleManager.getModule(Blink.class).isState()) || (scaffoldCheck.isEnabled() && ModuleManager.getModule(Scaffold.class).isState())) {
             return;
         }
+        if (isGapple()) return;
         if (mode.is("Grim")) {
             AxisAlignedBB playerBox = mc.thePlayer.boundingBox.expand(1.0D, 1.0D, 1.0D);
             int c = 0;

@@ -101,6 +101,7 @@ public class KillAura extends Module {
     @Listener
     public void onWorld(WorldEvent event) {
         target = null;
+        setState(false);
     }
     @Listener
     public void onPreUpdate(PreUpdateEvent event){
@@ -115,8 +116,6 @@ public class KillAura extends Module {
         if (isPlayerNear() && isSword()) {
             switch (autoblockmods.getMode()) {
                 case "GrimAC": {
-//                    PacketUtil.send1_12Block();
-//                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
                     mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
                     break;
                 }
@@ -156,17 +155,6 @@ public class KillAura extends Module {
             }
             target = null;
             return;
-        }
-        if (autoblockmods.is("GrimAC")) {
-            if (isSword()) {
-//                mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 72000);
-//                if (mc.thePlayer.isUsingItem() && isSword()) {
-//                    mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-//                    for (int i = 1; i < 5; i++) {
-//                        PacketUtil.send1_12Block();
-//                    }
-//                }
-            }
         }
         if (attackmode.is("Post")) {
             attack();

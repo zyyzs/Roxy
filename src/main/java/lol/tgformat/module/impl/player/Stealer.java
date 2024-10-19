@@ -1,6 +1,7 @@
 package lol.tgformat.module.impl.player;
 
 import lol.tgformat.api.event.Listener;
+import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.events.render.Render2DEvent;
@@ -134,12 +135,13 @@ public class Stealer extends Module {
     }
 
     @Listener
+    public void onWorld(WorldEvent event) {
+        setState(false);
+    }
+    @Listener
     public void onMotion(PreMotionEvent event) {
         if (isGapple()) return;
         if(isNull())return;
-        if(mc.thePlayer.ticksExisted < 10 && autodis.isEnabled()) {
-            this.setState(false);
-        }
         if (mc.thePlayer.openContainer == null) {
             willTake = 0;
             return;

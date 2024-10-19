@@ -1,17 +1,18 @@
 package lol.tgformat.module.impl.player;
 
 import lol.tgformat.api.event.Listener;
-import lol.tgformat.events.TickEvent;
-import lol.tgformat.events.motion.PostMotionEvent;
+import lol.tgformat.events.WorldEvent;
+import lol.tgformat.events.motion.PreMotionEvent;
 import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
 import lol.tgformat.module.Module;
-import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.ModuleType;
-import lol.tgformat.module.impl.world.Scaffold;
+import lol.tgformat.module.impl.combat.KillAura;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.module.values.impl.ModeSetting;
 import lol.tgformat.module.values.impl.NumberSetting;
 import lol.tgformat.utils.player.InventoryUtil;
+import lol.tgformat.utils.timer.TimerUtil;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -22,8 +23,6 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
-import org.lwjgl.input.Keyboard;
-import tech.skidonion.obfuscator.annotations.NativeObfuscation;
 import tech.skidonion.obfuscator.annotations.Renamer;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
@@ -32,201 +31,204 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
+import static lol.tgformat.module.ModuleManager.getModule;
+import static lol.tgformat.utils.player.InventoryUtil.windowClick;
+
 @Renamer
 
 @StringEncryption
 public class InvManager extends Module {
-    private final NumberSetting delay = new NumberSetting("Delay", 0.0, 300.0, 0.0, 10.0);
-    public final BooleanSetting instant = new BooleanSetting("Instant",false);
-    public final BooleanSetting openinv = new BooleanSetting("OpenInv",false);
-    public final BooleanSetting noWoodAndGold = new BooleanSetting("NoWoodAndGold",true);
-    private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
-    public String[] serverItems;
-    private final int[] bestArmorPieces;
-    private final List<Integer> trash;
-    private final int[] bestToolSlots;
-    private final List<Integer> gappleStackSlots;
-    private int bestSwordSlot;
-    private int bestsbSlot;
-    private int bestPearlSlot;
-    private int bestBowSlot;
-    private boolean serverOpen;
-    private boolean clientOpen;
-    private boolean nextTickCloseInventory;
-    private int ticksSinceLastClick;
 
     public InvManager() {
         super("InvManager", ModuleType.Player);
-        this.serverItems = new String[] { "选择游戏",
-                "加入游戏", "职业选择菜单", "离开对局",
-                "再来一局", "selector", "tracking compass",
-                "(right click)", "tienda ", "perfil", "salir",
-                "shop", "collectibles", "game", "profil", "lobby",
-                "show all", "hub", "friends only", "cofre", "(click",
-                "teleport", "play", "exit", "hide all", "jeux", "gadget",
-                " (activ", "emote", "amis", "bountique", "choisir", "choose " };
-        this.bestArmorPieces = new int[4];
-        this.trash = new ArrayList<>();
-        this.bestToolSlots = new int[3];
-        this.gappleStackSlots = new ArrayList<>();
     }
 
-    @Listener
-    public void onTick(TickEvent event){
-        if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (mc.thePlayer.ticksExisted < 10 && autodis.isEnabled()) {
-            this.setState(false);
-        }
-    }
+    public static final BooleanSetting noWoodAndGold = new BooleanSetting("NoWoodAndGold", true);
+
+    private final ModeSetting mode = new ModeSetting("Mode", "Spoof", "OpenInv", "Spoof");
+    private final NumberSetting delay = new NumberSetting("SlotDelay", 5, 300, 0, 10);
+    private final NumberSetting armorDelay = new NumberSetting("WearDelay", 20, 300, 0, 10);
+
+    public final NumberSetting sword = new NumberSetting("Weapon", 1, 9, 1, 1);
+    public final NumberSetting bow = new NumberSetting("Bow", 6, 9, 1, 1);
+    public final NumberSetting pearl = new NumberSetting("Pearl", 8, 9, 1, 1);
+    public final NumberSetting pick_axe = new NumberSetting("Pickaxe", 2, 9, 1, 1);
+    public final NumberSetting axe = new NumberSetting("Axe", 3, 9, 1, 1);
+    public final NumberSetting block = new NumberSetting("Block", 7, 9, 1, 1);
+    public final NumberSetting gApple = new NumberSetting("GApple", 4, 9, 1, 1);
+    public final NumberSetting shovel = new NumberSetting("Shovel", 5, 9, 1, 1);
+
+    public final String[] serverItems = {"选择游戏", "加入游戏", "职业选择菜单", "离开对局", "再来一局", "selector", "tracking compass", "(right click)", "tienda ", "perfil", "salir", "shop", "collectibles", "game", "profil", "lobby", "show all", "hub", "friends only", "cofre", "(click", "teleport", "play", "exit", "hide all", "jeux", "gadget", " (activ", "emote", "amis", "bountique", "choisir", "choose "};
+
+    private final int[] bestArmorPieces = new int[4];
+    private final List<Integer> trash = new ArrayList<>();
+    private final int[] bestToolSlots = new int[3];
+    private final List<Integer> gappleStackSlots = new ArrayList<>();
+    private int bestSwordSlot;
+    private int bestPearlSlot;
+
+    private int bestBowSlot;
+    private boolean serverOpen;
+    private boolean clientOpen;
+
+    private int ticksSinceLastClick;
+
+    private boolean nextTickCloseInventory;
+    private final TimerUtil timer = new TimerUtil();
+
 
     @Listener
     private void onPacket(PacketReceiveEvent event) {
-        if (isGapple()) return;
-        Packet<?> packet = event.getPacket();
+        final Packet<?> packet = event.getPacket();
         if (packet instanceof S2DPacketOpenWindow) {
             this.clientOpen = false;
             this.serverOpen = false;
         }
+
     }
 
     @Listener
     private void onPacketSend(PacketSendEvent event) {
-        if (isGapple()) return;
-        Packet<?> packet = event.getPacket();
+        final Packet<?> packet = event.getPacket();
+
         if (packet instanceof C16PacketClientStatus clientStatus) {
+
             if (clientStatus.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                 this.clientOpen = true;
                 this.serverOpen = true;
             }
-        }
-        else if (packet instanceof C0DPacketCloseWindow packetCloseWindow) {
+        } else if (packet instanceof C0DPacketCloseWindow packetCloseWindow) {
+
             if (packetCloseWindow.windowId == mc.thePlayer.inventoryContainer.windowId) {
                 this.clientOpen = false;
                 this.serverOpen = false;
             }
-        }
-        else if (packet instanceof C0EPacketClickWindow && !mc.thePlayer.isUsingItem()) {
+        } else if (packet instanceof C0EPacketClickWindow && !mc.thePlayer.isUsingItem()) {
             this.ticksSinceLastClick = 0;
+
         }
     }
 
-    private boolean dropItem(List<Integer> listOfSlots) {
+    @Listener
+    public void onWorld(WorldEvent event) {
+        setState(false);
+    }
+    private boolean dropItem(final List<Integer> listOfSlots) {
+
         if (!listOfSlots.isEmpty()) {
             int slot = listOfSlots.removeFirst();
-            InventoryUtil.windowClick(mc, slot, 1, InventoryUtil.ClickType.DROP_ITEM);
+            windowClick(mc, slot, 1, InventoryUtil.ClickType.DROP_ITEM);
             return true;
         }
         return false;
     }
 
+
     @Listener
-    private void onMotion(PostMotionEvent event) {
-        if (isGapple()) return;
-        if (!mc.thePlayer.isUsingItem() && (mc.currentScreen == null || mc.currentScreen instanceof GuiChat || mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiIngameMenu)) {
-            ++this.ticksSinceLastClick;
-            if (this.ticksSinceLastClick < Math.floor(this.delay.getValue() / 50.0) && !instant.isEnabled()) {
-                return;
-            }
-            if (this.clientOpen || (mc.currentScreen == null && !openinv.isEnabled())) {
-                this.clear();
-                for (int slot = 5; slot < 45; ++slot) {
-                    ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
-                    if (stack != null) {
-                        if (stack.getItem() instanceof ItemSnowball || stack.getItem() instanceof ItemEgg) {
-                            this.bestsbSlot = slot;
-                        }
-                        if (stack.getItem() instanceof ItemSword && InventoryUtil.isBestSword(mc.thePlayer, stack)) {
-                            this.bestSwordSlot = slot;
-                        }
-                        else if (stack.getItem() instanceof ItemTool && InventoryUtil.isBestTool(mc.thePlayer, stack)) {
-                            int toolType = InventoryUtil.getToolType(stack);
-                            if (toolType != -1 && slot != this.bestToolSlots[toolType]) {
-                                this.bestToolSlots[toolType] = slot;
-                            }
-                        }
-                        else if (stack.getItem() instanceof ItemArmor armor && InventoryUtil.isBestArmor(mc.thePlayer, stack)) {
-                            int pieceSlot = this.bestArmorPieces[armor.armorType];
-                            if (pieceSlot == -1 || slot != pieceSlot) {
-                                this.bestArmorPieces[armor.armorType] = slot;
-                            }
-                        }
-                        else if (stack.getItem() instanceof ItemBow && InventoryUtil.isBestBow(mc.thePlayer, stack)) {
-                            if (slot != this.bestBowSlot) {
-                                this.bestBowSlot = slot;
-                            }
-                        }
-                        else if (stack.getItem() instanceof ItemAppleGold) {
-                            this.gappleStackSlots.add(slot);
-                        }
-                        else if (stack.getItem() instanceof ItemEnderPearl) {
-                            this.bestPearlSlot = slot;
-                        }
-                        else if (!this.trash.contains(slot) && !isValidStack(stack)) {
-                            if (Arrays.stream(this.serverItems).noneMatch(stack.getDisplayName()::contains)) {
+    private void onMotion(PreMotionEvent event) {
+            if (!mc.thePlayer.isOnLadder() && !(getModule(Blink.class).isState()) && !mc.thePlayer.isUsingItem() && (mc.currentScreen == null || mc.currentScreen instanceof GuiChat || mc.currentScreen instanceof GuiInventory || !mc.thePlayer.isSpectator() || mc.currentScreen instanceof GuiIngameMenu) && KillAura.target == null) {
+
+                this.ticksSinceLastClick++;
+
+                if (this.ticksSinceLastClick < Math.floor(this.delay.getValue() / 50)) return;
+
+                if (this.clientOpen || (mc.currentScreen == null && !this.mode.getMode().equals("OpenInv"))) {
+                    this.clear();
+
+                    for (int slot = InventoryUtil.INCLUDE_ARMOR_BEGIN; slot < InventoryUtil.END; slot++) {
+                        final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
+
+                        if (stack != null) {
+                            if (stack.getItem() instanceof ItemSword && InventoryUtil.isBestSword(mc.thePlayer, stack)) {
+                                this.bestSwordSlot = slot;
+                            } else if (stack.getItem() instanceof ItemTool && InventoryUtil.isBestTool(mc.thePlayer, stack)) {
+                                final int toolType = InventoryUtil.getToolType(stack);
+                                if (toolType != -1 && slot != this.bestToolSlots[toolType])
+                                    this.bestToolSlots[toolType] = slot;
+                            } else if (stack.getItem() instanceof ItemArmor armor && InventoryUtil.isBestArmor(mc.thePlayer, stack)) {
+
+                                final int pieceSlot = this.bestArmorPieces[armor.armorType];
+
+                                if (pieceSlot == -1 || slot != pieceSlot)
+                                    this.bestArmorPieces[armor.armorType] = slot;
+                            } else if (stack.getItem() instanceof ItemBow && InventoryUtil.isBestBow(mc.thePlayer, stack)) {
+                                if (slot != this.bestBowSlot)
+                                    this.bestBowSlot = slot;
+                            } else if (stack.getItem() instanceof ItemAppleGold) {
+                                this.gappleStackSlots.add(slot);
+                            } else if (stack.getItem() instanceof ItemEnderPearl) {
+                                this.bestPearlSlot = slot;
+                            } else if (!this.trash.contains(slot) && !isValidStack(stack)) {
+                                if (Arrays.stream(serverItems).anyMatch(stack.getDisplayName()::contains)) continue;
+                                if (stack.getItem() instanceof ItemSkull) continue;
                                 this.trash.add(slot);
                             }
                         }
                     }
-                }
-                boolean busy = !this.trash.isEmpty() || this.equipArmor(false) || this.sortItems(false) || ModuleManager.getModule(Scaffold.class).isState();
-                if (!busy) {
-                    if (this.nextTickCloseInventory) {
-                        this.close();
-                        this.nextTickCloseInventory = false;
+
+                    final boolean busy = (!this.trash.isEmpty()) || this.equipArmor(false) || this.sortItems(false);
+
+                    if (!busy) {
+                        if (this.nextTickCloseInventory) {
+                            if (mode.is("Spoof")) this.close();
+                            this.nextTickCloseInventory = false;
+                        } else {
+                            this.nextTickCloseInventory = true;
+                        }
+                        return;
+                    } else {
+                        boolean waitUntilNextTick = !this.serverOpen;
+
+                        if (mode.is("Spoof")) this.open();
+
+                        if (this.nextTickCloseInventory)
+                            this.nextTickCloseInventory = false;
+
+                        if (waitUntilNextTick) return;
                     }
-                    else {
-                        this.nextTickCloseInventory = true;
-                    }
-                    return;
+
+
+                    if (timer.hasTimeElapsed(this.armorDelay.getValue().longValue()) && this.equipArmor(true))
+                        return;
+                    if (this.dropItem(this.trash)) return;
+                    this.sortItems(true);
                 }
-                boolean waitUntilNextTick = !this.serverOpen;
-                this.open();
-                if (this.nextTickCloseInventory) {
-                    this.nextTickCloseInventory = false;
-                }
-                if (waitUntilNextTick) {
-                    return;
-                }
-                if (this.equipArmor(true)) {
-                    return;
-                }
-                if (this.dropItem(this.trash)) {
-                    return;
-                }
-                this.sortItems(true);
             }
-        }
+
     }
 
-    private boolean sortItems(boolean moveItems) {
-        int goodsbSlot = 9 + 35;
-        if (this.bestsbSlot != -1 && this.bestsbSlot != goodsbSlot) {
-            if (moveItems) {
-                this.putItemInSlot(goodsbSlot, this.bestsbSlot);
-                this.bestsbSlot = goodsbSlot;
+    private boolean sortItems(final boolean moveItems) {
+        int goodSwordSlot = this.sword.getValue().intValue() + 35;
+
+        if (this.bestSwordSlot != -1) {
+            if (this.bestSwordSlot != goodSwordSlot) {
+                if (moveItems) {
+                    this.putItemInSlot(goodSwordSlot, this.bestSwordSlot);
+                    this.bestSwordSlot = goodSwordSlot;
+                }
+
+                return true;
             }
-            return true;
         }
-        int goodSwordSlot = 1 + 35;
-        if (this.bestSwordSlot != -1 && this.bestSwordSlot != goodSwordSlot) {
-            if (moveItems) {
-                this.putItemInSlot(goodSwordSlot, this.bestSwordSlot);
-                this.bestSwordSlot = goodSwordSlot;
+        int goodBowSlot = this.bow.getValue().intValue() + 35;
+
+        if (this.bestBowSlot != -1) {
+            if (this.bestBowSlot != goodBowSlot) {
+                if (moveItems) {
+                    this.putItemInSlot(goodBowSlot, this.bestBowSlot);
+                    this.bestBowSlot = goodBowSlot;
+                }
+                return true;
             }
-            return true;
         }
-        int goodBowSlot = 5 + 35;
-        if (this.bestBowSlot != -1 && this.bestBowSlot != goodBowSlot) {
-            if (moveItems) {
-                this.putItemInSlot(goodBowSlot, this.bestBowSlot);
-                this.bestBowSlot = goodBowSlot;
-            }
-            return true;
-        }
-        int goodGappleSlot = 3 + 35;
+        int goodGappleSlot = this.gApple.getValue().intValue() + 35;
+
         if (!this.gappleStackSlots.isEmpty()) {
             this.gappleStackSlots.sort(Comparator.comparingInt(slot -> mc.thePlayer.inventoryContainer.getSlot(slot).getStack().stackSize));
-            int bestGappleSlot = this.gappleStackSlots.getFirst();
+
+            final int bestGappleSlot = this.gappleStackSlots.getFirst();
+
             if (bestGappleSlot != goodGappleSlot) {
                 if (moveItems) {
                     this.putItemInSlot(goodGappleSlot, bestGappleSlot);
@@ -235,34 +237,48 @@ public class InvManager extends Module {
                 return true;
             }
         }
-        int[] toolSlots = { 4 + 35, 6 + 35, 7 + 35 };
-        for (int toolSlot : this.bestToolSlots) {
+
+
+        final int[] toolSlots = {
+                pick_axe.getValue().intValue() + 35,
+                axe.getValue().intValue() + 35,
+                shovel.getValue().intValue() + 35};
+
+        for (final int toolSlot : this.bestToolSlots) {
             if (toolSlot != -1) {
-                int type = InventoryUtil.getToolType(mc.thePlayer.inventoryContainer.getSlot(toolSlot).getStack());
-                if (type != -1 && toolSlot != toolSlots[type]) {
-                    if (moveItems) {
-                        this.putToolsInSlot(type, toolSlots);
+                final int type = InventoryUtil.getToolType(mc.thePlayer.inventoryContainer.getSlot(toolSlot).getStack());
+
+                if (type != -1) {
+                    if (toolSlot != toolSlots[type]) {
+                        if (moveItems) {
+                            this.putToolsInSlot(type, toolSlots);
+                        }
+                        return true;
                     }
-                    return true;
                 }
             }
         }
-        int goodBlockSlot = 2 + 35;
-        int mostBlocksSlot = this.getMostBlocks();
+
+        int goodBlockSlot = this.block.getValue().intValue() + 35;
+        int mostBlocksSlot = getMostBlocks();
         if (mostBlocksSlot != -1 && mostBlocksSlot != goodBlockSlot) {
             Slot dss = mc.thePlayer.inventoryContainer.getSlot(goodBlockSlot);
             ItemStack dsis = dss.getStack();
-            if (dsis == null || !(dsis.getItem() instanceof ItemBlock) || dsis.stackSize < mc.thePlayer.inventoryContainer.getSlot(mostBlocksSlot).getStack().stackSize || !Arrays.stream(this.serverItems).noneMatch(dsis.getDisplayName().toLowerCase()::contains)) {
+            if (!(dsis != null && dsis.getItem() instanceof ItemBlock && dsis.stackSize >= mc.thePlayer.inventoryContainer.getSlot(mostBlocksSlot).getStack().stackSize && Arrays.stream(serverItems).noneMatch(dsis.getDisplayName().toLowerCase()::contains))) {
                 this.putItemInSlot(goodBlockSlot, mostBlocksSlot);
             }
         }
-        int goodPearlSlot = 8 + 35;
-        if (this.bestPearlSlot != -1 && this.bestPearlSlot != goodPearlSlot) {
-            if (moveItems) {
-                this.putItemInSlot(goodPearlSlot, this.bestPearlSlot);
-                this.bestPearlSlot = goodPearlSlot;
+
+        int goodPearlSlot = this.pearl.getValue().intValue() + 35;
+
+        if (this.bestPearlSlot != -1) {
+            if (this.bestPearlSlot != goodPearlSlot) {
+                if (moveItems) {
+                    this.putItemInSlot(goodPearlSlot, this.bestPearlSlot);
+                    this.bestPearlSlot = goodPearlSlot;
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -270,10 +286,10 @@ public class InvManager extends Module {
     public int getMostBlocks() {
         int stack = 0;
         int biggestSlot = -1;
-        for (int i = 9; i < 45; ++i) {
+        for (int i = 9; i < 45; i++) {
             Slot slot = mc.thePlayer.inventoryContainer.getSlot(i);
             ItemStack is = slot.getStack();
-            if (is != null && is.getItem() instanceof ItemBlock && is.stackSize > stack && Arrays.stream(this.serverItems).noneMatch(is.getDisplayName().toLowerCase()::contains)) {
+            if (is != null && is.getItem() instanceof ItemBlock && is.stackSize > stack && Arrays.stream(serverItems).noneMatch(is.getDisplayName().toLowerCase()::contains)) {
                 stack = is.stackSize;
                 biggestSlot = i;
             }
@@ -282,42 +298,58 @@ public class InvManager extends Module {
     }
 
     private boolean equipArmor(boolean moveItems) {
-        for (int i = 0; i < this.bestArmorPieces.length; ++i) {
-            int piece = this.bestArmorPieces[i];
+        for (int i = 0; i < this.bestArmorPieces.length; i++) {
+            final int piece = this.bestArmorPieces[i];
+
             if (piece != -1) {
                 int armorPieceSlot = i + 5;
-                ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(armorPieceSlot).getStack();
-                if (stack == null) {
-                    if (moveItems) {
-                        InventoryUtil.windowClick(mc, piece, 0, InventoryUtil.ClickType.SHIFT_CLICK);
-                    }
-                    return true;
+                final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(armorPieceSlot).getStack();
+                if (stack != null)
+                    continue;
+
+                if (moveItems) {
+                    windowClick(mc, piece, 0, InventoryUtil.ClickType.SHIFT_CLICK);
                 }
+                timer.reset();
+                return true;
             }
         }
         return false;
     }
 
-    private void putItemInSlot(int slot, int slotIn) {
-        InventoryUtil.windowClick(mc, slotIn, slot - 36, InventoryUtil.ClickType.SWAP_WITH_HOT_BAR_SLOT);
+    private void putItemInSlot(final int slot, final int slotIn) {
+        windowClick(mc, slotIn,
+                slot - 36,
+                InventoryUtil.ClickType.SWAP_WITH_HOT_BAR_SLOT);
     }
 
-    private void putToolsInSlot(int tool, int[] toolSlots) {
-        int toolSlot = toolSlots[tool];
-        InventoryUtil.windowClick(mc, this.bestToolSlots[tool], toolSlot - 36, InventoryUtil.ClickType.SWAP_WITH_HOT_BAR_SLOT);
+    private void putToolsInSlot(final int tool, final int[] toolSlots) {
+        final int toolSlot = toolSlots[tool];
+
+        windowClick(mc, this.bestToolSlots[tool],
+                toolSlot - 36,
+                InventoryUtil.ClickType.SWAP_WITH_HOT_BAR_SLOT);
         this.bestToolSlots[tool] = toolSlot;
     }
 
-    private static boolean isValidStack(ItemStack stack) {
-        return (stack.getItem() instanceof ItemBlock && InventoryUtil.isStackValidToPlace(stack)) || (stack.getItem() instanceof ItemPotion && InventoryUtil.isBuffPotion(stack)) || (stack.getItem() instanceof ItemFood && InventoryUtil.isGoodFood(stack)) || InventoryUtil.isGoodItem(stack.getItem());
+    private static boolean isValidStack(final ItemStack stack) {
+        return switch (stack.getItem()) {
+            case ItemBlock ignored when InventoryUtil.isStackValidToPlace(stack) -> true;
+            case ItemPotion ignored when InventoryUtil.isBuffPotion(stack) -> true;
+            case ItemFood ignored when InventoryUtil.isGoodFood(stack) -> true;
+            case null, default -> InventoryUtil.isGoodItem(stack.getItem());
+        };
     }
 
+    @Override
     public void onEnable() {
         this.ticksSinceLastClick = 0;
-        this.clientOpen = (mc.currentScreen instanceof GuiInventory);
+
+        this.clientOpen = mc.currentScreen instanceof GuiInventory;
         this.serverOpen = this.clientOpen;
     }
 
+    @Override
     public void onDisable() {
         this.close();
         this.clear();
@@ -341,7 +373,6 @@ public class InvManager extends Module {
         this.trash.clear();
         this.bestBowSlot = -1;
         this.bestSwordSlot = -1;
-        this.bestsbSlot = -1;
         this.gappleStackSlots.clear();
         Arrays.fill(this.bestArmorPieces, -1);
         Arrays.fill(this.bestToolSlots, -1);

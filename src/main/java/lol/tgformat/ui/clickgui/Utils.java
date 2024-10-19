@@ -22,7 +22,8 @@ public interface Utils {
             iconFont = FontUtil.FontType.ICON,
             neverloseFont = FontUtil.FontType.NEVERLOSE,
             tahomaFont = FontUtil.FontType.TAHOMA,
-            rubikFont = FontUtil.FontType.RUBIK;
+            rubikFont = FontUtil.FontType.RUBIK,
+            misansFont = FontUtil.FontType.MISANS;
 
 
     //Regular Fonts
@@ -59,6 +60,6 @@ public interface Utils {
             iconFont26 = iconFont.size(26),
             iconFont35 = iconFont.size(35),
             iconFont40 = iconFont.size(40);
-
+    CustomFont misans10 = misansFont.size(10), misans12 = misansFont.size(12), misans14 = misansFont.size(14), misans16 = misansFont.size(16), misans18 = misansFont.size(18), misans27 = misansFont.size(27);
 
 }

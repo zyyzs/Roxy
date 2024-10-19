@@ -1,8 +1,6 @@
 package net.netease.font;
 
 import lol.tgformat.Client;
-import lol.tgformat.ui.font.AbstractFontRenderer;
-import lol.tgformat.utils.client.HTTPUtil;
 import lol.tgformat.utils.client.LogUtil;
 import net.minecraft.client.Minecraft;
 import net.netease.utils.RapeMasterFontManager;
@@ -129,13 +127,6 @@ public class FontManager {
     }
 
     public static void init() {
-        if (!fold.exists()){
-            fontsDir.mkdir();
-        }
-        if (!fontsDir.exists()){
-            fontsDir.mkdir();
-        }
-
         edit10 = new RapeMasterFontManager(getFont(editFontFile, 10.0F));
         edit12 = new RapeMasterFontManager(getFont(editFontFile, 12.0F));
         edit13 = new RapeMasterFontManager(getFont(editFontFile, 13.0F));

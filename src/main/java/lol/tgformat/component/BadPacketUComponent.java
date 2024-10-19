@@ -37,9 +37,9 @@ public class BadPacketUComponent implements IMinecraft {
             }
         }
         if (packet instanceof C03PacketPlayer) {
-            if (shouldFix && !c03Check) {
+            if (shouldFix) {
                 shouldFix = false;
-                PacketUtil.sendPacket(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+                mc.thePlayer.serverSprintState = true;
             }
             c03Check = false;
         }

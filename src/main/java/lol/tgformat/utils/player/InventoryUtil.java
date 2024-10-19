@@ -5,6 +5,7 @@ import lol.tgformat.accessable.IMinecraft;
 import lol.tgformat.module.ModuleManager;
 import lol.tgformat.module.impl.player.InvManager;
 import lol.tgformat.utils.network.PacketUtil;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockFalling;
@@ -142,8 +143,7 @@ public class InventoryUtil implements IMinecraft {
     public static boolean isBestSword(final EntityPlayerSP player, final ItemStack itemStack) {
         double damage = 0.0;
         ItemStack bestStack = null;
-        InvManager invManager = ModuleManager.getModule(InvManager.class);
-        if (invManager.noWoodAndGold.isEnabled()) {
+        if (InvManager.noWoodAndGold.isEnabled()) {
             if (itemStack.getItem() instanceof ItemSword sword && (sword.getMaterial().equals(Item.ToolMaterial.GOLD) || sword.getMaterial().equals(Item.ToolMaterial.WOOD))) {
                 return false;
             }
@@ -331,6 +331,7 @@ public class InventoryUtil implements IMinecraft {
         DROP_ITEM;
     }
 
+    @Getter
     private static class Tool
     {
         private final int slot;
@@ -343,17 +344,6 @@ public class InventoryUtil implements IMinecraft {
             this.stack = stack;
         }
 
-        public int getSlot() {
-            return this.slot;
-        }
-
-        public double getEfficiency() {
-            return this.efficiency;
-        }
-
-        public ItemStack getStack() {
-            return this.stack;
-        }
     }
     public static int getGappleSlot()
     {
