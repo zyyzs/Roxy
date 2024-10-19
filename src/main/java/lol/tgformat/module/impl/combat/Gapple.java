@@ -61,7 +61,6 @@ public class Gapple extends Module {
         }
     }
 
-
     @NativeObfuscation(verificationLock = "User")
     @Override
     public void onDisable() {
@@ -76,7 +75,6 @@ public class Gapple extends Module {
         PacketUtil.sendPacketNoEvent(new C17PacketCustomPayload("NoSlowPatcher", new PacketBuffer(Unpooled.buffer())));
         PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
     }
-
 
     @NativeObfuscation(verificationLock = "User")
     @Listener

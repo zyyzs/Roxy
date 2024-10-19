@@ -107,4 +107,8 @@ public class Timer
 
         this.renderPartialTicks = this.elapsedPartialTicks;
     }
+
+    public long getCounter() {
+        return counter;
+    }
 }

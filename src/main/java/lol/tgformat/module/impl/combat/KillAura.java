@@ -79,6 +79,8 @@ public class KillAura extends Module {
     private final BooleanSetting polygon = new BooleanSetting("Polygon",false);
     private final BooleanSetting keepsprint = new BooleanSetting("KeepSprint", true);
     private final BooleanSetting autodis = new BooleanSetting("AutoDisable", true);
+    private final BooleanSetting mob = new BooleanSetting("mob", true);
+
     public KillAura() {
         super("KillAura", ModuleType.Combat);
     }
@@ -138,6 +140,7 @@ public class KillAura extends Module {
             attack();
         }
     }
+
     @Listener
     public void onPost(PostMotionEvent event) {
         this.setSuffix(attackmode.getMode());
@@ -161,13 +164,15 @@ public class KillAura extends Module {
             attack();
         }
     }
+
     public boolean isPlayerNear() {
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entityCant(entity) || !(entity instanceof EntityPlayer) || !mc.thePlayer.canEntityBeSeen(entity)) continue;
+            if (notAttack(entity) || !(entity instanceof EntityPlayer) || !mc.thePlayer.canEntityBeSeen(entity)) continue;
             return true;
         }
         return false;
     }
+
     @Listener
     public void onReceive(PacketReceiveEvent event) {
         if (isNull()) return;
@@ -175,6 +180,7 @@ public class KillAura extends Module {
             event.setCancelled(true);
         }
     }
+
     public void attack() {
         if (isLookingAtEntity(isGapple() ? RotationComponent.rotations : CurrentRotationUtil.currentRotation , target) && shouldAttack()) {
             if(keepsprint.isEnabled()) {
@@ -186,36 +192,23 @@ public class KillAura extends Module {
             }
         }
     }
+
     public boolean isBlocking() {
         return target != null && !autoblockmods.is("Off") && isSword() && isState();
     }
+
     private boolean notAttack(Entity entity) {
         Scaffold sca = ModuleManager.getModule(Scaffold.class);
         Blink blink = ModuleManager.getModule(Blink.class);
         Timer timer = ModuleManager.getModule(Timer.class);
         AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
-        return !(entity instanceof EntityLivingBase) || (entity instanceof EntityMob)
+
+        // ((!mob.isEnabled() && entity instanceof EntityMob))
+        // (entity instanceof EntityMob)
+        return !(entity instanceof EntityLivingBase) || ((!mob.isEnabled() && entity instanceof EntityMob))
                 || entity == mc.thePlayer
                 || !entity.isEntityAlive()
-                || !(mc.thePlayer.getClosestDistanceToEntity(entity) < startrange.getValue())
-                || sca.isState()
-                || entity == Blink.getFakePlayer()
-                || blink.isState()
-                || ModuleManager.getModule(Stuck.class).isState()
-                || antiBot.isServerBot(entity)
-                || Teams.isSameTeam(entity)
-                || timer.isState()
-                || FriendsCollection.isFriend(entity);
-    }
-    private boolean entityCant(Entity entity) {
-        Scaffold sca = ModuleManager.getModule(Scaffold.class);
-        Blink blink = ModuleManager.getModule(Blink.class);
-        Timer timer = ModuleManager.getModule(Timer.class);
-        AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
-        return !(entity instanceof EntityLivingBase)
-                || entity == mc.thePlayer
-                || !entity.isEntityAlive()
-                || !(mc.thePlayer.getClosestDistanceToEntity(entity) < 6)
+                || mc.thePlayer.getClosestDistanceToEntity(entity) > startrange.getValue()
                 || sca.isState()
                 || entity == Blink.getFakePlayer()
                 || blink.isState()
@@ -226,6 +219,29 @@ public class KillAura extends Module {
                 || FriendsCollection.isFriend(entity);
     }
 
+    // ?
+    /*
+    private boolean entityCant(Entity entity) {
+        Scaffold scaffold = ModuleManager.getModule(Scaffold.class);
+        Blink blink = ModuleManager.getModule(Blink.class);
+        Timer timer = ModuleManager.getModule(Timer.class);
+        AntiBot antiBot = ModuleManager.getModule(AntiBot.class);
+
+        return !(entity instanceof EntityLivingBase)
+                || entity == mc.thePlayer
+                || !entity.isEntityAlive()
+                || mc.thePlayer.getClosestDistanceToEntity(entity) > 6
+                || scaffold.isState()
+                || entity == Blink.getFakePlayer()
+                || blink.isState()
+                || ModuleManager.getModule(Stuck.class).isState()
+                || antiBot.isServerBot(entity)
+                || Teams.isSameTeam(entity)
+                || timer.isState()
+                || FriendsCollection.isFriend(entity);
+    }
+
+     */
 
     private MovementFix getMovementFixType() {
         return switch (moveFix.getMode()) {
@@ -236,12 +252,14 @@ public class KillAura extends Module {
             default -> throw new IllegalStateException("Unexpected value: " + moveFix.getMode());
         };
     }
+
     @Listener
     public void onTick(TickEvent event) {
         if (attackmode.is("Tick")) {
             attack();
         }
     }
+
     @Listener
     public void onRender3D(Render3DEvent event) {
         AxisAlignedBB axisAlignedBB = target.getEntityBoundingBox();
@@ -394,8 +412,8 @@ public class KillAura extends Module {
     public boolean shouldAttack() {
         return this.attackTimer.hasReached(1000.0D / (cps() * 1.5D));
     }
-    public static boolean isLookingAtEntity(Vector2f rotations, Entity target) {
-        double range = 3.0f;
+    public boolean isLookingAtEntity(Vector2f rotations, Entity target) {
+        double range = this.range.getValue();
         Vec3 src = mc.thePlayer.getPositionEyes(1.0f);
         Vec3 rotationVec = getVectorForRotation(rotations.y, rotations.x);
         Vec3 dest = src.addVector(rotationVec.xCoord * range, rotationVec.yCoord * range, rotationVec.zCoord * range);

@@ -62,17 +62,21 @@ public class Disabler extends Module {
 
     public static List<Packet<INetHandler>> storedPackets;
     public static ConcurrentLinkedDeque<Integer> pingPackets;
+
     public Disabler(){
         super("Disabler", ModuleType.Misc);
     }
+
     @Listener
     public void onWorld(WorldEvent event){
-        if(isNull())return;
+        if(isNull()) return;
+
         this.lastSlot = -1;
         this.lastSprinting = false;
         this.c03Check = false;
         this.shouldFix = false;
     }
+
     @Listener
     public void onUpdate(PreUpdateEvent event) {
         if (isNull())return;
@@ -80,10 +84,12 @@ public class Disabler extends Module {
             processPackets();
         }
     }
+
     @Listener
     public void onMotion(PreMotionEvent event) {
         this.setSuffix(mode.getMode());
     }
+
     @Listener(0)
     public void onSend(PacketSendEvent event){
         Packet<?> packet = event.getPacket();
@@ -156,6 +162,7 @@ public class Disabler extends Module {
 
         }
     }
+
     @Listener
     public void onHigher(PacketSendHigherEvent event) {
         if (badPacketsF.isEnabled() && event.getPacket() instanceof C0BPacketEntityAction c0b && !event.isCancelled()) {
@@ -180,6 +187,7 @@ public class Disabler extends Module {
             this.lastSlot = c09.getSlotId();
         }
     }
+
     public static float getRandomYaw(float requestedYaw){
         int rand = MathUtil.getRandomInRange(1,200);
         return requestedYaw + (360 * rand);
@@ -213,6 +221,7 @@ public class Disabler extends Module {
     
     public static void processPackets() {
         if (mc.getCurrentServerData() == null) return;
+
         if (!storedPackets.isEmpty()) {
             for (Packet<INetHandler> packet : storedPackets) {
                 PacketReceiveEvent event = new PacketReceiveEvent(packet, packetListener);
@@ -225,6 +234,7 @@ public class Disabler extends Module {
             storedPackets.clear();
         }
     }
+
 //    public static boolean noPost() {
 //        return PacketStoringComponent.blinking || BlinkUtils.isBlinking();
 //    }

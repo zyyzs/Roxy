@@ -41,14 +41,13 @@ import java.util.LinkedList;
 @Renamer
 @StringEncryption
 public class Timer extends Module {
-
-    private final ModeSetting mode = new ModeSetting("Mode","Basic","Basic","Balance");
-    private final NumberSetting speed = new NumberSetting("TimerSpeed", 3.0, 6.0, 1.0,0.1);
+    private final ModeSetting mode = new ModeSetting("Mode","Basic","Basic", "Balance");
+    private final NumberSetting speed = new NumberSetting("TimerSpeed", 3.0, 6.0, 0.1,0.1);
     private final BooleanSetting dis = new BooleanSetting("AutoDisable", true);
     private final BooleanSetting dissca = new BooleanSetting("AutoDisSca", true);
     private final BooleanSetting scaOnly = new BooleanSetting("ScaffoldOnly", true);
     private final BooleanSetting poslook = new BooleanSetting("PosLook", true);
-    private final BooleanSetting debug = new BooleanSetting("DeBug", true);
+    private final BooleanSetting debug = new BooleanSetting("Debug", true);
     private final BooleanSetting render = new BooleanSetting("Render", true);
     private final LinkedList<Packet<INetHandler>> inBus = new LinkedList<>();
     private final StopWatch stopWatch = new StopWatch();
