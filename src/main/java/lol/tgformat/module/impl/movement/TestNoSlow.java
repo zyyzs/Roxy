@@ -8,28 +8,38 @@ import com.viaversion.viaversion.api.type.Type;
 import lol.tgformat.api.event.Listener;
 import lol.tgformat.events.PreUpdateEvent;
 import lol.tgformat.events.WorldChangeEvent;
+import lol.tgformat.events.WorldEvent;
 import lol.tgformat.events.motion.PostMotionEvent;
 import lol.tgformat.events.movement.SlowEvent;
+import lol.tgformat.events.packet.PacketReceiveEvent;
 import lol.tgformat.events.packet.PacketSendEvent;
+import lol.tgformat.events.packet.PacketSendHigherEvent;
 import lol.tgformat.module.Module;
 import lol.tgformat.module.ModuleType;
+import lol.tgformat.module.impl.misc.Disabler;
 import lol.tgformat.module.values.impl.BooleanSetting;
+import lol.tgformat.utils.client.LogUtil;
 import lol.tgformat.utils.network.PacketUtil;
+import lol.tgformat.utils.player.BlinkUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
+import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import tech.skidonion.obfuscator.annotations.StringEncryption;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @Author KuChaZi
@@ -38,97 +48,35 @@ import java.util.Iterator;
  */
 @StringEncryption
 public class TestNoSlow extends Module {
-    private final BooleanSetting sword = new BooleanSetting("Sword", true);
-    private final BooleanSetting food = new BooleanSetting("Food", false);
-    private final BooleanSetting bow = new BooleanSetting("Bow", false);
     public TestNoSlow() {
-        super("NoSlow", ModuleType.Movement);
+        super("TestNoSlow", ModuleType.Movement);
     }
-
-    public boolean dropped = false;
-
+    boolean eating = false;
     @Listener
     public void onSlow(SlowEvent event) {
-        if (isNull()) return;
-        if (isSlow()) {
-            event.setCancelled(true);
+        if (isFood()) {
+            event.setCancelled();
         }
-        mc.thePlayer.setSprinting(true);
     }
-
     @Listener
-    public void onWorld(WorldChangeEvent event){
-        if (isNull()) return;
-
-        dropped = false;
-    }
-
-    @Listener
-    public void onUpdate(PreUpdateEvent event) {
-        if (isSlow()) {
-            if (!isBow() && !isFood()) {
-                PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                PacketUtil.sendPacket(new C0EPacketClickWindow(0, 36, 0, 2, new ItemStack(Block.getBlockById(166)), (short)0));
+    public void onSend(PacketSendEvent event) {
+        if (isFood()) {
+            if (event.getPacket() instanceof C08PacketPlayerBlockPlacement c08 && c08.getPlacedBlockDirection() == 255) {
+                eating = true;
+                BlinkUtils.startBlink();
             }
-            if (isBow()) {
-                PacketUtil.sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                PacketUtil.sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-                PacketUtil.sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem)));
-            }
-        }
-        if (dropped) {
-            mc.gameSettings.keyBindUseItem.setPressed(false);
-        }
-
-        if (!mc.thePlayer.isUsingItem()) {
-            dropped = false;
-        }
-    }
-
-    @Listener
-    public void onPostMotion(PostMotionEvent e) {
-        if (isSlow() && !isFood()) {
-            PacketUtil.sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-            mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-            if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && mc.thePlayer.isUsingItem()) {
-                for (int i = 0; i < 8; i++) {
-                    PacketUtil.send1_12Block();
+            if (event.getPacket() instanceof C09PacketHeldItemChange && !event.isCancelled() || event.getPacket() instanceof C07PacketPlayerDigging c07 && c07.getStatus().equals(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM)) {
+                eating = false;
+                if (event.getPacket() instanceof C07PacketPlayerDigging c07 && c07.getStatus().equals(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM)) {
+                    BlinkUtils.stopBlink();
+                    LogUtil.addChatMessage("pros");
                 }
             }
         }
     }
     @Listener
-    public void onPacketSend(PacketSendEvent event){
-        Packet<?> packet = event.getPacket();
-        if (packet instanceof C08PacketPlayerBlockPlacement wrapper) {
-            if (food.isEnabled()) {
-                if (wrapper.getStack() != null && !(mc.theWorld.getBlockState(wrapper.getPosition()).getBlock() instanceof BlockContainer)) {
-                    if (wrapper.getStack().getItem() instanceof ItemFood && !dropped) {
-                        if (wrapper.getStack().getStackSize() > 1) {
-                            event.setCancelled(true);
-                            PacketUtil.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                            PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(wrapper.getStack()));
-                            dropped = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (food.isEnabled()) {
-            if (dropped) {
-                if (packet instanceof C07PacketPlayerDigging wrapper) {
-                    if (wrapper.getStatus() == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM) {
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        }
+    public void onWorld(WorldEvent event) {
+        eating = false;
     }
-
-    public boolean isSlow(){
-        ItemStack heldItem = mc.thePlayer.getHeldItem();
-        Item item = heldItem.getItem();
-        return (mc.thePlayer.isUsingItem()) && ((item instanceof ItemSword && sword.isEnabled()) || (item instanceof ItemFood && food.isEnabled()) || (item instanceof ItemBow && bow.isEnabled()));
-    }
-
+    
 }

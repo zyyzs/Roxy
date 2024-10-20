@@ -83,7 +83,7 @@ public class NoSlow extends Module {
     }
     @Listener
     public void onPost(PostMotionEvent event) {
-        if (isGapple()) {
+        if (isGapple() && BlinkUtils.isBlinking()) {
             PacketUtil.send1_12Block();
             return;
         }
