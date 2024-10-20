@@ -251,7 +251,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0, this.motionZ, yaw, pitch, this.onGround));
                 flag2 = false;
             }
+
             Disabler.processPackets();
+
             ++this.positionUpdateTicks;
             if (flag2) {
                 this.lastReportedPosX = this.posX;

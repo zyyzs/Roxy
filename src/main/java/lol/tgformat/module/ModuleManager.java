@@ -47,6 +47,8 @@ public class ModuleManager implements IMinecraft {
         addModule(new BackTrack());
         addModule(new Criticals());
         addModule(new SuperKB());
+        // addModule(new AntiAttack());
+        // addModule(new History());
         //Combat
 
 
@@ -85,6 +87,7 @@ public class ModuleManager implements IMinecraft {
         addModule(new Spammer());
         addModule(new GhostBlocksMaker());
         addModule(new AntiSpammer());
+        // addModule(new DebugModule());
         //Misc
 
 

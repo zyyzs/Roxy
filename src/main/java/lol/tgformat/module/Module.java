@@ -141,6 +141,7 @@ public class Module implements IMinecraft {
 
     public void setState(boolean state) {
         if (this.state == state) return;
+
         this.state = state;
         if (state) {
             onEnable();
